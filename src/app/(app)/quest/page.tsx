@@ -1,36 +1,28 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Flame,
-  Star,
-  Lock,
-  Check,
-  Play,
-  RotateCcw,
   Trophy,
   User as UserIcon,
   Sparkles,
   Shield,
   Crown,
 } from "lucide-react";
-import AppNav from "@/components/app/AppNav";
 import ChatPanel, { ChatFab } from "@/components/app/ChatPanel";
+import ChapterPath from "@/components/app/ChapterPath";
 import DailyChallenge from "@/components/app/DailyChallenge";
+import StreakCalendar from "@/components/app/StreakCalendar";
 import { useLanguage } from "@/lib/useLanguage";
-import { useTheme } from "@/lib/useTheme";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { useDemoMode } from "@/lib/useDemoMode";
 import { t } from "@/lib/i18n";
 import {
-  QUESTS,
   levelNameKey,
-  questTitle,
   xpProgress,
-  type Quest,
 } from "@/lib/quests";
 
 type LeaderRow = {
@@ -42,8 +34,7 @@ type LeaderRow = {
 
 export default function QuestHubPage() {
   const router = useRouter();
-  const { lang, toggle: toggleLang } = useLanguage();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { lang } = useLanguage();
   const demo = useDemoMode();
   const {
     user,
@@ -51,8 +42,6 @@ export default function QuestHubPage() {
     status,
     isDemo,
     ready,
-    login,
-    logout,
   } = useSkarbnikUser();
   const [chatOpen, setChatOpen] = useState(false);
   const [top3, setTop3] = useState<LeaderRow[]>([]);
@@ -93,18 +82,7 @@ export default function QuestHubPage() {
 
   return (
     <main className="min-h-screen bg-themed">
-      <AppNav
-        lang={lang}
-        onToggleLang={toggleLang}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        authenticated={!!user}
-        onLogin={login}
-        onLogout={logout}
-        demo={demo}
-      />
-
-      <div className="max-w-6xl mx-auto px-6 pt-24 pb-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-8 h-8 rounded-full border-2 border-gold-themed/30 border-t-gold-themed animate-spin" />
@@ -123,6 +101,9 @@ export default function QuestHubPage() {
               streak={(user as { streak_days?: number } | null)?.streak_days ?? 0}
               isDemo={isDemo}
             />
+
+            {/* Streak calendar — 7-day activity strip */}
+            <StreakCalendar lang={lang} userId={user?.id ?? null} />
 
             {/* Daily Challenge */}
             <DailyChallenge
@@ -144,9 +125,9 @@ export default function QuestHubPage() {
                 </div>
               </div>
 
-              <QuestGrid
+              <ChapterPath
                 lang={lang}
-                userLevel={level === 4 ? 3 : level}
+                userLevel={level}
                 completedQuests={completedQuests}
               />
             </div>
@@ -302,167 +283,6 @@ function TopBar({
             </p>
           </div>
         </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function QuestGrid({
-  lang,
-  userLevel,
-  completedQuests,
-}: {
-  lang: "pl" | "en";
-  userLevel: 1 | 2 | 3;
-  completedQuests: string[];
-}) {
-  // Group by level so we can render visible sections
-  const levels: Array<1 | 2 | 3> = [1, 2, 3];
-
-  return (
-    <div className="space-y-10">
-      {levels.map((lvl) => {
-        const quests = QUESTS.filter((q) => q.level === lvl);
-        const locked = lvl > userLevel;
-        return (
-          <div key={lvl}>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="font-mono text-xs uppercase tracking-widest text-muted-themed">
-                {t("questLevel", lang)} {lvl}
-              </span>
-              <div className="h-px bg-themed flex-1" />
-              {locked && (
-                <span className="text-xs text-muted-themed inline-flex items-center gap-1">
-                  <Lock className="w-3 h-3" />
-                  {t("questUnlockAt", lang, { level: lvl })}
-                </span>
-              )}
-            </div>
-            <div
-              className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${
-                locked ? "opacity-50 pointer-events-none" : ""
-              }`}
-            >
-              {quests.map((q) => (
-                <QuestCard
-                  key={q.id}
-                  quest={q}
-                  lang={lang}
-                  completed={completedQuests.includes(q.id)}
-                  locked={locked}
-                />
-              ))}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function QuestCard({
-  quest,
-  lang,
-  completed,
-  locked,
-}: {
-  quest: Quest;
-  lang: "pl" | "en";
-  completed: boolean;
-  locked: boolean;
-}) {
-  const demoAppend = typeof window !== "undefined" && window.location.search.includes("demo=true") ? "?demo=true" : "";
-  const statusLabel = locked
-    ? t("questLocked", lang)
-    : completed
-    ? t("questCompleted", lang)
-    : t("questAvailable", lang);
-
-  const borderClass = locked
-    ? "border-themed"
-    : completed
-    ? "border-green/40 hover:border-green/70"
-    : "border-gold-themed/30 hover:border-gold-themed/60";
-
-  const icon = locked ? (
-    <Lock className="w-4 h-4 text-muted-themed" />
-  ) : completed ? (
-    <Check className="w-4 h-4 text-green" />
-  ) : (
-    <Sparkles className="w-4 h-4 text-gold-themed" />
-  );
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`group bg-card-themed border ${borderClass} rounded-2xl p-5 transition-all shadow-card relative overflow-hidden`}
-    >
-      {completed && (
-        <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none">
-          <div className="absolute top-0 right-0 w-full h-full bg-green/5 rounded-bl-[100%]" />
-        </div>
-      )}
-
-      <div className="flex items-start justify-between gap-3 mb-3 relative">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-elevated-themed">
-            {icon}
-          </span>
-          <span className="text-muted-themed text-[10px] font-mono uppercase tracking-widest">
-            {statusLabel}
-          </span>
-        </div>
-        <span className="inline-flex items-center gap-1 bg-gold-themed/10 border border-gold-themed/20 text-gold-themed font-mono text-xs font-bold px-2.5 py-1 rounded-lg">
-          +{quest.xp} XP
-        </span>
-      </div>
-
-      <h3 className="font-heading text-lg font-bold text-themed mb-3 leading-tight">
-        {questTitle(quest, lang)}
-      </h3>
-
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-0.5">
-          {[1, 2, 3].map((s) => (
-            <Star
-              key={s}
-              className={`w-3.5 h-3.5 ${
-                s <= quest.stars
-                  ? "text-gold-themed fill-current"
-                  : "text-muted-themed/40"
-              }`}
-              fill={s <= quest.stars ? "currentColor" : "none"}
-            />
-          ))}
-        </div>
-
-        {locked ? (
-          <span className="text-muted-themed text-xs font-medium">
-            {t("questLocked", lang)}
-          </span>
-        ) : (
-          <Link
-            href={`/quest/${quest.id}${demoAppend}`}
-            className={`inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg transition-colors ${
-              completed
-                ? "bg-elevated-themed border border-themed text-themed hover:bg-card-hover-themed"
-                : "gradient-gold-themed text-white"
-            }`}
-          >
-            {completed ? (
-              <>
-                <RotateCcw className="w-3.5 h-3.5" />
-                {t("questReplay", lang)}
-              </>
-            ) : (
-              <>
-                <Play className="w-3.5 h-3.5" />
-                {t("questStart", lang)}
-              </>
-            )}
-          </Link>
-        )}
       </div>
     </motion.div>
   );

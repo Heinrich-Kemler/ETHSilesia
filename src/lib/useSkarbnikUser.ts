@@ -21,7 +21,17 @@ export type SkarbnikUser = {
   level: number;
   total_xp: number;
   streak_days: number;
+  last_active: string | null;
   language: "pl" | "en";
+  created_at: string;
+};
+
+export type QuestCompletion = {
+  quest_id: string;
+  xp_earned: number;
+  answers_correct: number;
+  answers_total: number;
+  completed_at: string;
 };
 
 type Status = "idle" | "loading" | "authenticated" | "unauthenticated" | "error";
@@ -30,6 +40,7 @@ type HookResult = {
   status: Status;
   user: SkarbnikUser | DemoUser | null;
   completedQuests: string[];
+  questCompletions: QuestCompletion[];
   isDemo: boolean;
   error: string | null;
   refetch: () => Promise<void>;
@@ -62,6 +73,7 @@ export function useSkarbnikUser(): HookResult {
   const privy = useSafePrivy();
   const [user, setUser] = useState<SkarbnikUser | null>(null);
   const [completedQuests, setCompletedQuests] = useState<string[]>([]);
+  const [questCompletions, setQuestCompletions] = useState<QuestCompletion[]>([]);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const syncedPrivyId = useRef<string | null>(null);
@@ -79,6 +91,7 @@ export function useSkarbnikUser(): HookResult {
     if (privy?.logout) await privy.logout();
     setUser(null);
     setCompletedQuests([]);
+    setQuestCompletions([]);
     syncedPrivyId.current = null;
   }, [privy]);
 
@@ -89,9 +102,11 @@ export function useSkarbnikUser(): HookResult {
       const data = (await res.json()) as {
         user: SkarbnikUser;
         completedQuests: string[];
+        questCompletions?: QuestCompletion[];
       };
       setUser(data.user);
       setCompletedQuests(data.completedQuests ?? []);
+      setQuestCompletions(data.questCompletions ?? []);
       setStatus("authenticated");
       setError(null);
     } catch (e) {
@@ -152,6 +167,7 @@ export function useSkarbnikUser(): HookResult {
         status: "authenticated",
         user: DEMO_USER,
         completedQuests: DEMO_USER.completedQuests,
+        questCompletions: DEMO_USER.questCompletions,
         isDemo: true,
         error: null,
         refetch: async () => {},
@@ -164,6 +180,7 @@ export function useSkarbnikUser(): HookResult {
       status,
       user,
       completedQuests,
+      questCompletions,
       isDemo: false,
       error,
       refetch,
@@ -171,5 +188,16 @@ export function useSkarbnikUser(): HookResult {
       logout,
       ready: privyReady,
     };
-  }, [demo, status, user, completedQuests, error, refetch, login, logout, privyReady]);
+  }, [
+    demo,
+    status,
+    user,
+    completedQuests,
+    questCompletions,
+    error,
+    refetch,
+    login,
+    logout,
+    privyReady,
+  ]);
 }

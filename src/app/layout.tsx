@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Mono } from "next/font/google";
+import { Cinzel, Inter, Space_Mono } from "next/font/google";
 import PrivyProvider from "@/components/providers/PrivyProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 import "./globals.css";
@@ -15,6 +15,15 @@ const spaceMono = Space_Mono({
   subsets: ["latin"],
 });
 
+// Cinzel is the heading display face — loaded via next/font so it's
+// self-hosted, avoids render-blocking <link>, and gets CSS-optimised.
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  weight: ["400", "600", "700", "800", "900"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Skarbnik — Twoj przewodnik po DeFi",
   description:
@@ -27,11 +36,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl" className={`${inter.variable} ${spaceMono.variable}`}>
+    <html
+      lang="pl"
+      className={`${inter.variable} ${spaceMono.variable} ${cinzel.variable}`}
+    >
       <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&display=swap"
-          rel="stylesheet"
+        {/*
+          Inline theme bootstrap — runs before React hydrates so the
+          `data-theme` attribute is already correct on first paint.
+          Prevents the light/dark flash. Mirrors useTheme's fallback
+          logic (default dark when storage is empty/invalid).
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var t=localStorage.getItem('skarbnik-theme');document.documentElement.setAttribute('data-theme',t==='light'||t==='dark'?t:'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}",
+          }}
         />
       </head>
       <body className="min-h-screen">

@@ -1,11 +1,25 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { t } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
 
 export default function CTASection({ lang }: { lang: Lang }) {
+  const router = useRouter();
+  const { status, isDemo, login } = useSkarbnikUser();
+
+  // Mirrors HeroSection: authenticated/demo → /quest, otherwise → Privy login.
+  const handleStart = () => {
+    if (status === "authenticated" || isDemo) {
+      router.push("/quest");
+    } else {
+      login();
+    }
+  };
+
   return (
     <section className="relative py-24">
       <div className="max-w-4xl mx-auto px-6">
@@ -26,7 +40,9 @@ export default function CTASection({ lang }: { lang: Lang }) {
             {t("ctaDesc", lang)}
           </p>
           <button
-            className="relative group flex items-center justify-center gap-2 mx-auto text-white font-heading font-bold text-lg px-10 py-4 rounded-xl transition-all gradient-gold-themed"
+            type="button"
+            onClick={handleStart}
+            className="relative inline-flex group items-center justify-center gap-2 mx-auto text-white font-heading font-bold text-lg px-10 py-4 rounded-xl transition-all gradient-gold-themed"
             style={{ boxShadow: "0 0 30px var(--gold-glow)" }}
           >
             {t("ctaButton", lang)}

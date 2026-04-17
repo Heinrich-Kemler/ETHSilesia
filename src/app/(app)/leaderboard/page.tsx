@@ -11,10 +11,8 @@ import {
   ArrowLeft,
   RefreshCw,
 } from "lucide-react";
-import AppNav from "@/components/app/AppNav";
 import ChatPanel, { ChatFab } from "@/components/app/ChatPanel";
 import { useLanguage } from "@/lib/useLanguage";
-import { useTheme } from "@/lib/useTheme";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { useDemoMode } from "@/lib/useDemoMode";
 import { t } from "@/lib/i18n";
@@ -38,10 +36,9 @@ type LeaderResponse = {
 const SEASON_END = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
 export default function LeaderboardPage() {
-  const { lang, toggle: toggleLang } = useLanguage();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { lang } = useLanguage();
   const demo = useDemoMode();
-  const { user, login, logout } = useSkarbnikUser();
+  const { user } = useSkarbnikUser();
   const [chatOpen, setChatOpen] = useState(false);
   const [data, setData] = useState<LeaderResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,18 +84,7 @@ export default function LeaderboardPage() {
 
   return (
     <main className="min-h-screen bg-themed">
-      <AppNav
-        lang={lang}
-        onToggleLang={toggleLang}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        authenticated={!!user}
-        onLogin={login}
-        onLogout={logout}
-        demo={demo}
-      />
-
-      <div className="max-w-3xl mx-auto px-6 pt-24 pb-24">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         <Link
           href={demo ? "/quest?demo=true" : "/quest"}
           className="inline-flex items-center gap-2 text-muted-themed hover:text-themed text-sm mb-6"

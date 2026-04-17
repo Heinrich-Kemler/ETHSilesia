@@ -2,7 +2,6 @@
 
 import { use, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
@@ -14,10 +13,9 @@ import {
   Shield,
   Crown,
   Award,
+  BookOpen,
 } from "lucide-react";
-import AppNav from "@/components/app/AppNav";
 import { useLanguage } from "@/lib/useLanguage";
-import { useTheme } from "@/lib/useTheme";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { useDemoMode } from "@/lib/useDemoMode";
 import { t } from "@/lib/i18n";
@@ -28,6 +26,8 @@ import {
   questTitle,
   type Quest,
 } from "@/lib/quests";
+import { markActiveDay } from "@/lib/streak";
+import CelebrationModal from "@/components/app/CelebrationModal";
 import { useToast } from "@/components/ui/Toast";
 
 type Phase = "loading" | "quiz" | "complete" | "not-found";
@@ -40,11 +40,9 @@ export default function ActiveQuestPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const router = useRouter();
-  const { lang, toggle: toggleLang } = useLanguage();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { lang } = useLanguage();
   const demo = useDemoMode();
-  const { user, isDemo, login, logout, refetch } = useSkarbnikUser();
+  const { user, isDemo, refetch } = useSkarbnikUser();
   const toast = useToast();
 
   const quest = useMemo<Quest | undefined>(() => getQuestById(id), [id]);
@@ -55,7 +53,6 @@ export default function ActiveQuestPage({
   const [correctCount, setCorrectCount] = useState(0);
   const [aiExplanation, setAiExplanation] = useState<string>("");
   const [aiLoading, setAiLoading] = useState(false);
-  const [timerStart, setTimerStart] = useState<number>(0);
   const [elapsed, setElapsed] = useState(0);
   const [locked, setLocked] = useState(false);
   const [completionResult, setCompletionResult] = useState<{
@@ -64,6 +61,10 @@ export default function ActiveQuestPage({
     levelUp: boolean;
     badgeEarned: number | null;
   } | null>(null);
+  // Sequenced celebration: show level-up first (if any), then badge (if any).
+  const [celebrationStep, setCelebrationStep] = useState<
+    "level-up" | "badge" | "done"
+  >("done");
   const demoAppend = demo ? "?demo=true" : "";
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -74,7 +75,6 @@ export default function ActiveQuestPage({
       return;
     }
     setPhase("quiz");
-    setTimerStart(Date.now());
     setElapsed(0);
   }, [quest]);
 
@@ -87,7 +87,6 @@ export default function ActiveQuestPage({
       }
       return;
     }
-    setTimerStart(Date.now());
     setElapsed(0);
     timerRef.current = setInterval(() => {
       setElapsed((e) => {
@@ -188,6 +187,9 @@ export default function ActiveQuestPage({
     const totalQ = quest.questions.length;
     const xpEarned = Math.round((correctCount * quest.xp) / totalQ);
 
+    // Mark today active for the streak tracker (idempotent, runs in demo + real paths).
+    markActiveDay(user?.id ?? null);
+
     // Demo mode → skip the server call, show synthetic success.
     if (isDemo) {
       setCompletionResult({
@@ -252,30 +254,15 @@ export default function ActiveQuestPage({
         badgeEarned: data.badgeEarned,
       });
       setPhase("complete");
+      // Trigger the sequenced celebration modal. Level-up wins the first slot
+      // if present; otherwise a badge takes it. Any remaining reward shows
+      // after the user dismisses the first modal.
+      if (data.levelUp) setCelebrationStep("level-up");
+      else if (data.badgeEarned) setCelebrationStep("badge");
       toast({
         variant: "success",
         message: t("toastQuestCompleted", lang, { xp: xpEarned }),
       });
-      if (data.levelUp) {
-        // best-effort lookup — levelUp implies a new level computed server-side
-        toast({
-          variant: "level-up",
-          message: t("toastLevelUp", lang, {
-            level: t(levelNameKey(Math.min(3, (user.level ?? 1) + 1) as 1 | 2 | 3), lang),
-          }),
-        });
-      }
-      if (data.badgeEarned) {
-        toast({
-          variant: "level-up",
-          message: t("toastBadge", lang, {
-            name: t(
-              ("badge" + data.badgeEarned) as TranslationKey,
-              lang
-            ),
-          }),
-        });
-      }
       await refetch();
     } catch {
       toast({
@@ -298,17 +285,7 @@ export default function ActiveQuestPage({
   if (phase === "not-found") {
     return (
       <main className="min-h-screen bg-themed">
-        <AppNav
-          lang={lang}
-          onToggleLang={toggleLang}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          authenticated={!!user}
-          onLogin={login}
-          onLogout={logout}
-          demo={demo}
-        />
-        <div className="max-w-2xl mx-auto px-6 pt-28 text-center">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-24 text-center">
           <h1 className="font-heading text-3xl font-bold text-themed mb-4">
             {lang === "pl" ? "Quest nie znaleziony" : "Quest not found"}
           </h1>
@@ -327,16 +304,6 @@ export default function ActiveQuestPage({
   if (!quest || phase === "loading") {
     return (
       <main className="min-h-screen bg-themed">
-        <AppNav
-          lang={lang}
-          onToggleLang={toggleLang}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          authenticated={!!user}
-          onLogin={login}
-          onLogout={logout}
-          demo={demo}
-        />
         <div className="flex items-center justify-center py-28">
           <div className="w-8 h-8 rounded-full border-2 border-gold-themed/30 border-t-gold-themed animate-spin" />
         </div>
@@ -349,18 +316,7 @@ export default function ActiveQuestPage({
 
   return (
     <main className="min-h-screen bg-themed">
-      <AppNav
-        lang={lang}
-        onToggleLang={toggleLang}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        authenticated={!!user}
-        onLogin={login}
-        onLogout={logout}
-        demo={demo}
-      />
-
-      <div className="max-w-3xl mx-auto px-6 pt-24 pb-16">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         {phase === "quiz" && (
           <>
             {/* Quest header */}
@@ -541,6 +497,16 @@ export default function ActiveQuestPage({
                         )}
                       </div>
 
+                      {/* Static quest explainer — always-on educational takeaway */}
+                      {!aiLoading && quest.explainer && (
+                        <div className="mt-3 bg-cyan-themed/5 border border-cyan-themed/20 rounded-xl p-4 flex gap-3">
+                          <BookOpen className="w-4 h-4 text-cyan-themed flex-shrink-0 mt-0.5" />
+                          <p className="text-secondary-themed text-xs leading-relaxed">
+                            {quest.explainer[lang]}
+                          </p>
+                        </div>
+                      )}
+
                       {!aiLoading && (
                         <motion.button
                           initial={{ opacity: 0, y: 8 }}
@@ -576,6 +542,39 @@ export default function ActiveQuestPage({
           />
         )}
       </div>
+
+      {/* Sequenced celebration overlays. Level-up shows first; if a badge
+          was also earned, it shows after the level-up modal is dismissed. */}
+      {completionResult?.levelUp && (
+        <CelebrationModal
+          open={celebrationStep === "level-up"}
+          lang={lang}
+          variant="level-up"
+          newLevel={
+            Math.min(4, (user?.level ?? 2)) as 2 | 3 | 4
+          }
+          levelName={t(
+            levelNameKey(
+              Math.min(3, (user?.level ?? 1)) as 1 | 2 | 3
+            ),
+            lang
+          )}
+          onClose={() =>
+            setCelebrationStep(
+              completionResult?.badgeEarned ? "badge" : "done"
+            )
+          }
+        />
+      )}
+      {completionResult?.badgeEarned && (
+        <CelebrationModal
+          open={celebrationStep === "badge"}
+          lang={lang}
+          variant="badge"
+          badgeId={completionResult.badgeEarned}
+          onClose={() => setCelebrationStep("done")}
+        />
+      )}
     </main>
   );
 }

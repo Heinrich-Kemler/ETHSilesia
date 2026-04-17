@@ -1,0 +1,11 @@
+{
+  "name": "Złoty Skarbnik",
+  "description": "Awarded for reaching level 3.",
+  "external_url": "https://skarbnik.app/badges/3",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/3.png",
+  "attributes": [
+    { "trait_type": "Badge ID", "value": 3 },
+    { "trait_type": "Tier", "value": "Gold" },
+    { "trait_type": "Trigger", "value": "Level 3 reached" }
+  ]
+}

@@ -24,11 +24,80 @@ export type Quest = {
   stars: 1 | 2 | 3;
   /** Minimum 1 question; we currently ship 6 per quest. */
   questions: readonly [QuizQuestion, ...QuizQuestion[]];
+  /** 1-2 sentence educational takeaway shown after each answer. */
+  explainer?: QuizOption;
 };
 
 function pl_en(pl: string, en: string): QuizOption {
   return { pl, en };
 }
+
+/**
+ * Short static educational takeaway per quest. Shown beneath each answer
+ * when the AI coach is paused (see AI_ENABLED flag in /api/ai/explain).
+ */
+const EXPLAINERS: Record<string, QuizOption> = {
+  "l1-blockchain": pl_en(
+    "Blockchain to wspólna, publiczna księga. Transakcje są grupowane w bloki i weryfikowane przez wiele niezależnych komputerów — dlatego nikt pojedynczy nie może ich zmienić.",
+    "A blockchain is a shared public ledger. Transactions are grouped into blocks and verified by many independent computers — so no single party can alter them."
+  ),
+  "l1-wallet": pl_en(
+    "Portfel przechowuje Twoje klucze, nie tokeny. Kto ma klucze (lub seed phrase), ten kontroluje środki — nigdy nikomu ich nie udostępniaj.",
+    "A wallet holds your keys, not the coins. Whoever has the keys (or seed phrase) controls the funds — never share them with anyone."
+  ),
+  "l1-usdc": pl_en(
+    "USDC to stablecoin śledzący kurs dolara (1 USDC ≈ 1 USD). Każdy token jest pokryty rezerwami, którymi zarządza regulowana firma Circle.",
+    "USDC is a stablecoin that tracks the US dollar (1 USDC ≈ 1 USD). Every token is backed by reserves managed by the regulated company Circle."
+  ),
+  "l1-transaction": pl_en(
+    "Transakcja potrzebuje adresu odbiorcy i opłaty za gas. Walidatorzy sieci ją potwierdzają i po zatwierdzeniu nie da się jej cofnąć.",
+    "A transaction needs a recipient address and a gas fee. Network validators confirm it and once confirmed it cannot be reversed."
+  ),
+  "l1-gas": pl_en(
+    "Gas to opłata za wykonanie transakcji w sieci blockchain. Rośnie, gdy sieć jest obciążona — L2 (Base, Arbitrum) jest zwykle znacznie tańsze od Ethereum L1.",
+    "Gas is the fee to run a transaction on the blockchain. It rises when the network is busy — L2s like Base and Arbitrum are typically much cheaper than Ethereum L1."
+  ),
+  "l2-defi": pl_en(
+    "DeFi (decentralised finance) to finanse bez pośredników — smart kontrakty zastępują banki, brokerów i notariuszy. Ty zachowujesz klucze i pełną kontrolę.",
+    "DeFi (decentralised finance) means finance without middlemen — smart contracts replace banks, brokers and notaries. You keep your keys and full control."
+  ),
+  "l2-dex": pl_en(
+    "DEX (zdecentralizowana giełda) pozwala handlować bezpośrednio ze smart kontraktem — bez oddawania komuś kluczy. Przykład: Uniswap.",
+    "A DEX (decentralised exchange) lets you trade directly with a smart contract — no need to hand over your keys. Example: Uniswap."
+  ),
+  "l2-yield": pl_en(
+    "Yield to zwrot z Twojego kapitału (odsetki, nagrody za staking). Wyższy yield zwykle oznacza wyższe ryzyko — obietnice „gwarantowanych” wysokich zwrotów to czerwona flaga.",
+    "Yield is the return on your capital (interest, staking rewards). Higher yield usually means higher risk — promises of “guaranteed” high returns are a red flag."
+  ),
+  "l2-liquidity": pl_en(
+    "Pula płynności gromadzi tokeny od wielu dostawców i zasila handel na DEX-ie. Dostawcy (LP) zarabiają część opłat z transakcji w puli.",
+    "A liquidity pool collects tokens from many providers to power DEX trading. Providers (LPs) earn a share of the pool's trading fees."
+  ),
+  "l2-smart": pl_en(
+    "Smart kontrakt to kod, który sam wykonuje zapisane warunki — bez ingerencji człowieka. Jest niezmienny po wdrożeniu, dlatego audyty bezpieczeństwa są kluczowe.",
+    "A smart contract is code that self-executes its rules — no human in the loop. It is immutable after deployment, which is why security audits are essential."
+  ),
+  "l3-il": pl_en(
+    "Impermanent loss to strata względem trzymania tokenów, która powstaje, gdy ceny w puli się rozjeżdżają. Opłaty z handlu mogą ją zrównoważyć; pule stablecoin-stablecoin mają niską ekspozycję.",
+    "Impermanent loss is the loss vs. simply holding, caused when pool token prices diverge. Trading fees can offset it; stablecoin-stablecoin pools have low exposure."
+  ),
+  "l3-rwa": pl_en(
+    "Real World Assets to tokenizacja realnych aktywów (obligacji, nieruchomości) na blockchainie. Daje szerszy dostęp 24/7, ale nadal podlega ryzyku emitenta i regulacjom.",
+    "Real World Assets means tokenising real-world assets (bonds, property) on-chain. It opens 24/7 access, but still carries issuer and regulatory risk."
+  ),
+  "l3-risk": pl_en(
+    "Oceniając ryzyko patrz na: audyty, TVL, transparentność zespołu, regulatora (w Polsce — KNF). Inwestuj tylko tyle, ile możesz stracić, i dywersyfikuj.",
+    "When assessing risk, check: audits, TVL, team transparency, the regulator (in Poland — KNF). Invest only what you can afford to lose, and diversify."
+  ),
+  "l3-rug": pl_en(
+    "Rug pull to oszustwo, w którym twórcy wyciągają płynność i znikają. Czerwone flagi: anonimowy zespół, brak audytu, „gwarantowane” bardzo wysokie zwroty. DYOR = sprawdź sam zanim wejdziesz.",
+    "A rug pull is a scam where the team drains the liquidity and disappears. Red flags: anonymous team, no audit, “guaranteed” very high returns. DYOR = verify it yourself before investing."
+  ),
+  "l3-boss": pl_en(
+    "Fundamenty Skarbnika: cold wallet na większe kwoty, multisig dla wspólnego zarządzania, DYOR (Do Your Own Research) i nigdy więcej niż jesteś gotów stracić.",
+    "Skarbnik's foundations: a cold wallet for bigger balances, multisig for shared custody, DYOR (Do Your Own Research) and never more than you can afford to lose."
+  ),
+};
 
 /** Helper to make a quest. */
 function q(
@@ -38,9 +107,19 @@ function q(
   titleEn: string,
   xp: number,
   stars: 1 | 2 | 3,
-  questions: readonly [QuizQuestion, ...QuizQuestion[]]
+  questions: readonly [QuizQuestion, ...QuizQuestion[]],
+  explainer?: QuizOption
 ): Quest {
-  return { id, level, titlePl, titleEn, xp, stars, questions };
+  return {
+    id,
+    level,
+    titlePl,
+    titleEn,
+    xp,
+    stars,
+    questions,
+    explainer: explainer ?? EXPLAINERS[id],
+  };
 }
 
 /* ==============================================================

@@ -317,6 +317,184 @@ export const translations = {
     pl: "Poprawna odpowiedź:",
     en: "Correct answer:",
   },
+  streakCalendarTitle: {
+    pl: "Twoja passa",
+    en: "Your streak",
+  },
+  streakCurrent: {
+    pl: "{count} dni pod rząd",
+    en: "{count}-day streak",
+  },
+  streakEmpty: {
+    pl: "Zacznij dziś",
+    en: "Start today",
+  },
+  streakBest: {
+    pl: "Rekord: {count}",
+    en: "Best: {count}",
+  },
+
+  // Badges showcase + nav
+  navBadges: { pl: "Odznaki", en: "Badges" },
+  badgesKicker: {
+    pl: "Kolekcja NFT",
+    en: "NFT collection",
+  },
+  badgesTitle: {
+    pl: "Twoje odznaki Skarbnika",
+    en: "Your Skarbnik badges",
+  },
+  badgesSubtitle: {
+    pl: "Odblokowuj odznaki ERC-1155 na sieci Base, ucząc się i zdobywając passę.",
+    en: "Unlock ERC-1155 badges on Base as you learn and build your streak.",
+  },
+  badgesCollected: {
+    pl: "Zebrane",
+    en: "Collected",
+  },
+  badgesOnChainTitle: {
+    pl: "Każda odznaka to NFT na Base Sepolia",
+    en: "Each badge is an NFT on Base Sepolia",
+  },
+  badgesOnChainBody: {
+    pl: "Po zdobyciu odznaki nasze automaty mintują ją do Twojego portfela jako token ERC-1155. To Twoja weryfikowalna historia nauki on-chain.",
+    en: "When you earn a badge, our mint queue drops it into your wallet as an ERC-1155 token — a verifiable on-chain record of what you've learned.",
+  },
+  badgesDemoNotice: {
+    pl: "Tryb demo — postęp nie jest zapisywany on-chain.",
+    en: "Demo mode — progress is not recorded on-chain.",
+  },
+  badgeEarned: {
+    pl: "Zdobyte",
+    en: "Earned",
+  },
+
+  // Celebration modal (level-up + badge)
+  celebrationLevelUpTitle: {
+    pl: "Awans!",
+    en: "Level up!",
+  },
+  celebrationLevelUpSubtitle: {
+    pl: "Jesteś teraz {level}",
+    en: "You're now {level}",
+  },
+  celebrationLevelUpBody: {
+    pl: "Nowy poziom odblokowany. Nowe questy czekają — wróć jutro, żeby utrzymać passę.",
+    en: "A new tier is unlocked. Fresh quests are live — come back tomorrow to keep your streak alive.",
+  },
+  celebrationBadgeTitle: {
+    pl: "Nowa odznaka!",
+    en: "New badge unlocked!",
+  },
+  celebrationContinue: {
+    pl: "Super, lecę dalej",
+    en: "Nice, keep going",
+  },
+
+  // Profile page + nav
+  navProfile: { pl: "Profil", en: "Profile" },
+  profileKicker: {
+    pl: "Twój profil",
+    en: "Your profile",
+  },
+  profileUsernamePlaceholder: {
+    pl: "Ustaw nazwę użytkownika",
+    en: "Set a username",
+  },
+  profileEditUsername: {
+    pl: "Edytuj nazwę użytkownika",
+    en: "Edit username",
+  },
+  profileSave: { pl: "Zapisz", en: "Save" },
+  profileCancel: { pl: "Anuluj", en: "Cancel" },
+  profileUsernameEmpty: {
+    pl: "Nazwa nie może być pusta.",
+    en: "Username cannot be empty.",
+  },
+  profileUsernameSaved: {
+    pl: "Nazwa zapisana.",
+    en: "Username saved.",
+  },
+  profileUsernameError: {
+    pl: "Nie udało się zapisać. Spróbuj ponownie.",
+    en: "Couldn't save. Please try again.",
+  },
+  profileCopyWallet: {
+    pl: "Kopiuj adres portfela",
+    en: "Copy wallet address",
+  },
+  profileCopied: { pl: "Skopiowano", en: "Copied" },
+  profileMemberSince: {
+    pl: "Dołączył(a):",
+    en: "Member since:",
+  },
+
+  // Stats row
+  profileStatLevel: { pl: "Poziom", en: "Level" },
+  profileStatXp: { pl: "Całkowite XP", en: "Total XP" },
+  profileStatStreak: { pl: "Passa", en: "Streak" },
+  profileStatQuests: { pl: "Questy", en: "Quests" },
+  profileXpToNext: {
+    pl: "{remaining} XP do następnego poziomu",
+    en: "{remaining} XP to next level",
+  },
+  profileMaxLevel: {
+    pl: "Maksymalny poziom",
+    en: "Max level reached",
+  },
+  profileDayOne: { pl: "dzień", en: "day" },
+  profileDays: { pl: "dni", en: "days" },
+
+  // XP progress section
+  profileXpProgressLabel: {
+    pl: "Postęp poziomu",
+    en: "Level progress",
+  },
+
+  // Badges preview
+  profileBadgesTitle: {
+    pl: "Odznaki",
+    en: "Badges",
+  },
+  profileViewAllBadges: {
+    pl: "Zobacz wszystkie",
+    en: "View all",
+  },
+  profileNoBadgesYet: {
+    pl: "Jeszcze brak odznak — ukończ quest, aby zdobyć pierwszą.",
+    en: "No badges yet — finish a quest to earn your first.",
+  },
+
+  // Completed quests
+  profileCompletedQuests: {
+    pl: "Ukończone questy",
+    en: "Completed quests",
+  },
+  profileNoQuestsYet: {
+    pl: "Nie ukończyłeś jeszcze żadnego questa.",
+    en: "You haven't completed any quests yet.",
+  },
+
+  // Settings
+  profileSettings: { pl: "Ustawienia", en: "Settings" },
+  profileSettingLanguage: { pl: "Język", en: "Language" },
+  profileSettingTheme: { pl: "Motyw", en: "Theme" },
+  profileThemeDark: { pl: "Ciemny", en: "Dark" },
+  profileThemeLight: { pl: "Jasny", en: "Light" },
+
+  // Account actions
+  profileAccountActions: {
+    pl: "Ustawienia konta",
+    en: "Account",
+  },
+  profileDisconnect: {
+    pl: "Rozłącz portfel",
+    en: "Disconnect wallet",
+  },
+  profileDemoReadOnly: {
+    pl: "Tryb demo — zmiany nie są zapisywane.",
+    en: "Demo mode — changes are not saved.",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
