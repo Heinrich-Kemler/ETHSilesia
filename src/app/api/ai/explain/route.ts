@@ -8,12 +8,34 @@ import {
 
 export const runtime = "nodejs";
 
+/**
+ * Feature flag — set AI_ENABLED=true in .env.local to resume Grok/OpenAI
+ * calls. Off by default to save API credits while the backend is being
+ * iterated.
+ */
+const AI_ENABLED = process.env.AI_ENABLED === "true";
+
 type ExplainBody = {
   question?: string;
   userAnswer?: string;
   correctAnswer?: string;
   language?: string;
 };
+
+function staticExplanation(
+  language: "pl" | "en",
+  correctAnswer: string,
+  wasCorrect: boolean
+): string {
+  if (language === "pl") {
+    return wasCorrect
+      ? `Świetnie! Poprawna odpowiedź to: ${correctAnswer}.`
+      : `Nie tym razem. Poprawna odpowiedź to: ${correctAnswer}.`;
+  }
+  return wasCorrect
+    ? `Nice — the correct answer is: ${correctAnswer}.`
+    : `Not quite. The correct answer is: ${correctAnswer}.`;
+}
 
 export async function POST(request: Request) {
   try {
@@ -34,6 +56,17 @@ export async function POST(request: Request) {
     }
 
     const language = normalizeLanguage(body.language);
+    const wasCorrect =
+      userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+
+    // --- AI disabled path (default) ------------------------------------
+    if (!AI_ENABLED) {
+      return NextResponse.json({
+        explanation: staticExplanation(language, correctAnswer, wasCorrect),
+      });
+    }
+
+    // --- AI enabled path ----------------------------------------------
     const client = getOpenAIClient();
 
     const response = await client.responses.create({
@@ -49,10 +82,10 @@ export async function POST(request: Request) {
     const output = response.output_text?.trim();
 
     if (!output) {
-      return NextResponse.json(
-        { error: "AI did not return an explanation." },
-        { status: 502 }
-      );
+      // Fall back to the static response rather than 502 — keeps UX clean.
+      return NextResponse.json({
+        explanation: staticExplanation(language, correctAnswer, wasCorrect),
+      });
     }
 
     return NextResponse.json({ explanation: output });

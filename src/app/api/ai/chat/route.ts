@@ -6,6 +6,13 @@ import { getSupabaseAdminClient } from "@/lib/server/supabaseAdmin";
 export const maxDuration = 30;
 export const runtime = "nodejs";
 
+/**
+ * Feature flag — set AI_ENABLED=true in .env.local to resume the full
+ * Grok + Gemini RAG pipeline. Off by default so we don't burn API
+ * credits while the backend/DB layer is being iterated on.
+ */
+const AI_ENABLED = process.env.AI_ENABLED === "true";
+
 type ChatBody = {
   message?: string;
   language?: string;
@@ -13,12 +20,20 @@ type ChatBody = {
   sessionId?: string; // Losowo generowany identyfikator sesji z przeglądarki
 };
 
+function cannedChatResponse(language: "pl" | "en"): string {
+  if (language === "pl") {
+    return "Skarbnik odpoczywa — ulepszamy moją bazę wiedzy. Wróć wkrótce! Tymczasem — ruszaj na questy i ucz się praktycznie. Pamiętaj: DYOR (Do Your Own Research) i nigdy nie inwestuj więcej niż możesz stracić.";
+  }
+  return "Skarbnik is resting — my knowledge base is being upgraded. Come back soon! In the meantime — jump into the quests and learn by doing. Remember: DYOR (Do Your Own Research) and never invest more than you can afford to lose.";
+}
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as ChatBody;
     const userQuery = body.message?.trim();
     const sessionId = body.sessionId || "anonymous-session";
     const userLang = body.language === "en" ? "English" : "Polish";
+    const language: "pl" | "en" = body.language === "en" ? "en" : "pl";
 
     if (!userQuery) {
       return NextResponse.json(
@@ -27,6 +42,13 @@ export async function POST(request: Request) {
       );
     }
 
+    // --- AI disabled path (default) ------------------------------------
+    // Keeps the frontend UX seamless without calling Grok/Gemini.
+    if (!AI_ENABLED) {
+      return NextResponse.json({ response: cannedChatResponse(language) });
+    }
+
+    // --- AI enabled path: full RAG pipeline ----------------------------
     const supabase = getSupabaseAdminClient();
 
     // 1. Zidentyfikuj i wczytaj wewnętrzne ID usera na podstawie privy_id (jeśli został podany)
@@ -101,7 +123,7 @@ export async function POST(request: Request) {
       .join("\n\n");
 
     // 4. Stworzenie System Promptu
-    const systemInstruction = `Jesteś Skarbnikiem, wirtualnym opiekunem użytkownika na platformie ETH Silesia. 
+    const systemInstruction = `Jesteś Skarbnikiem, wirtualnym opiekunem użytkownika na platformie ETH Silesia.
 Dostosowujesz się do poziomu edukacji usera (jego poziom to: ${userLevel}). Twoi rozmówcy to początkujący, zwykli ludzie bez pojęcia o krypto (często totalni laicy).
 
 Zasady, bezwzględnie:
@@ -157,10 +179,8 @@ Odpowiadaj konkretnie, krótko i po ludzku. Nigdy nie dawaj i nie sugeruj porad 
     const responseText = chatCompletion.choices?.[0]?.message?.content;
 
     if (!responseText) {
-      return NextResponse.json(
-        { error: "AI did not return a response." },
-        { status: 502 },
-      );
+      // Fall back to canned — keeps UX seamless.
+      return NextResponse.json({ response: cannedChatResponse(language) });
     }
 
     // 7. Zapisanie historii na spokojnie w tle, używamy waitUntil lub po prostu await

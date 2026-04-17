@@ -1,1 +1,10 @@
-{}
+{
+  "baseSepolia": {
+    "chainId": 84532,
+    "SkarbnikBadges": {
+      "address": "0x7e05eDfd2509eE95170636D1A61Af7B6cb9e7902",
+      "deployedAt": "2026-04-17T17:35:04.631Z",
+      "metadataBaseUri": "ipfs://QmSkarbnikBadgeMetadataPlaceholder/"
+    }
+  }
+}

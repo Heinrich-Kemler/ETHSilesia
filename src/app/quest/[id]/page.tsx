@@ -14,6 +14,7 @@ import {
   Shield,
   Crown,
   Award,
+  BookOpen,
 } from "lucide-react";
 import AppNav from "@/components/app/AppNav";
 import { useLanguage } from "@/lib/useLanguage";
@@ -540,6 +541,16 @@ export default function ActiveQuestPage({
                           </p>
                         )}
                       </div>
+
+                      {/* Static quest explainer — always-on educational takeaway */}
+                      {!aiLoading && quest.explainer && (
+                        <div className="mt-3 bg-cyan-themed/5 border border-cyan-themed/20 rounded-xl p-4 flex gap-3">
+                          <BookOpen className="w-4 h-4 text-cyan-themed flex-shrink-0 mt-0.5" />
+                          <p className="text-secondary-themed text-xs leading-relaxed">
+                            {quest.explainer[lang]}
+                          </p>
+                        </div>
+                      )}
 
                       {!aiLoading && (
                         <motion.button
