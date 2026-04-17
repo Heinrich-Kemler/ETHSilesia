@@ -1,0 +1,2147 @@
+[
+  {
+    "id": "qa_001",
+    "topic": "wallet",
+    "question_pl": "Co się stanie, jeśli zgubię telefon z portfelem?",
+    "question_en": "What happens if I lose my phone with my wallet?",
+    "answer_pl": "Jeśli masz zapisaną frazę odzyskiwania (12-24 słowa), nic strasznego — instalujesz portfel na nowym telefonie, wpisujesz frazę i odzyskujesz wszystkie środki. Ale jeśli straciłeś frazę i telefon jednocześnie, pieniądze przepadają bezpowrotnie — nie ma banku, który by je odzyskał. Dlatego fraza odzyskiwania jest najważniejszą rzeczą, o którą musisz dbać.",
+    "answer_en": "If you've written down your seed phrase (12-24 words), nothing terrible — you install the wallet on a new phone, type in the phrase, and recover all your funds. But if you've lost both the phrase and the phone, the money is gone forever — there's no bank to recover it. That's why the seed phrase is the single most important thing to protect.",
+    "level": 1,
+    "keywords_pl": [
+      "zgubilem telefon",
+      "stracilem portfel",
+      "odzyskac portfel"
+    ],
+    "keywords_en": [
+      "lost phone",
+      "lost wallet",
+      "recover wallet"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_002",
+    "topic": "wallet",
+    "question_pl": "Czy ktoś może zhakować mój portfel?",
+    "question_en": "Can someone hack my wallet?",
+    "answer_pl": "Samo 'złamanie' szyfrowania portfela jest praktycznie niemożliwe — zajęłoby to więcej czasu niż wiek wszechświata. Ale 95% kradzieży w krypto to phishing: oszust nakłania Cię, żebyś sam podał mu frazę odzyskiwania albo kliknął w złośliwy link. Twój portfel jest bezpieczny dopóki fraza jest bezpieczna, a Ty nie zatwierdzasz podejrzanych transakcji.",
+    "answer_en": "Actually 'cracking' wallet encryption is practically impossible — it would take longer than the age of the universe. But 95% of crypto theft is phishing: a scammer tricks you into giving up your seed phrase yourself, or clicking a malicious link. Your wallet is safe as long as your phrase stays safe and you don't approve suspicious transactions.",
+    "level": 1,
+    "keywords_pl": [
+      "hack",
+      "zhakowac",
+      "wlamanie",
+      "bezpieczenstwo portfela"
+    ],
+    "keywords_en": [
+      "hack",
+      "hacked",
+      "breach",
+      "wallet security"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_003",
+    "topic": "wallet",
+    "question_pl": "Jaka jest różnica między hot wallet a cold wallet?",
+    "question_en": "What is the difference between a hot and cold wallet?",
+    "answer_pl": "Hot wallet to aplikacja podłączona do internetu (MetaMask, Rabby, Phantom) — wygodna do codziennego użytku, ale podatna na atak, jeśli coś w Twoim telefonie lub komputerze jest niebezpieczne. Cold wallet to małe urządzenie fizyczne (Ledger, Trezor), które trzyma klucze offline — znacznie bezpieczniejsze, ale mniej wygodne. Analogia: hot wallet to portfel w kieszeni, cold wallet to sejf w domu.",
+    "answer_en": "A hot wallet is an internet-connected app (MetaMask, Rabby, Phantom) — convenient for daily use, but vulnerable if something on your phone or computer is compromised. A cold wallet is a small physical device (Ledger, Trezor) that keeps keys offline — much safer but less convenient. Analogy: a hot wallet is the one in your pocket, a cold wallet is a safe at home.",
+    "level": 1,
+    "keywords_pl": [
+      "hot wallet",
+      "cold wallet",
+      "portfel sprzetowy",
+      "ledger",
+      "trezor"
+    ],
+    "keywords_en": [
+      "hot wallet",
+      "cold wallet",
+      "hardware wallet",
+      "ledger",
+      "trezor"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_004",
+    "topic": "wallet",
+    "question_pl": "Czy MetaMask jest bezpieczny?",
+    "question_en": "Is MetaMask safe?",
+    "answer_pl": "Tak, MetaMask to jeden z najstarszych i najczęściej używanych portfeli — działa od 2016 roku, ma miliony użytkowników. Sam kod portfela jest bezpieczny; ryzyko wynika z fałszywych reklam, phishingowych klonów i instalowania rozszerzeń z niepewnych źródeł. Instaluj tylko z oficjalnej strony metamask.io i nigdy nie podawaj frazy odzyskiwania nikomu.",
+    "answer_en": "Yes, MetaMask is one of the oldest and most widely used wallets — live since 2016, with millions of users. The wallet code itself is safe; the risk comes from fake ads, phishing clones, and installing extensions from untrusted sources. Only install from the official metamask.io site and never share your seed phrase with anyone.",
+    "level": 1,
+    "keywords_pl": [
+      "metamask",
+      "bezpieczny",
+      "czy metamask"
+    ],
+    "keywords_en": [
+      "metamask",
+      "safe",
+      "is metamask"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_005",
+    "topic": "wallet",
+    "question_pl": "Co to jest portfel sprzętowy (hardware wallet)?",
+    "question_en": "What is a hardware wallet?",
+    "answer_pl": "Portfel sprzętowy to małe urządzenie fizyczne (najczęściej wielkości pendrive'a), które trzyma klucze prywatne offline i wymaga fizycznego potwierdzenia każdej transakcji. Nawet jeśli Twój komputer jest zainfekowany wirusem, haker nie jest w stanie wyjąć pieniędzy bez fizycznego dostępu do urządzenia. Najpopularniejsze modele to Ledger i Trezor, cena 300-900 zł.",
+    "answer_en": "A hardware wallet is a small physical device (usually USB-stick sized) that keeps private keys offline and requires physical confirmation for every transaction. Even if your computer is infected with malware, a hacker can't move funds without physical access to the device. The most popular models are Ledger and Trezor, costing 300-900 PLN.",
+    "level": 1,
+    "keywords_pl": [
+      "hardware wallet",
+      "portfel sprzetowy",
+      "ledger",
+      "trezor"
+    ],
+    "keywords_en": [
+      "hardware wallet",
+      "ledger",
+      "trezor",
+      "cold storage"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_006",
+    "topic": "wallet",
+    "question_pl": "Czy powinienem trzymać krypto na giełdzie?",
+    "question_en": "Should I keep crypto on an exchange?",
+    "answer_pl": "Dla małych kwot i aktywnego handlu — można. Dla większych oszczędności — nie. W krypto mówi się 'not your keys, not your coins' — jeśli giełda padnie (jak FTX w 2022), Twoje środki mogą przepaść, nawet jeśli giełda wydaje się duża i bezpieczna. Zasada: wypłacaj większe kwoty do własnego portfela.",
+    "answer_en": "For small amounts and active trading — it's fine. For bigger savings — no. In crypto there's a saying: 'not your keys, not your coins' — if the exchange collapses (like FTX in 2022), your funds can be lost, even if the exchange seems big and safe. Rule: withdraw larger amounts to your own wallet.",
+    "level": 1,
+    "keywords_pl": [
+      "gielda",
+      "trzymanie krypto",
+      "binance",
+      "zondacrypto"
+    ],
+    "keywords_en": [
+      "exchange",
+      "keep crypto",
+      "binance",
+      "custody"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_007",
+    "topic": "wallet",
+    "question_pl": "Co się stanie, jeśli wyślę krypto na zły adres?",
+    "question_en": "What happens if I send crypto to the wrong address?",
+    "answer_pl": "Pieniądze przepadają. Transakcje w krypto są nieodwracalne — nie ma infolinii, banku ani rzecznika, który mógłby je cofnąć. Dlatego zawsze sprawdzaj adres 2-3 razy, zwłaszcza pierwsze i ostatnie kilka znaków. Przy dużych kwotach wyślij najpierw testową transakcję (np. 1 USDC), żeby potwierdzić, że wszystko działa.",
+    "answer_en": "The money is gone. Crypto transactions are irreversible — there's no hotline, bank, or ombudsman who can reverse them. Always double- or triple-check the address, especially the first and last few characters. For large amounts, send a small test transaction first (e.g. 1 USDC) to confirm everything works.",
+    "level": 1,
+    "keywords_pl": [
+      "zly adres",
+      "zla kwota",
+      "bledny adres",
+      "stracone krypto"
+    ],
+    "keywords_en": [
+      "wrong address",
+      "wrong transfer",
+      "sent to wrong",
+      "lost crypto"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_008",
+    "topic": "wallet",
+    "question_pl": "Czy mogę odzyskać portfel za pomocą frazy odzyskiwania?",
+    "question_en": "Can I recover my wallet with my seed phrase?",
+    "answer_pl": "Tak, to jest główne zastosowanie frazy odzyskiwania. Instalujesz portfel na dowolnym urządzeniu, wybierasz 'Import wallet' lub 'Recover', wpisujesz 12 lub 24 słowa w dokładnej kolejności i odzyskujesz pełen dostęp do środków. Fraza działa z większością popularnych portfeli (MetaMask, Rabby, Trust Wallet i innymi), nawet jeśli oryginalnie założyłeś portfel w innej aplikacji.",
+    "answer_en": "Yes, that's the main purpose of the seed phrase. You install the wallet on any device, pick 'Import wallet' or 'Recover', type in the 12 or 24 words in exact order, and regain full access to your funds. The phrase works with most popular wallets (MetaMask, Rabby, Trust Wallet, and others), even if you originally set up the wallet in a different app.",
+    "level": 1,
+    "keywords_pl": [
+      "odzyskac portfel",
+      "import portfela",
+      "przywrocenie portfela"
+    ],
+    "keywords_en": [
+      "recover wallet",
+      "import wallet",
+      "restore wallet"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_009",
+    "topic": "wallet",
+    "question_pl": "Co to jest adres portfela?",
+    "question_en": "What is a wallet address?",
+    "answer_pl": "Adres portfela to długi ciąg znaków (np. 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7), który jest jak numer konta bankowego w świecie krypto. Dajesz go komuś, żeby mógł wysłać Ci krypto. Jest całkowicie publiczny i bezpieczny do udostępniania — w przeciwieństwie do frazy odzyskiwania czy klucza prywatnego.",
+    "answer_en": "A wallet address is a long string of characters (e.g. 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb7) that works like a bank account number in the crypto world. You give it to someone so they can send you crypto. It's completely public and safe to share — unlike your seed phrase or private key.",
+    "level": 1,
+    "keywords_pl": [
+      "adres portfela",
+      "adres krypto",
+      "wallet address"
+    ],
+    "keywords_en": [
+      "wallet address",
+      "crypto address",
+      "public address"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_010",
+    "topic": "wallet",
+    "question_pl": "Czy adresy portfela są publiczne?",
+    "question_en": "Are wallet addresses public?",
+    "answer_pl": "Tak, adresy portfela są widoczne dla każdego na świecie razem z całą historią transakcji. Nie ma jednak Twojego imienia ani nazwiska — tylko sam adres. Ktoś, kto zna Twój adres, może zobaczyć ile masz krypto i co robisz, ale nie może nic wyjąć bez Twojego klucza prywatnego. Dla prywatności wiele osób używa kilku portfeli do różnych celów.",
+    "answer_en": "Yes, wallet addresses are visible to anyone in the world along with their full transaction history. But there's no name attached — just the address itself. Someone who knows your address can see how much crypto you have and what you do with it, but they can't withdraw anything without your private key. For privacy, many people use several wallets for different purposes.",
+    "level": 1,
+    "keywords_pl": [
+      "adres publiczny",
+      "prywatnosc",
+      "widocznosc adresu"
+    ],
+    "keywords_en": [
+      "public address",
+      "privacy",
+      "address visible"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_011",
+    "topic": "wallet",
+    "question_pl": "Ile portfeli powinienem mieć?",
+    "question_en": "How many wallets should I have?",
+    "answer_pl": "Tyle, ile potrzebujesz do wygodnego oddzielania ryzyk — większość użytkowników ma 2-3. Typowy podział: 'skarbiec' na długoterminowe oszczędności (najlepiej hardware wallet), portfel codzienny do transakcji i DeFi, oraz portfel 'testowy' do eksperymentowania z nowymi aplikacjami. Każdy portfel ma osobną frazę odzyskiwania i osobne adresy.",
+    "answer_en": "As many as you need to comfortably separate risk — most users have 2-3. A typical split: a 'vault' for long-term savings (ideally a hardware wallet), a daily wallet for transactions and DeFi, and a 'test' wallet for experimenting with new apps. Each wallet has its own seed phrase and addresses.",
+    "level": 1,
+    "keywords_pl": [
+      "ile portfeli",
+      "kilka portfeli",
+      "oddzielne portfele"
+    ],
+    "keywords_en": [
+      "how many wallets",
+      "multiple wallets",
+      "separate wallets"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_012",
+    "topic": "wallet",
+    "question_pl": "Czy mogę mieć ten sam portfel na telefonie i komputerze?",
+    "question_en": "Can I have the same wallet on my phone and computer?",
+    "answer_pl": "Tak — instalujesz MetaMask (lub inny portfel) na obu urządzeniach i importujesz tę samą frazę odzyskiwania. Zobaczysz ten sam portfel z tym samym saldem na obu. Pamiętaj jednak, że każde dodatkowe urządzenie to potencjalne ryzyko: jeśli którekolwiek zostanie skompromitowane, cały portfel jest zagrożony.",
+    "answer_en": "Yes — you install MetaMask (or another wallet) on both devices and import the same seed phrase. You'll see the same wallet with the same balance on each. But remember, every extra device adds risk: if any one of them gets compromised, the whole wallet is exposed.",
+    "level": 1,
+    "keywords_pl": [
+      "portfel na telefonie",
+      "portfel na komputerze",
+      "synchronizacja"
+    ],
+    "keywords_en": [
+      "wallet on phone",
+      "wallet on computer",
+      "sync wallet"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_013",
+    "topic": "wallet",
+    "question_pl": "Czy portfele kryptowalutowe są darmowe?",
+    "question_en": "Are crypto wallets free?",
+    "answer_pl": "Tak, prawie wszystkie popularne portfele programowe (MetaMask, Rabby, Phantom, Trust Wallet) są całkowicie darmowe. Płacisz tylko 'gas fee' (opłatę sieciową) przy każdej transakcji, ale to opłata dla blockchainu, nie dla twórców portfela. Portfele sprzętowe (Ledger, Trezor) kosztują jednorazowo 300-900 zł.",
+    "answer_en": "Yes, almost all popular software wallets (MetaMask, Rabby, Phantom, Trust Wallet) are completely free. You only pay a 'gas fee' (network fee) per transaction, but that goes to the blockchain, not to the wallet creators. Hardware wallets (Ledger, Trezor) have a one-time cost of 300-900 PLN.",
+    "level": 1,
+    "keywords_pl": [
+      "darmowy portfel",
+      "cena portfela",
+      "koszt portfela"
+    ],
+    "keywords_en": [
+      "free wallet",
+      "wallet cost",
+      "wallet price"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_014",
+    "topic": "wallet",
+    "question_pl": "Co powinienem zrobić po założeniu nowego portfela?",
+    "question_en": "What should I do right after creating a new wallet?",
+    "answer_pl": "Trzy rzeczy, w tej kolejności: (1) Zapisz frazę odzyskiwania na papierze i schowaj fizycznie — nigdy w telefonie, mailu ani chmurze; (2) Wyślij sobie bardzo małą kwotę (np. 5 zł w USDC), żeby przetestować odbiór; (3) Sprawdź odzyskiwanie — usuń portfel, zainstaluj ponownie i odzyskaj go frazą, żeby upewnić się, że fraza działa. Dopiero potem wpłacaj większe kwoty.",
+    "answer_en": "Three things, in this order: (1) Write down your seed phrase on paper and hide it physically — never on your phone, in email, or the cloud; (2) Send yourself a very small amount (e.g. 5 PLN worth of USDC) to test that receiving works; (3) Test recovery — delete the wallet, reinstall it, and recover with your phrase to confirm it works. Only then deposit larger amounts.",
+    "level": 1,
+    "keywords_pl": [
+      "nowy portfel",
+      "konfiguracja portfela",
+      "setup portfela"
+    ],
+    "keywords_en": [
+      "new wallet",
+      "wallet setup",
+      "first wallet"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_015",
+    "topic": "wallet",
+    "question_pl": "Jaka jest różnica między frazą odzyskiwania a hasłem do portfela?",
+    "question_en": "What's the difference between a seed phrase and a wallet password?",
+    "answer_pl": "Hasło do portfela chroni tylko dostęp do aplikacji na Twoim konkretnym urządzeniu — jak PIN do telefonu. Fraza odzyskiwania to klucz do samego portfela, działający na dowolnym urządzeniu. Jeśli zapomnisz hasła, zresetujesz portfel i odzyskasz go frazą. Jeśli stracisz frazę, żadne hasło Cię nie uratuje.",
+    "answer_en": "The wallet password only protects access to the app on your specific device — like a phone PIN. The seed phrase is the key to the wallet itself, working on any device. If you forget the password, you reset the wallet and recover it with the phrase. If you lose the phrase, no password will save you.",
+    "level": 1,
+    "keywords_pl": [
+      "haslo portfela",
+      "pin portfela",
+      "fraza a haslo"
+    ],
+    "keywords_en": [
+      "wallet password",
+      "wallet pin",
+      "phrase vs password"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_016",
+    "topic": "wallet",
+    "question_pl": "Czy portfel pokazuje moje saldo w złotówkach?",
+    "question_en": "Does the wallet show my balance in PLN?",
+    "answer_pl": "Większość portfeli pokazuje wartości w dolarach (USD) lub euro, ale w ustawieniach zwykle możesz wybrać PLN. MetaMask, Rabby i większość portfeli Web3 obsługują przewalutowanie na żywo. Pamiętaj, że to tylko aktualna wycena rynkowa — sam blockchain przechowuje tylko ilość tokenów, nie ich wartość w żadnej walucie.",
+    "answer_en": "Most wallets show values in dollars (USD) or euros, but in settings you can usually pick PLN. MetaMask, Rabby, and most Web3 wallets support live currency conversion. Remember, that's just the current market value — the blockchain itself only stores token amounts, not their value in any currency.",
+    "level": 1,
+    "keywords_pl": [
+      "saldo w zlotych",
+      "pln",
+      "przewalutowanie",
+      "wartosc portfela"
+    ],
+    "keywords_en": [
+      "balance in pln",
+      "currency display",
+      "wallet value"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_017",
+    "topic": "wallet",
+    "question_pl": "Czy ktoś może zobaczyć, co robię w swoim portfelu?",
+    "question_en": "Can someone see what I do in my wallet?",
+    "answer_pl": "Tak — każda transakcja jest publiczna i dostępna dla każdego przez eksploratory blockchainu (np. Etherscan). Widać adresy, kwoty i czas. Nie widać jednak Twojego imienia ani nazwiska. Jeśli zależy Ci na większej prywatności, używaj kilku portfeli do różnych celów, żeby nie łączyć wszystkich aktywności w jedną historię.",
+    "answer_en": "Yes — every transaction is public and viewable by anyone via blockchain explorers (e.g. Etherscan). Addresses, amounts, and timestamps are visible. But your name isn't attached. If you care about more privacy, use several wallets for different purposes so not every activity links back to the same history.",
+    "level": 1,
+    "keywords_pl": [
+      "prywatnosc",
+      "historia portfela",
+      "sledzenie portfela"
+    ],
+    "keywords_en": [
+      "privacy",
+      "wallet history",
+      "wallet tracking"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_018",
+    "topic": "wallet",
+    "question_pl": "Czy mogę zmienić swój adres portfela?",
+    "question_en": "Can I change my wallet address?",
+    "answer_pl": "Nie możesz 'zmienić' istniejącego adresu, ale możesz utworzyć nowy w tym samym portfelu — większość portfeli pozwala mieć wiele adresów pod jedną frazą odzyskiwania. Jeśli masz powody, żeby zacząć od czystego konta (np. fraza wyciekła), najlepsze rozwiązanie to nowy portfel z zupełnie nową frazą i przeniesienie środków.",
+    "answer_en": "You can't 'change' an existing address, but you can create a new one within the same wallet — most wallets let you hold multiple addresses under one seed phrase. If you have reasons to start fresh (e.g. your phrase may have leaked), the best option is a brand new wallet with a new phrase and moving your funds there.",
+    "level": 1,
+    "keywords_pl": [
+      "zmiana adresu",
+      "nowy adres",
+      "kolejny adres"
+    ],
+    "keywords_en": [
+      "change address",
+      "new address",
+      "additional address"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_019",
+    "topic": "wallet",
+    "question_pl": "Co to jest 'connect wallet'?",
+    "question_en": "What does 'connect wallet' mean?",
+    "answer_pl": "'Connect wallet' to akcja łączenia Twojego portfela z aplikacją DeFi (np. Uniswap, Aave), dzięki czemu aplikacja może 'widzieć' Twoje saldo i prosić Cię o zatwierdzenie transakcji. To NIE oznacza oddania kontroli — aplikacja nie może sama wyjąć pieniędzy, każda akcja wymaga Twojego potwierdzenia w portfelu. Łącz portfel tylko z zaufanymi stronami i sprawdzaj URL za każdym razem.",
+    "answer_en": "'Connect wallet' is the action of linking your wallet to a DeFi app (e.g. Uniswap, Aave), so the app can 'see' your balance and ask you to approve transactions. It does NOT mean giving up control — the app can't withdraw funds on its own, every action requires your confirmation in the wallet. Only connect to trusted sites and check the URL every time.",
+    "level": 1,
+    "keywords_pl": [
+      "connect wallet",
+      "polaczyc portfel",
+      "laczenie aplikacji"
+    ],
+    "keywords_en": [
+      "connect wallet",
+      "linking wallet",
+      "dapp connection"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_020",
+    "topic": "wallet",
+    "question_pl": "Czy powinienem używać biometrii (Face ID / odcisk palca) do portfela?",
+    "question_en": "Should I use biometrics (Face ID / fingerprint) for my wallet?",
+    "answer_pl": "Tak, to dobry dodatkowy poziom zabezpieczenia — utrudnia osobom postronnym dostęp do portfela, gdyby ukradli Twój odblokowany telefon. Pamiętaj jednak, że biometria chroni tylko aplikację portfela na konkretnym telefonie, a nie sam portfel. Prawdziwe bezpieczeństwo zależy od frazy odzyskiwania, którą trzymasz na papierze, nie od Face ID.",
+    "answer_en": "Yes, it's a good extra layer of protection — it makes it harder for strangers to access the wallet if they stole your unlocked phone. But remember, biometrics only protect the wallet app on that specific phone, not the wallet itself. Real security comes from the seed phrase kept on paper, not from Face ID.",
+    "level": 1,
+    "keywords_pl": [
+      "biometria",
+      "face id",
+      "odcisk palca",
+      "zabezpieczenia"
+    ],
+    "keywords_en": [
+      "biometrics",
+      "face id",
+      "fingerprint",
+      "wallet security"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_021",
+    "topic": "defi",
+    "question_pl": "Czy DeFi jest bezpieczne dla początkujących?",
+    "question_en": "Is DeFi safe for beginners?",
+    "answer_pl": "DeFi może być bezpieczne, jeśli zaczynasz rozważnie — używasz sprawdzonych protokołów (Aave, Uniswap, Compound), zaczynasz od małych kwot (50-200 zł) i rozumiesz, co robisz. Niebezpieczne staje się, gdy gonisz za wysokim APY w nieznanych projektach albo łączysz portfel z pierwszą lepszą aplikacją. Pamiętaj: w DeFi nie ma BFG — w razie pomyłki lub oszustwa nikt Ci pieniędzy nie zwróci.",
+    "answer_en": "DeFi can be safe if you start carefully — use proven protocols (Aave, Uniswap, Compound), begin with small amounts (50-200 PLN), and understand what you're doing. It becomes dangerous when you chase high APY in unknown projects or connect your wallet to the first app you stumble on. Remember: DeFi has no deposit insurance — if you make a mistake or get scammed, nobody will refund you.",
+    "level": 1,
+    "keywords_pl": [
+      "defi dla poczatkujacych",
+      "bezpieczenstwo defi",
+      "czy defi"
+    ],
+    "keywords_en": [
+      "defi for beginners",
+      "defi safe",
+      "is defi safe"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_022",
+    "topic": "defi",
+    "question_pl": "Ile pieniędzy potrzebuję, żeby zacząć z DeFi?",
+    "question_en": "How much money do I need to start with DeFi?",
+    "answer_pl": "Technicznie — nawet 50 zł wystarczy, żeby poznać mechanikę. Na początek praktyczne minimum to 200-500 zł w USDC plus niewielka ilość natywnego tokena sieci (np. 30-50 zł w ETH lub MATIC) na opłaty sieciowe. Poniżej tych kwot opłaty mogą zjeść większość zysków. Dla realnego zarabiania sensowne są kwoty od 1000 zł w górę.",
+    "answer_en": "Technically — even 50 PLN is enough to learn the mechanics. A practical starting point is 200-500 PLN in USDC plus a small amount of the network's native token (e.g. 30-50 PLN in ETH or MATIC) for gas fees. Below these amounts, fees eat most of the gains. For meaningful earnings, amounts from 1000 PLN upward make more sense.",
+    "level": 1,
+    "keywords_pl": [
+      "ile na defi",
+      "minimum defi",
+      "kwota poczatkowa"
+    ],
+    "keywords_en": [
+      "how much defi",
+      "defi minimum",
+      "starting amount"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_023",
+    "topic": "defi",
+    "question_pl": "Czy mogę stracić wszystkie pieniądze w DeFi?",
+    "question_en": "Can I lose all my money in DeFi?",
+    "answer_pl": "Tak, w kilku scenariuszach: (1) Protokół zostaje zhakowany i środki znikają; (2) Twój portfel został okradziony przez phishing; (3) Inwestujesz w projekt, który okazuje się oszustwem (rug pull); (4) Kurs tokena spada blisko zera. Dlatego zasadą jest: nigdy nie wkładaj więcej, niż jesteś w stanie stracić. Dywersyfikacja i używanie sprawdzonych protokołów znacznie zmniejsza to ryzyko.",
+    "answer_en": "Yes, in several scenarios: (1) The protocol gets hacked and funds vanish; (2) Your wallet is drained via phishing; (3) You invest in a project that turns out to be a scam (rug pull); (4) A token's price crashes to near zero. That's why the rule is: never put in more than you can afford to lose. Diversifying and sticking to proven protocols significantly reduces this risk.",
+    "level": 2,
+    "keywords_pl": [
+      "stracic wszystko",
+      "ryzyko straty",
+      "bezpieczenstwo kapitalu"
+    ],
+    "keywords_en": [
+      "lose everything",
+      "total loss",
+      "capital risk"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_024",
+    "topic": "defi",
+    "question_pl": "Jaka jest różnica między DeFi a bankiem?",
+    "question_en": "What is the difference between DeFi and a bank?",
+    "answer_pl": "Bank to firma, która trzyma i zarządza Twoimi pieniędzmi — ma nad nimi kontrolę, ale jest regulowany i objęty gwarancjami BFG do 100 000 euro. DeFi to aplikacje obsługiwane przez kod (smart kontrakty) — Ty masz pełną kontrolę, ale żadnych gwarancji. Bank może zablokować konto, ale też pomoże przy oszustwie. DeFi nikt nie zablokuje, ale też nikt nie pomoże, jeśli się pomylisz.",
+    "answer_en": "A bank is a company that holds and manages your money — it has control, but it's regulated and covered by deposit insurance up to 100,000 EUR. DeFi consists of apps run by code (smart contracts) — you have full control, but no guarantees. A bank can freeze your account but will help if you're scammed. DeFi can't freeze your funds, but nobody will help if you make a mistake.",
+    "level": 1,
+    "keywords_pl": [
+      "defi a bank",
+      "roznica defi bank",
+      "bank vs defi"
+    ],
+    "keywords_en": [
+      "defi vs bank",
+      "difference bank defi",
+      "bank vs defi"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_025",
+    "topic": "defi",
+    "question_pl": "Czy muszę weryfikować tożsamość, żeby używać DeFi?",
+    "question_en": "Do I need to verify my identity for DeFi?",
+    "answer_pl": "Nie. W klasycznym DeFi łączysz portfel i od razu możesz korzystać — bez dowodu osobistego, bez selfie, bez zdjęć rachunków. Smart kontrakt nie wie, kim jesteś, widzi tylko Twój adres portfela. Weryfikacja tożsamości (KYC) jest wymagana na scentralizowanych giełdach (Zondacrypto, Binance), gdy kupujesz krypto za złotówki, ale po wypłacie do własnego portfela dalsze operacje w DeFi są anonimowe.",
+    "answer_en": "No. In classic DeFi you connect your wallet and can start using it immediately — no ID, no selfie, no utility bills. A smart contract doesn't know who you are, it only sees your wallet address. Identity verification (KYC) is required on centralised exchanges (Zondacrypto, Binance) when you buy crypto with PLN, but once withdrawn to your own wallet, further DeFi operations are anonymous.",
+    "level": 1,
+    "keywords_pl": [
+      "kyc",
+      "weryfikacja defi",
+      "anonimowosc defi"
+    ],
+    "keywords_en": [
+      "kyc defi",
+      "defi verification",
+      "defi anonymous"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_026",
+    "topic": "defi",
+    "question_pl": "Co to jest APY?",
+    "question_en": "What is APY?",
+    "answer_pl": "APY (Annual Percentage Yield) to roczna stopa zwrotu z inwestycji, uwzględniająca efekt procentu składanego. Jeśli protokół pokazuje APY 5%, to znaczy, że Twoje 1000 USDC powinno po roku urosnąć do 1050 USDC (przy stałym oprocentowaniu). W DeFi APY zwykle jest zmienny i zmienia się co sekundę w zależności od popytu i podaży.",
+    "answer_en": "APY (Annual Percentage Yield) is the annual rate of return on an investment, including compound interest. If a protocol shows 5% APY, it means your 1000 USDC should grow to 1050 USDC after a year (at a constant rate). In DeFi, APY is usually variable and changes every second based on supply and demand.",
+    "level": 1,
+    "keywords_pl": [
+      "apy",
+      "roczny zwrot",
+      "oprocentowanie roczne"
+    ],
+    "keywords_en": [
+      "apy",
+      "annual yield",
+      "interest rate"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_027",
+    "topic": "defi",
+    "question_pl": "Co oznacza TVL?",
+    "question_en": "What does TVL mean?",
+    "answer_pl": "TVL (Total Value Locked) to łączna wartość wszystkich pieniędzy zdeponowanych w protokole DeFi — najczęściej wyrażana w dolarach. Wysokie TVL (powyżej 100 milionów USD) oznacza, że wielu ludzi ufa protokołowi i że jest stosunkowo stabilny. TVL nie gwarantuje bezpieczeństwa, ale jest dobrym pierwszym wskaźnikiem — protokół z 10 miliardami TVL to coś zupełnie innego niż świeży projekt z 100 tysiącami.",
+    "answer_en": "TVL (Total Value Locked) is the total value of all money deposited in a DeFi protocol — usually expressed in dollars. High TVL (above 100 million USD) means many people trust the protocol and it's relatively stable. TVL doesn't guarantee safety, but it's a good first signal — a protocol with 10 billion TVL is a completely different beast than a fresh project with 100k.",
+    "level": 2,
+    "keywords_pl": [
+      "tvl",
+      "total value locked",
+      "zdeponowane srodki"
+    ],
+    "keywords_en": [
+      "tvl",
+      "total value locked",
+      "deposited funds"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_028",
+    "topic": "defi",
+    "question_pl": "Czy staking jest bezpieczny?",
+    "question_en": "Is staking safe?",
+    "answer_pl": "Staking znanych tokenów (ETH, SOL) przez sprawdzone protokoły (Lido, Rocket Pool) jest względnie bezpieczny — to jeden z najczęstszych sposobów zarabiania w krypto. Ryzyka to: spadek ceny tokena, 'slashing' (kara za błąd walidatora, do 5% pozycji) oraz potencjalny 'depeg' tokenów liquid staking jak stETH. Unikaj stakingu w nieznanych sieciach obiecujących 50%+ APY — to zwykle pułapka.",
+    "answer_en": "Staking well-known tokens (ETH, SOL) through proven protocols (Lido, Rocket Pool) is relatively safe — it's one of the most common ways to earn in crypto. The risks are: token price drop, 'slashing' (a validator error penalty, up to 5% of your position), and potential 'depeg' of liquid staking tokens like stETH. Avoid staking in unknown networks promising 50%+ APY — that's usually a trap.",
+    "level": 2,
+    "keywords_pl": [
+      "staking bezpieczny",
+      "ryzyko stakingu",
+      "czy staking"
+    ],
+    "keywords_en": [
+      "staking safe",
+      "staking risk",
+      "is staking"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_029",
+    "topic": "defi",
+    "question_pl": "Co się stanie, jeśli protokół DeFi zostanie zhakowany?",
+    "question_en": "What happens if a DeFi protocol gets hacked?",
+    "answer_pl": "Środki wszystkich użytkowników mogą zostać skradzione — i zwykle nie ma nikogo, kto je zwróci. Niektóre duże protokoły (Aave, Maker) mają 'fundusze ubezpieczeniowe' lub skarbce zarządzania, które mogą pokryć część strat. Część hacków została w przeszłości zwrócona przez samych hakerów (tzw. 'white hat') albo po długich negocjacjach. Najlepsza ochrona to wybór sprawdzonych protokołów i ewentualne ubezpieczenie zewnętrzne (Nexus Mutual).",
+    "answer_en": "Funds from all users can be stolen — and usually nobody will refund them. Some large protocols (Aave, Maker) have 'insurance funds' or governance treasuries that may cover part of the losses. Some historical hacks have been returned by the hackers themselves ('white hat') or after long negotiations. The best protection is choosing proven protocols and optionally getting third-party insurance (Nexus Mutual).",
+    "level": 2,
+    "keywords_pl": [
+      "hack protokolu",
+      "kradziez defi",
+      "zhakowany protokol"
+    ],
+    "keywords_en": [
+      "protocol hack",
+      "defi theft",
+      "hacked protocol"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_030",
+    "topic": "defi",
+    "question_pl": "Jak rozpoznać, że projekt DeFi jest wiarygodny?",
+    "question_en": "How do I know if a DeFi project is legitimate?",
+    "answer_pl": "Sprawdź: (1) Wiek — minimum 1-2 lata działania bez incydentów; (2) TVL — minimum 100 milionów USD; (3) Audyty od znanych firm (OpenZeppelin, Trail of Bits); (4) Jawny zespół z doświadczeniem w branży; (5) Rozsądny APY (3-10% dla stablecoinów, nie 200%). Jeśli choć jeden z tych punktów jest podejrzany — lepiej odpuść. Narzędzia pomocne: DeFiLlama, DeFiSafety.",
+    "answer_en": "Check: (1) Age — at least 1-2 years running without incidents; (2) TVL — minimum 100 million USD; (3) Audits from well-known firms (OpenZeppelin, Trail of Bits); (4) Public team with industry experience; (5) Reasonable APY (3-10% for stablecoins, not 200%). If even one point is suspicious — walk away. Helpful tools: DeFiLlama, DeFiSafety.",
+    "level": 2,
+    "keywords_pl": [
+      "wiarygodny projekt",
+      "legit defi",
+      "prawdziwy projekt"
+    ],
+    "keywords_en": [
+      "legit defi",
+      "trustworthy project",
+      "genuine project"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_031",
+    "topic": "defi",
+    "question_pl": "Co to znaczy 'yield farming'?",
+    "question_en": "What does 'yield farming' mean?",
+    "answer_pl": "Yield farming to strategia zarabiania polegająca na 'przestawianiu' pieniędzy między różnymi protokołami DeFi w pogoni za najwyższym APY. Często łączy się kilka nagród na raz — np. deponujesz w puli płynności i dodatkowo dostajesz token zarządzania protokołu jako bonus. Potrafi dać wyższy zysk niż zwykły lending, ale wymaga aktywnego zarządzania i zwiększa ryzyko.",
+    "answer_en": "Yield farming is an earning strategy that involves 'rotating' money between different DeFi protocols in pursuit of the highest APY. Often you stack multiple rewards at once — e.g. you deposit into a liquidity pool and additionally receive the protocol's governance token as a bonus. It can yield more than simple lending, but requires active management and adds risk.",
+    "level": 2,
+    "keywords_pl": [
+      "yield farming",
+      "farming",
+      "uprawa yieldu"
+    ],
+    "keywords_en": [
+      "yield farming",
+      "farming",
+      "yield farm"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_032",
+    "topic": "defi",
+    "question_pl": "Czy mogę wypłacić pieniądze z DeFi w każdej chwili?",
+    "question_en": "Can I withdraw money from DeFi anytime?",
+    "answer_pl": "W większości protokołów (Aave, Uniswap, Compound) — tak, od razu, bez kar i bez okresu wypowiedzenia. Wyjątki to: niektóre rodzaje stakingu z lockupem (np. ETH staking poza Lido może mieć 7-14 dni na wypłatę), oraz sytuacje gdy cała płynność puli jest 'pożyczona' — wtedy trzeba chwilę poczekać, aż ktoś spłaci. W klasycznym lendingu wypłata to zwykle 10 sekund.",
+    "answer_en": "In most protocols (Aave, Uniswap, Compound) — yes, immediately, with no penalties or notice periods. Exceptions: some staking types with lockups (e.g. ETH staking outside Lido may take 7-14 days), and situations where all pool liquidity is 'borrowed' — then you wait briefly for someone to repay. In classic lending, withdrawal takes about 10 seconds.",
+    "level": 1,
+    "keywords_pl": [
+      "wyplata defi",
+      "withdraw defi",
+      "wyciagniecie srodkow"
+    ],
+    "keywords_en": [
+      "defi withdrawal",
+      "withdraw defi",
+      "pull funds"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_033",
+    "topic": "defi",
+    "question_pl": "Jaka jest różnica między pożyczaniem w banku a w DeFi?",
+    "question_en": "What is the difference between borrowing from a bank and from DeFi?",
+    "answer_pl": "Bank sprawdza Twoją zdolność kredytową (BIK, dochody, umowy) i daje pożyczkę 'na twarz'. DeFi nie sprawdza niczego — każda pożyczka wymaga zastawu większego niż sama pożyczka (np. zastawiasz 1 ETH wart 3000 USD, żeby pożyczyć 2000 USDC). W banku dostajesz kredyt hipoteczny na 30 lat; w DeFi krótkoterminową pożyczkę pod zastaw krypto. To dwie różne usługi, nie konkurencja.",
+    "answer_en": "A bank checks your creditworthiness (credit score, income, contracts) and extends an unsecured loan. DeFi checks nothing — every loan requires collateral worth more than the loan itself (e.g. you pledge 1 ETH worth 3000 USD to borrow 2000 USDC). At a bank you get a 30-year mortgage; in DeFi a short-term loan against crypto collateral. They're two different services, not competitors.",
+    "level": 2,
+    "keywords_pl": [
+      "pozyczka defi",
+      "pozyczka bank",
+      "kredyt defi"
+    ],
+    "keywords_en": [
+      "defi loan",
+      "bank loan",
+      "defi credit"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_034",
+    "topic": "defi",
+    "question_pl": "Czy muszę rozliczać podatek od zarobków z DeFi w Polsce?",
+    "question_en": "Do I need to pay tax on DeFi earnings in Poland?",
+    "answer_pl": "Tak — zyski z DeFi (odsetki, nagrody, wymiana tokenów) są opodatkowane w Polsce stawką 19% jako przychód z kapitałów pieniężnych. Rozliczasz je w PIT-38 raz w roku. Warto prowadzić własną ewidencję transakcji lub użyć narzędzi typu Koinly, CoinTracker, które agregują historię i generują raport podatkowy. Nie jestem doradcą podatkowym — przy większych kwotach skonsultuj się ze specjalistą.",
+    "answer_en": "Yes — DeFi earnings (interest, rewards, token swaps) are taxed in Poland at 19% as capital income. You report them annually on PIT-38. It's worth keeping your own transaction log or using tools like Koinly or CoinTracker that aggregate history and generate tax reports. I'm not a tax advisor — for larger amounts, consult a professional.",
+    "level": 1,
+    "keywords_pl": [
+      "podatek defi",
+      "podatek krypto",
+      "pit krypto",
+      "rozliczenie"
+    ],
+    "keywords_en": [
+      "defi tax",
+      "crypto tax",
+      "poland tax",
+      "tax filing"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_035",
+    "topic": "defi",
+    "question_pl": "Co to jest 'smart kontrakt'?",
+    "question_en": "What is a smart contract?",
+    "answer_pl": "Smart kontrakt to program komputerowy zapisany na blockchainie, który wykonuje się automatycznie po spełnieniu określonych warunków. To jak automat z kawą — wrzucasz monetę, naciskasz przycisk, dostajesz kawę, bez barmana. Każda aplikacja DeFi (Aave, Uniswap) to w istocie zestaw smart kontraktów, które obsługują wszystkie operacje bez ingerencji człowieka.",
+    "answer_en": "A smart contract is a computer program stored on a blockchain that executes automatically when certain conditions are met. It's like a coffee vending machine — you insert a coin, press a button, get coffee, no barista needed. Every DeFi app (Aave, Uniswap) is essentially a set of smart contracts handling all operations without human intervention.",
+    "level": 2,
+    "keywords_pl": [
+      "smart kontrakt",
+      "smart contract",
+      "automatyczny kod"
+    ],
+    "keywords_en": [
+      "smart contract",
+      "automated code",
+      "blockchain contract"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_036",
+    "topic": "defi",
+    "question_pl": "Dlaczego APY w DeFi jest wyższe niż w banku?",
+    "question_en": "Why is APY in DeFi higher than at a bank?",
+    "answer_pl": "Bo w DeFi nie ma kosztów stałych banku — oddziałów, pracowników, regulacji, marketingu. Cały 'spread' (różnica między tym, co płaci pożyczkobiorca a co dostaje depozytariusz) jest znacznie mniejszy, więc więcej idzie do Ciebie. Dodatkowo yieldy w DeFi zawierają premię za ryzyko — bank ma gwarancje BFG, DeFi żadnych.",
+    "answer_en": "Because DeFi has no fixed bank overhead — branches, staff, regulation, marketing. The entire 'spread' (the gap between what borrowers pay and depositors earn) is much smaller, so more goes to you. Plus DeFi yields include a risk premium — banks have deposit insurance, DeFi has none.",
+    "level": 2,
+    "keywords_pl": [
+      "apy wysoki",
+      "zyski defi bank",
+      "wyzszy zysk defi"
+    ],
+    "keywords_en": [
+      "higher apy defi",
+      "yield bank vs defi",
+      "defi returns"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_037",
+    "topic": "defi",
+    "question_pl": "Czy mogę używać DeFi przez zwykłą przeglądarkę?",
+    "question_en": "Can I use DeFi through a regular browser?",
+    "answer_pl": "Tak — większość aplikacji DeFi działa przez przeglądarkę internetową (Chrome, Firefox) i nie wymaga instalacji osobnych aplikacji. Potrzebujesz tylko rozszerzenia portfela (np. MetaMask lub Rabby) zainstalowanego w przeglądarce. Zasada: używaj oddzielnej przeglądarki dla krypto, bez zbędnych wtyczek, i zawsze wpisuj adresy stron ręcznie zamiast klikać w reklamy lub linki.",
+    "answer_en": "Yes — most DeFi apps run through a web browser (Chrome, Firefox) and don't require separate apps. You only need a wallet extension (e.g. MetaMask or Rabby) installed in the browser. Rule: use a separate browser for crypto, with no unnecessary extensions, and always type site URLs manually instead of clicking ads or links.",
+    "level": 1,
+    "keywords_pl": [
+      "przegladarka defi",
+      "chrome defi",
+      "aplikacje defi"
+    ],
+    "keywords_en": [
+      "browser defi",
+      "chrome defi",
+      "defi apps"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_038",
+    "topic": "defi",
+    "question_pl": "Co to jest DEX?",
+    "question_en": "What is a DEX?",
+    "answer_pl": "DEX (Decentralized Exchange) to giełda krypto działająca bez pośrednika — np. Uniswap, Curve, Jupiter. Łączysz portfel i wymieniasz tokeny bezpośrednio z blockchainu, bez konta, bez weryfikacji, bez depozytów. W przeciwieństwie do CEX-u (np. Binance), gdzie giełda trzyma Twoje krypto, na DEX-ie cały czas kontrolujesz swoje pieniądze.",
+    "answer_en": "A DEX (Decentralized Exchange) is a crypto exchange that runs without a middleman — e.g. Uniswap, Curve, Jupiter. You connect your wallet and swap tokens directly from the blockchain, no account, no verification, no deposits. Unlike a CEX (e.g. Binance) where the exchange holds your crypto, on a DEX you stay in control of your money the entire time.",
+    "level": 1,
+    "keywords_pl": [
+      "dex",
+      "zdecentralizowana gielda",
+      "uniswap"
+    ],
+    "keywords_en": [
+      "dex",
+      "decentralized exchange",
+      "uniswap"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_039",
+    "topic": "defi",
+    "question_pl": "Czy DeFi jest tylko dla programistów?",
+    "question_en": "Is DeFi only for programmers?",
+    "answer_pl": "Nie — nowoczesne aplikacje DeFi mają przyjazne interfejsy graficzne, podobne do stron bankowych. Nie musisz umieć programować, żeby zdeponować USDC w Aave albo wymienić tokeny na Uniswap. Potrzebujesz tylko umieć zainstalować aplikację portfela, zapisać frazę odzyskiwania i klikać przyciski. Trudność jest bardziej w zrozumieniu, co robisz, niż w obsłudze.",
+    "answer_en": "No — modern DeFi apps have friendly graphical interfaces, similar to banking websites. You don't need to know how to code to deposit USDC into Aave or swap tokens on Uniswap. You just need to install a wallet app, write down your seed phrase, and click buttons. The challenge is understanding what you're doing, not operating the tools.",
+    "level": 1,
+    "keywords_pl": [
+      "defi programista",
+      "defi techniczny",
+      "defi trudne"
+    ],
+    "keywords_en": [
+      "defi programmer",
+      "defi technical",
+      "defi difficult"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_040",
+    "topic": "defi",
+    "question_pl": "Czy powinienem używać Ethereum, Polygon czy innej sieci?",
+    "question_en": "Should I use Ethereum, Polygon, or another network?",
+    "answer_pl": "Dla małych kwot (do kilku tysięcy zł) polecane są tańsze sieci — Polygon, Base, Arbitrum — gdzie opłaty transakcyjne to grosze. Ethereum ma największą płynność i najbezpieczniejsze protokoły, ale każda transakcja kosztuje 5-30 zł, więc ma sens dopiero przy większych pozycjach. Solana jest bardzo szybka i tania, ale technicznie różna od Ethereum (inny typ portfela). Początkującym polecam zacząć od Polygon lub Base.",
+    "answer_en": "For small amounts (up to a few thousand PLN), cheaper networks are recommended — Polygon, Base, Arbitrum — where transaction fees are pennies. Ethereum has the deepest liquidity and safest protocols, but every transaction costs 5-30 PLN, so it only makes sense for larger positions. Solana is very fast and cheap, but technically different from Ethereum (different wallet type). For beginners, start with Polygon or Base.",
+    "level": 2,
+    "keywords_pl": [
+      "ethereum polygon",
+      "ktora siec",
+      "wybor sieci"
+    ],
+    "keywords_en": [
+      "ethereum polygon",
+      "which network",
+      "network choice"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_041",
+    "topic": "security",
+    "question_pl": "Jak poznać, że strona internetowa jest fałszywa?",
+    "question_en": "How do I know if a website is fake?",
+    "answer_pl": "Czerwone flagi: dziwny URL (np. 'app-uniswap.com' zamiast 'app.uniswap.org'), brak kłódki HTTPS, literówki w nazwie, niedawno utworzona domena. Oszuści kopiują strony 1:1 — wizualnie nie da się ich odróżnić. Jedyna pewna metoda: wpisz adres ręcznie w pasku przeglądarki, zapisz zaufane strony w zakładkach, nigdy nie klikaj w reklamy Google ani linki z maili i wiadomości.",
+    "answer_en": "Red flags: weird URL (e.g. 'app-uniswap.com' instead of 'app.uniswap.org'), no HTTPS padlock, typos in the name, recently registered domain. Scammers copy sites 1:1 — visually they're indistinguishable. The only reliable method: type the address manually in the browser bar, bookmark trusted sites, never click Google ads or links from emails and messages.",
+    "level": 1,
+    "keywords_pl": [
+      "falszywa strona",
+      "phishing",
+      "fake website",
+      "oszustwo online"
+    ],
+    "keywords_en": [
+      "fake website",
+      "phishing site",
+      "scam site",
+      "fake url"
+    ],
+    "safety_note_pl": "UWAGA: Nigdy nie klikaj w reklamy Google ani wyniki wyszukiwania, gdy szukasz stron DeFi. Oszuści kupują reklamy wyglądające identycznie jak oryginały. Zapisz oficjalne strony w zakładkach przeglądarki i używaj tylko ich.",
+    "safety_note_en": "WARNING: Never click Google ads or search results when looking for DeFi sites. Scammers buy ads that look identical to the real thing. Bookmark official sites in your browser and only use those."
+  },
+  {
+    "id": "qa_042",
+    "topic": "security",
+    "question_pl": "Ktoś zaproponował mi świetną okazję inwestycyjną — czy to oszustwo?",
+    "question_en": "Someone offered me a great investment opportunity — is it a scam?",
+    "answer_pl": "Prawie na pewno tak. Legalne instytucje finansowe nie szukają klientów przez DM na Telegramie, WhatsAppie ani komentarze na Facebooku. Typowe oszustwa: 'gwarantowany zysk 30% miesięcznie', 'znam sposób dla wybranych', 'możesz zacząć od 500 zł'. Im większa presja czasowa i wyższe obietnice, tym pewniejsze oszustwo. Nikt prawdziwy nie napisze do Ciebie pierwszy.",
+    "answer_en": "Almost certainly yes. Legitimate financial institutions don't approach clients via Telegram DMs, WhatsApp, or Facebook comments. Typical scams: 'guaranteed 30% monthly returns', 'I know a method reserved for the chosen', 'you can start with 500 PLN'. The more time pressure and the higher the promises, the more certain it's a scam. Nobody real will message you first.",
+    "level": 1,
+    "keywords_pl": [
+      "okazja inwestycyjna",
+      "szybki zysk",
+      "oszustwo inwestycyjne",
+      "scam"
+    ],
+    "keywords_en": [
+      "investment opportunity",
+      "quick returns",
+      "investment scam",
+      "scam"
+    ],
+    "safety_note_pl": "UWAGA: Jeśli ktokolwiek obiecuje Ci 'gwarantowany zysk' w krypto — to oszustwo. W krypto nie ma gwarancji zysku, nawet w najbezpieczniejszych protokołach. Zablokuj kontakt i nie odpowiadaj.",
+    "safety_note_en": "WARNING: If anyone promises you 'guaranteed returns' in crypto — it's a scam. There are no guaranteed returns in crypto, not even in the safest protocols. Block the contact and don't reply."
+  },
+  {
+    "id": "qa_043",
+    "topic": "security",
+    "question_pl": "Co to jest atak phishingowy?",
+    "question_en": "What is a phishing attack?",
+    "answer_pl": "Phishing to próba wyłudzenia Twoich danych (frazy odzyskiwania, klucza prywatnego, hasła) przez podszywanie się pod zaufane źródło — support portfela, giełdę, znaną aplikację. Klasyczny scenariusz: ktoś pisze 'jestem z supportu MetaMask, musisz zweryfikować portfel — wpisz tu swoją frazę'. Żadna prawdziwa firma nigdy o to nie poprosi. Każda taka prośba to oszustwo.",
+    "answer_en": "Phishing is an attempt to steal your credentials (seed phrase, private key, password) by impersonating a trusted source — wallet support, an exchange, a familiar app. Classic scenario: someone messages 'I'm from MetaMask support, you need to verify your wallet — type your phrase here'. No legitimate company will ever ask. Every such request is a scam.",
+    "level": 1,
+    "keywords_pl": [
+      "phishing",
+      "wyludzenie",
+      "falszywy support",
+      "podszywanie"
+    ],
+    "keywords_en": [
+      "phishing",
+      "social engineering",
+      "fake support",
+      "impersonation"
+    ],
+    "safety_note_pl": "UWAGA: NIGDY nie podawaj frazy odzyskiwania ani klucza prywatnego nikomu — ani 'supportowi', ani 'weryfikacji', ani 'dziennikarzowi'. Każda taka prośba to 100% oszustwo. Prawdziwe firmy nigdy tego nie wymagają.",
+    "safety_note_en": "WARNING: NEVER share your seed phrase or private key with anyone — not with 'support', not for 'verification', not with 'a journalist'. Every such request is 100% a scam. Legitimate companies never require it."
+  },
+  {
+    "id": "qa_044",
+    "topic": "security",
+    "question_pl": "Mój portfel został opróżniony — co robić?",
+    "question_en": "My wallet was drained — what do I do?",
+    "answer_pl": "Po pierwsze, działaj szybko: jeśli w portfelu są jeszcze jakieś pozostałości (tokeny, NFT), natychmiast przenieś je na zupełnie nowy portfel z NOWĄ frazą odzyskiwania. Stary portfel jest spalony — oszuści mają skrypty, które opróżniają go natychmiast po każdej wpłacie. Zgłoś sprawę na policji i na chainabuse.com. Ostrzeż społeczność, żeby uniknąć dalszych ofiar. Niestety odzyskanie środków jest bardzo trudne.",
+    "answer_en": "First, act fast: if any remnants remain (tokens, NFTs), immediately move them to a brand new wallet with a NEW seed phrase. The old wallet is burnt — scammers have scripts that drain it instantly after any new deposit. Report to the police and to chainabuse.com. Warn your community to prevent further victims. Unfortunately, recovery of funds is very difficult.",
+    "level": 1,
+    "keywords_pl": [
+      "portfel opruznony",
+      "kradziez portfela",
+      "drained wallet",
+      "stracone krypto"
+    ],
+    "keywords_en": [
+      "wallet drained",
+      "stolen wallet",
+      "drained",
+      "lost crypto"
+    ],
+    "safety_note_pl": "UWAGA: Nie wpłacaj już nigdy nic do skompromitowanego portfela, nawet jeśli wydaje się 'pusty i bezpieczny'. Oszuści monitorują portfele i opróżniają je automatycznie w kilka sekund po każdej wpłacie.",
+    "safety_note_en": "WARNING: Never deposit anything back into a compromised wallet, even if it looks 'empty and safe'. Scammers monitor wallets and drain them automatically within seconds of any deposit."
+  },
+  {
+    "id": "qa_045",
+    "topic": "security",
+    "question_pl": "Czy bezpiecznie jest łączyć portfel ze stronami?",
+    "question_en": "Is it safe to connect my wallet to websites?",
+    "answer_pl": "Łączenie portfela ze sprawdzonymi stronami (Uniswap, Aave, Compound) jest bezpieczne — samo połączenie nie daje stronie dostępu do Twoich środków, każda akcja wymaga potwierdzenia w portfelu. Niebezpieczeństwo wynika z: fałszywych klonów stron, podejrzanych transakcji typu 'approve' na nieznane tokeny, oraz złośliwych aplikacji proszących o podpisanie dziwnych wiadomości. Zasada: łącz tylko z zaufanymi stronami i czytaj każde okno z prośbą o zatwierdzenie.",
+    "answer_en": "Connecting your wallet to trusted sites (Uniswap, Aave, Compound) is safe — the connection itself doesn't give the site access to your funds, every action requires confirmation in your wallet. The danger comes from: fake site clones, suspicious 'approve' transactions for unknown tokens, and malicious apps asking you to sign weird messages. Rule: only connect to trusted sites and read every approval prompt carefully.",
+    "level": 1,
+    "keywords_pl": [
+      "connect wallet",
+      "laczenie portfela",
+      "dapp",
+      "bezpieczenstwo laczenia"
+    ],
+    "keywords_en": [
+      "connect wallet",
+      "wallet connection",
+      "dapp",
+      "connection safety"
+    ],
+    "safety_note_pl": "UWAGA: Zawsze czytaj okno transakcji w portfelu przed zatwierdzeniem. Zwracaj uwagę na: jaki token się zatwierdza, kto jest odbiorcą, czy dajesz 'unlimited approval'. W razie wątpliwości — anuluj. Dla większych pozycji używaj Rabby zamiast MetaMask — lepiej pokazuje skutki transakcji.",
+    "safety_note_en": "WARNING: Always read the transaction prompt in your wallet before approving. Pay attention to: which token is being approved, who the recipient is, whether you're giving 'unlimited approval'. When in doubt — cancel. For larger positions, use Rabby instead of MetaMask — it shows transaction consequences more clearly."
+  },
+  {
+    "id": "qa_046",
+    "topic": "security",
+    "question_pl": "Co to jest rug pull?",
+    "question_en": "What is a rug pull?",
+    "answer_pl": "Rug pull to oszustwo, w którym twórcy projektu krypto znikają ze wszystkimi pieniędzmi inwestorów. Typowy scenariusz: nowy token jest mocno promowany w social mediach, ludzie wpłacają, kurs rośnie — a potem twórcy sprzedają wszystkie swoje tokeny i wycofują płynność. Wartość tokena spada do zera w kilka minut. Dzieje się to najczęściej z 'meme-coinami' i nieznanymi projektami obiecującymi ogromne zyski.",
+    "answer_en": "A rug pull is a scam where crypto project creators disappear with all investor money. Typical scenario: a new token gets heavily promoted on social media, people deposit, the price rises — then creators sell all their tokens and pull the liquidity. Token value crashes to zero in minutes. It happens most often with 'memecoins' and unknown projects promising huge returns.",
+    "level": 2,
+    "keywords_pl": [
+      "rug pull",
+      "oszustwo projektu",
+      "znikniecie twocow",
+      "exit scam"
+    ],
+    "keywords_en": [
+      "rug pull",
+      "project scam",
+      "exit scam",
+      "creator vanished"
+    ],
+    "safety_note_pl": "UWAGA: Unikaj 'meme-coinów' z TikToka, Twittera czy Telegramu — zdecydowana większość to rug pulle. Jeśli chcesz sprawdzić konkretny token, użyj narzędzi tokensniffer.com lub gopluslabs.io. Nigdy nie inwestuj więcej, niż jesteś gotowy stracić w całości.",
+    "safety_note_en": "WARNING: Avoid 'memecoins' from TikTok, Twitter, or Telegram — the vast majority are rug pulls. If you want to check a specific token, use tokensniffer.com or gopluslabs.io. Never invest more than you're ready to lose entirely."
+  },
+  {
+    "id": "qa_047",
+    "topic": "security",
+    "question_pl": "Jak sprawdzić, czy kontrakt jest bezpieczny?",
+    "question_en": "How do I check if a contract is safe?",
+    "answer_pl": "Dla zaawansowanych użytkowników: (1) Sprawdź audyty na oficjalnej stronie projektu; (2) Szukaj 'verified contract' na Etherscan — kod powinien być jawny; (3) Sprawdź wiek kontraktu i liczbę transakcji; (4) Użyj narzędzi: gopluslabs.io, tokensniffer.com, De.Fi Shield. Dla początkujących: trzymaj się znanych protokołów (Aave, Uniswap, Curve, Lido) z długą historią i wysokim TVL — nie musisz wtedy samodzielnie sprawdzać kodu.",
+    "answer_en": "For advanced users: (1) Check audits on the project's official site; (2) Look for 'verified contract' on Etherscan — code should be open; (3) Check contract age and transaction count; (4) Use tools: gopluslabs.io, tokensniffer.com, De.Fi Shield. For beginners: stick to well-known protocols (Aave, Uniswap, Curve, Lido) with long histories and high TVL — you don't need to audit code yourself.",
+    "level": 2,
+    "keywords_pl": [
+      "sprawdzenie kontraktu",
+      "audyt kontraktu",
+      "bezpieczny kontrakt"
+    ],
+    "keywords_en": [
+      "check contract",
+      "contract audit",
+      "safe contract"
+    ],
+    "safety_note_pl": "UWAGA: Nawet 'audytowany' kontrakt nie jest w 100% bezpieczny — wiele protokołów z audytami zostało zhakowanych. Audyt to warunek konieczny, ale niewystarczający. Zawsze patrz na kombinację: audyty + wiek + TVL + historia bez incydentów.",
+    "safety_note_en": "WARNING: Even an 'audited' contract isn't 100% safe — many audited protocols have been hacked. An audit is a necessary but insufficient condition. Always look at the combination: audits + age + TVL + incident-free track record."
+  },
+  {
+    "id": "qa_048",
+    "topic": "security",
+    "question_pl": "Czy mogę udostępnić publicznie swój adres portfela?",
+    "question_en": "Should I share my wallet address publicly?",
+    "answer_pl": "Adres portfela jest bezpieczny do udostępnienia — to jak numer konta bankowego, nie hasło. Samo posiadanie adresu nie pozwala nikomu wyjąć pieniędzy. Ale pamiętaj: każdy, kto zna Twój adres, widzi Twoją pełną historię transakcji i aktualne saldo (przez Etherscan). Dla prywatności używaj oddzielnego adresu do 'publicznych' celów, a oddzielnego do prywatnych oszczędności.",
+    "answer_en": "Your wallet address is safe to share — it's like a bank account number, not a password. Just knowing the address doesn't let anyone withdraw funds. But remember: anyone with your address can see your full transaction history and current balance (via Etherscan). For privacy, use one address for 'public' purposes and a separate one for private savings.",
+    "level": 1,
+    "keywords_pl": [
+      "udostepnic adres",
+      "publiczny adres",
+      "prywatnosc adresu"
+    ],
+    "keywords_en": [
+      "share address",
+      "public address",
+      "address privacy"
+    ],
+    "safety_note_pl": "UWAGA: NIGDY nie myl adresu portfela z kluczem prywatnym ani frazą odzyskiwania. Adres = bezpieczny do pokazania. Klucz prywatny i fraza = NIGDY nikomu nie udostępniaj, to równoznaczne z oddaniem wszystkich pieniędzy.",
+    "safety_note_en": "WARNING: NEVER confuse your wallet address with your private key or seed phrase. Address = safe to share. Private key and seed phrase = NEVER share with anyone, it's equivalent to handing over all your money."
+  },
+  {
+    "id": "qa_049",
+    "topic": "security",
+    "question_pl": "Co się stanie, jeśli kliknę w podejrzany link?",
+    "question_en": "What happens if I click a suspicious link?",
+    "answer_pl": "Samo kliknięcie linku zwykle nie kradnie pieniędzy — niebezpieczne są kolejne kroki: strona może poprosić Cię o podanie frazy odzyskiwania, o podpisanie 'pozornie niewinnej' transakcji, lub próbować zainstalować złośliwe rozszerzenie. Jeśli kliknąłeś, ale nic nie zatwierdziłeś w portfelu — prawdopodobnie jesteś bezpieczny. Dla pewności: zamknij zakładkę, przeskanuj komputer antywirusem, rozważ przeniesienie środków do nowego portfela.",
+    "answer_en": "Just clicking a link usually doesn't steal funds — the danger is in what comes next: the site may ask for your seed phrase, a 'seemingly innocent' transaction signature, or try to install a malicious extension. If you clicked but approved nothing in your wallet — you're probably safe. To be sure: close the tab, scan your computer for malware, and consider moving funds to a new wallet.",
+    "level": 1,
+    "keywords_pl": [
+      "podejrzany link",
+      "klikniecie linku",
+      "zlosliwy link"
+    ],
+    "keywords_en": [
+      "suspicious link",
+      "clicked link",
+      "malicious link"
+    ],
+    "safety_note_pl": "UWAGA: Jeśli po kliknięciu linku zatwierdziłeś JAKĄKOLWIEK transakcję w portfelu (nawet 'darmową', 'testową' lub 'podpis bez gazu'), natychmiast przenieś wszystkie środki do nowego portfela z nową frazą. Fałszywe 'podpisy' mogą autoryzować przejęcie tokenów.",
+    "safety_note_en": "WARNING: If after clicking a link you approved ANY transaction in your wallet (even a 'free', 'test', or 'gasless signature'), immediately move all funds to a new wallet with a new phrase. Fake 'signatures' can authorise token takeovers."
+  },
+  {
+    "id": "qa_050",
+    "topic": "security",
+    "question_pl": "Jak bezpiecznie przechowywać frazę odzyskiwania?",
+    "question_en": "How do I store my seed phrase safely?",
+    "answer_pl": "Zapisz frazę na papierze (najlepiej dwie kopie) i schowaj w dwóch różnych fizycznych miejscach — np. jedna w domu, jedna u zaufanej osoby lub w sejfie bankowym. Dla długoterminowej ochrony rozważ metalową płytkę odporną na ogień i wodę (Cryptotag, Billfodl — 100-300 zł). NIGDY nie zapisuj frazy w telefonie, mailu, Google Drive, zdjęciach, ani w menadżerze haseł.",
+    "answer_en": "Write the phrase on paper (ideally two copies) and hide them in two different physical locations — e.g. one at home, one with a trusted person or in a bank safe deposit box. For long-term protection, consider a fire- and water-resistant metal plate (Cryptotag, Billfodl — 100-300 PLN). NEVER store the phrase on your phone, email, Google Drive, photos, or password manager.",
+    "level": 1,
+    "keywords_pl": [
+      "przechowywanie frazy",
+      "zapisac fraze",
+      "bezpieczenstwo frazy"
+    ],
+    "keywords_en": [
+      "store seed phrase",
+      "seed phrase backup",
+      "phrase safety"
+    ],
+    "safety_note_pl": "UWAGA: Jeśli zapisałeś frazę cyfrowo (telefon, mail, chmura) — musisz założyć, że jest skompromitowana. Zrób nowy portfel z nową frazą, zapisz ją tym razem tylko na papierze, i przenieś tam wszystkie środki.",
+    "safety_note_en": "WARNING: If you've stored your phrase digitally (phone, email, cloud) — you must assume it's compromised. Create a new wallet with a new phrase, write it on paper only this time, and move all funds there."
+  },
+  {
+    "id": "qa_051",
+    "topic": "security",
+    "question_pl": "Co zrobić, jeśli ktoś zobaczył moją frazę odzyskiwania?",
+    "question_en": "What do I do if someone has seen my seed phrase?",
+    "answer_pl": "Natychmiast utwórz nowy portfel z zupełnie nową frazą odzyskiwania i przenieś tam wszystkie środki — każda sekunda się liczy. Nie ma znaczenia, czy to był 'zaufany znajomy', czy dawno temu — fraza jest spalona na zawsze. Używanie starego portfela po wycieku frazy to jak trzymanie pieniędzy w domu, do którego sąsiad ma klucz. Stary portfel zostaw pusty i nigdy więcej do niego nie wpłacaj.",
+    "answer_en": "Immediately create a new wallet with a completely new seed phrase and move all funds there — every second counts. It doesn't matter if it was a 'trusted friend' or long ago — the phrase is burnt forever. Using the old wallet after a phrase leak is like keeping money in a house your neighbour has the key to. Leave the old wallet empty and never deposit anything there again.",
+    "level": 1,
+    "keywords_pl": [
+      "fraza zobaczona",
+      "wyciek frazy",
+      "fraza ujawniona"
+    ],
+    "keywords_en": [
+      "phrase leaked",
+      "phrase seen",
+      "phrase exposed"
+    ],
+    "safety_note_pl": "UWAGA: Nawet jeśli osoba, która widziała frazę, wydaje się zaufana — sytuacja może się zmienić w przyszłości. Rodzina, znajomi, byli partnerzy — nigdy nie wiadomo. Raz ujawniona fraza jest ujawniona na zawsze.",
+    "safety_note_en": "WARNING: Even if the person who saw the phrase seems trustworthy — the situation can change in the future. Family, friends, former partners — you never know. A phrase exposed once is exposed forever."
+  },
+  {
+    "id": "qa_052",
+    "topic": "security",
+    "question_pl": "Czy airdrop w moim portfelu to zawsze pułapka?",
+    "question_en": "Is an airdrop in my wallet always a trap?",
+    "answer_pl": "Nieproszone tokeny, które nagle pojawiają się w portfelu z nieznanego źródła — tak, w 95% przypadków to pułapka. Próba wymiany, sprzedaży lub 'odebrania' takiego tokena często prowadzi do podpisania złośliwej transakcji, która opróżnia portfel. Zignoruj je, nie klikaj. Prawdziwe airdropy zwykle trzeba 'odebrać' na oficjalnej stronie projektu, o którym słyszałeś wcześniej, a nie w portfelu.",
+    "answer_en": "Unsolicited tokens that suddenly appear in your wallet from an unknown source — yes, 95% of the time they're a trap. Trying to swap, sell, or 'claim' such a token often leads to signing a malicious transaction that drains your wallet. Ignore them, don't click. Real airdrops usually need to be 'claimed' on the official site of a project you've heard of before, not inside your wallet.",
+    "level": 2,
+    "keywords_pl": [
+      "airdrop pulapka",
+      "tokeny niespodziewane",
+      "scam token"
+    ],
+    "keywords_en": [
+      "airdrop trap",
+      "unexpected tokens",
+      "scam token"
+    ],
+    "safety_note_pl": "UWAGA: Niektóre fałszywe tokeny mają tzw. 'honeypot' — pozornie pozwalają się wymienić, ale w trakcie transakcji oszust przejmuje kontrolę nad innymi Twoimi tokenami. Najlepsza zasada: ignoruj każdy token, którego nie zamówiłeś i nie znasz.",
+    "safety_note_en": "WARNING: Some fake tokens are 'honeypots' — they seem swappable, but during the transaction the scammer gains control over your other tokens. Best rule: ignore any token you didn't order and don't recognise."
+  },
+  {
+    "id": "qa_053",
+    "topic": "security",
+    "question_pl": "Czy rozmowa z 'supportem' na Discordzie jest bezpieczna?",
+    "question_en": "Is it safe to talk to 'support' on Discord?",
+    "answer_pl": "Oficjalne wsparcie większości protokołów DeFi odbywa się w otwartych kanałach Discorda, nie przez prywatne wiadomości. 99% DM-ów o 'pomocy' to oszustwo — prawdziwy support nie pisze pierwszy. Jeśli potrzebujesz pomocy, pytaj publicznie w oficjalnym kanale projektu. Każda osoba, która do Ciebie napisze sama i prosi o frazę, klucz, albo kliknięcie linku — to oszust.",
+    "answer_en": "Official support for most DeFi protocols happens in open Discord channels, not via direct messages. 99% of DMs offering 'help' are scams — real support doesn't message first. If you need help, ask publicly in the project's official channel. Anyone who messages you unprompted asking for a phrase, key, or link click — is a scammer.",
+    "level": 1,
+    "keywords_pl": [
+      "discord support",
+      "pomoc discord",
+      "falszywy support"
+    ],
+    "keywords_en": [
+      "discord support",
+      "discord help",
+      "fake support"
+    ],
+    "safety_note_pl": "UWAGA: Wyłącz możliwość otrzymywania DM-ów od nieznajomych w Discordzie (Settings → Privacy & Safety). Oszuści aktywnie skanują serwery DeFi i piszą do każdego nowego członka. To prosty krok, który eliminuje 90% ataków.",
+    "safety_note_en": "WARNING: Disable DMs from strangers in Discord (Settings → Privacy & Safety). Scammers actively scan DeFi servers and message every new member. It's a simple step that eliminates 90% of attacks."
+  },
+  {
+    "id": "qa_054",
+    "topic": "security",
+    "question_pl": "Czy 'giveaway' od celebryty na Twitterze jest prawdziwy?",
+    "question_en": "Is a celebrity 'giveaway' on Twitter real?",
+    "answer_pl": "Nie. Wszystkie 'giveaways' typu 'wyślij 0.1 ETH, a dostaniesz 2 ETH z powrotem' to oszustwo — nawet jeśli link wygląda jakby pochodził od Elona Muska. Oszuści hakują konta znanych osób albo używają bardzo podobnych nazw (np. 'elonmusk' vs 'elon_musk'). Nikt na świecie nie rozdaje krypto za darmo. Jeśli ktoś obiecuje 'wysłać coś z powrotem', zawsze okradnie Cię.",
+    "answer_en": "No. All 'giveaways' like 'send 0.1 ETH, get 2 ETH back' are scams — even if the link looks like it's from Elon Musk. Scammers hack famous accounts or use near-identical handles (e.g. 'elonmusk' vs 'elon_musk'). Nobody on earth gives away free crypto. If someone promises to 'send something back', they will always rob you.",
+    "level": 1,
+    "keywords_pl": [
+      "giveaway",
+      "darmowe krypto",
+      "celebryta krypto",
+      "musk giveaway"
+    ],
+    "keywords_en": [
+      "giveaway",
+      "free crypto",
+      "celebrity giveaway",
+      "musk giveaway"
+    ],
+    "safety_note_pl": "UWAGA: Reguła absolutna — jeśli ktoś prosi Cię o wysłanie krypto z obietnicą zwrotu większej kwoty, to oszustwo, 100% przypadków. Nigdy nie wysyłaj krypto na podstawie takiej obietnicy, nawet 'żeby sprawdzić'.",
+    "safety_note_en": "WARNING: Absolute rule — if anyone asks you to send crypto with the promise of returning more, it's a scam, 100% of the time. Never send crypto based on such a promise, not even 'just to test'."
+  },
+  {
+    "id": "qa_055",
+    "topic": "security",
+    "question_pl": "Czy używanie publicznego WiFi jest bezpieczne dla krypto?",
+    "question_en": "Is public WiFi safe for crypto?",
+    "answer_pl": "Raczej nie, szczególnie dla większych operacji. Publiczne WiFi (kawiarnia, hotel, lotnisko) może być monitorowane lub podstawione przez osoby trzecie. Samo sprawdzenie salda portfela jest mniej ryzykowne, ale wykonywanie transakcji, szczególnie logowanie do giełd, jest niebezpieczne. Jeśli musisz — użyj VPN-a i unikaj stron z danymi płatniczymi.",
+    "answer_en": "Probably not, especially for larger operations. Public WiFi (cafes, hotels, airports) can be monitored or spoofed by third parties. Just checking your wallet balance is less risky, but performing transactions — especially logging into exchanges — is dangerous. If you must, use a VPN and avoid sites with payment data.",
+    "level": 2,
+    "keywords_pl": [
+      "publiczne wifi",
+      "wifi bezpieczenstwo",
+      "kawiarnia krypto"
+    ],
+    "keywords_en": [
+      "public wifi",
+      "wifi security",
+      "cafe crypto"
+    ],
+    "safety_note_pl": "UWAGA: VPN zwiększa prywatność, ale nie chroni przed złośliwymi aplikacjami na Twoim urządzeniu. Jeśli podejrzewasz, że Twoje urządzenie jest zainfekowane, żadne WiFi ani VPN Cię nie uratuje — potrzebujesz czystego urządzenia lub portfela sprzętowego.",
+    "safety_note_en": "WARNING: A VPN improves privacy but doesn't protect against malicious apps on your device. If you suspect your device is infected, no WiFi or VPN will save you — you need a clean device or a hardware wallet."
+  },
+  {
+    "id": "qa_056",
+    "topic": "security",
+    "question_pl": "Co to jest 'approval scam'?",
+    "question_en": "What is an 'approval scam'?",
+    "answer_pl": "Approval scam to oszustwo, w którym klikasz coś na fałszywej stronie (np. 'odbierz airdrop') i podpisujesz transakcję 'approve', która daje oszustowi nieograniczony dostęp do konkretnego tokena w Twoim portfelu. Nie widzi się tego od razu — Twoje saldo nie znika, ale oszust może wyjąć tokeny w dowolnym momencie. Żeby odwołać takie uprawnienia, użyj revoke.cash — wyświetla wszystkie aktywne 'approvals' i pozwala je skasować.",
+    "answer_en": "An approval scam is when you click something on a fake site (e.g. 'claim airdrop') and sign an 'approve' transaction that gives the scammer unlimited access to a specific token in your wallet. You don't notice right away — your balance doesn't disappear, but the scammer can withdraw tokens at any time. To revoke such permissions, use revoke.cash — it lists all active approvals and lets you cancel them.",
+    "level": 2,
+    "keywords_pl": [
+      "approval scam",
+      "approve oszustwo",
+      "revoke approval"
+    ],
+    "keywords_en": [
+      "approval scam",
+      "token approval",
+      "revoke approval"
+    ],
+    "safety_note_pl": "UWAGA: Warto raz na 3-6 miesięcy sprawdzić revoke.cash dla swojego portfela i skasować stare approvals, których już nie używasz. To standardowa higiena krypto. Dotyczy szczególnie portfeli aktywnie używanych w DeFi.",
+    "safety_note_en": "WARNING: It's worth checking revoke.cash for your wallet every 3-6 months and cancelling old approvals you no longer use. It's standard crypto hygiene, especially for wallets actively used in DeFi."
+  },
+  {
+    "id": "qa_057",
+    "topic": "security",
+    "question_pl": "Czy mogę ufać nowemu projektowi z dużym hype'em?",
+    "question_en": "Can I trust a new project with big hype?",
+    "answer_pl": "Hype sam w sobie jest bardziej ostrzeżeniem niż zaletą. Oszustwa inwestują ogromne pieniądze w reklamę, influencerów i fałszywe komentarze — szybki wzrost popularności często oznacza, że gra się kończy. Prawdziwe projekty rosną stopniowo, a ich wartość wynika z użyteczności, nie z marketingu. Jeśli o projekcie słyszysz pierwszy raz 'bo jest hot' — to za późno lub za niebezpiecznie.",
+    "answer_en": "Hype itself is more of a warning than a plus. Scams invest heavily in ads, influencers, and fake comments — sudden popularity often means the game is ending. Real projects grow gradually, and their value comes from utility, not marketing. If you're hearing about a project for the first time 'because it's hot' — it's either too late or too risky.",
+    "level": 2,
+    "keywords_pl": [
+      "hype",
+      "trending project",
+      "nowy projekt",
+      "shilling"
+    ],
+    "keywords_en": [
+      "hype",
+      "trending project",
+      "new project",
+      "shilling"
+    ],
+    "safety_note_pl": "UWAGA: Influencerzy w krypto są często opłacani za promowanie projektów bez ujawniania tej relacji. Nie traktuj ich rekomendacji jako bezstronnej opinii. Jeśli ktoś mówi 'to 100x', zastanów się, czemu nie kupuje sam, tylko Ci mówi.",
+    "safety_note_en": "WARNING: Crypto influencers are often paid to promote projects without disclosing it. Don't treat their recommendations as unbiased. If someone says 'this will 100x', ask yourself why they're telling you instead of just buying it themselves."
+  },
+  {
+    "id": "qa_058",
+    "topic": "security",
+    "question_pl": "Jakie są znaki, że aplikacja krypto jest fałszywa?",
+    "question_en": "What are the signs that a crypto app is fake?",
+    "answer_pl": "Czerwone flagi: (1) Aplikacja pobierana spoza oficjalnego sklepu (App Store/Google Play) lub z linku w wiadomości; (2) Nowy wydawca bez historii; (3) Mała liczba pobrań, ale suspiciously dobre recenzje; (4) Aplikacja prosi o frazę odzyskiwania przy pierwszym uruchomieniu w dziwny sposób; (5) Dziwne uprawnienia (dostęp do SMS, kontaktów, galerii). Instaluj tylko z oficjalnej strony projektu lub zweryfikowanych sklepów aplikacji.",
+    "answer_en": "Red flags: (1) App downloaded outside official stores (App Store/Google Play) or from a link in a message; (2) New publisher with no history; (3) Few downloads but suspiciously good reviews; (4) The app asks for your seed phrase on first launch in a weird way; (5) Odd permissions (SMS access, contacts, gallery). Only install from the project's official site or verified app stores.",
+    "level": 1,
+    "keywords_pl": [
+      "falszywa aplikacja",
+      "fake app",
+      "falszywy metamask"
+    ],
+    "keywords_en": [
+      "fake app",
+      "fake metamask",
+      "malicious app"
+    ],
+    "safety_note_pl": "UWAGA: Nawet w oficjalnym App Store i Google Play pojawiały się fałszywe aplikacje portfelowe (np. kopie Trust Wallet czy MetaMask). Przed instalacją sprawdź wydawcę, liczbę pobrań, datę publikacji — oryginały mają miliony instalacji.",
+    "safety_note_en": "WARNING: Even the official App Store and Google Play have had fake wallet apps (e.g. copies of Trust Wallet or MetaMask). Before installing, check the publisher, download count, and publish date — originals have millions of installs."
+  },
+  {
+    "id": "qa_059",
+    "topic": "security",
+    "question_pl": "Czy mam włączyć 2FA na giełdzie krypto?",
+    "question_en": "Should I enable 2FA on a crypto exchange?",
+    "answer_pl": "Tak, zdecydowanie — 2FA (uwierzytelnianie dwuskładnikowe) znacznie zwiększa bezpieczeństwo konta giełdowego. Używaj aplikacji typu Google Authenticator lub Authy, a NIE SMS-ów — karty SIM można 'sklonować' (tzw. SIM swap attack). 2FA aplikacją generuje jednorazowe kody lokalnie na telefonie, niezależne od operatora telekomunikacyjnego.",
+    "answer_en": "Yes, absolutely — 2FA (two-factor authentication) significantly improves exchange account security. Use an app like Google Authenticator or Authy, NOT SMS — SIM cards can be 'cloned' (SIM swap attack). An authenticator app generates one-time codes locally on your phone, independent of your mobile carrier.",
+    "level": 1,
+    "keywords_pl": [
+      "2fa",
+      "uwierzytelnianie",
+      "authenticator",
+      "ochrona konta"
+    ],
+    "keywords_en": [
+      "2fa",
+      "two factor",
+      "authenticator",
+      "account security"
+    ],
+    "safety_note_pl": "UWAGA: Zapisz 'kody zapasowe' 2FA na papierze przy konfiguracji — jeśli zgubisz telefon bez tych kodów, możesz stracić dostęp do konta giełdowego, nawet mając hasło. To drobnostka, która ratuje z kłopotu.",
+    "safety_note_en": "WARNING: Write down the '2FA backup codes' on paper during setup — if you lose your phone without them, you could lose access to the exchange account even with your password. A small step that saves a big headache."
+  },
+  {
+    "id": "qa_060",
+    "topic": "security",
+    "question_pl": "Czy mogę przeszkodzić oszustowi, gdy już ukradł moją frazę?",
+    "question_en": "Can I stop a scammer who already has my seed phrase?",
+    "answer_pl": "Praktycznie nie. Od momentu, kiedy oszust ma frazę, ma pełną kontrolę nad Twoim portfelem na każdej sieci blockchain. Jedyne, co możesz zrobić, to szybciej niż on — wyjąć wszystko, co się da, do zupełnie nowego portfela z nową frazą. Jeśli w portfelu są 'zablokowane' aktywa (staking z lockupem, LP pozycje), rozważ natychmiastowe odblokowanie, nawet z kosztami. Liczą się minuty.",
+    "answer_en": "Practically no. From the moment a scammer has your phrase, they have full control over your wallet on every blockchain. The only thing you can do is beat them to it — withdraw everything you can to a brand new wallet with a new phrase. If the wallet holds 'locked' assets (locked staking, LP positions), consider unlocking immediately, even at a cost. Minutes matter.",
+    "level": 2,
+    "keywords_pl": [
+      "oszust ma fraze",
+      "ratowanie srodkow",
+      "wyciek frazy"
+    ],
+    "keywords_en": [
+      "scammer has phrase",
+      "save funds",
+      "phrase leaked"
+    ],
+    "safety_note_pl": "UWAGA: Nie wahaj się użyć awaryjnych metod, nawet jeśli są drogie — zapłacenie 500 zł w opłatach żeby uratować 5000 zł to dobry interes. Priorytety: najpierw stablecoiny i najcenniejsze tokeny, potem NFT, na końcu drobne pozostałości.",
+    "safety_note_en": "WARNING: Don't hesitate to use emergency methods, even if costly — paying 500 PLN in fees to save 5000 PLN is a good trade. Priorities: stablecoins and the most valuable tokens first, then NFTs, then small leftovers last."
+  },
+  {
+    "id": "qa_061",
+    "topic": "stablecoins",
+    "question_pl": "Dlaczego USDC zawsze jest warte 1 dolara?",
+    "question_en": "Why is USDC always worth $1?",
+    "answer_pl": "Bo firma Circle, która emituje USDC, trzyma w banku jednego prawdziwego dolara za każde USDC w obiegu. Ta relacja 1:1 jest 'gwarantowana' przez mechanizm wykupu — w każdej chwili możesz zwrócić USDC do Circle i dostać dolara. Dzięki temu rynek utrzymuje cenę blisko 1 USD, bo gdyby USDC kosztowało 0.95 USD, ktoś by je skupił i wymienił z zyskiem.",
+    "answer_en": "Because Circle, the company that issues USDC, keeps one real dollar in a bank for every USDC in circulation. This 1:1 relationship is 'guaranteed' by a redemption mechanism — at any time you can return USDC to Circle and receive a dollar. This keeps the market price near 1 USD, because if USDC fell to 0.95 USD, someone would buy them up and redeem at a profit.",
+    "level": 1,
+    "keywords_pl": [
+      "usdc 1 dolar",
+      "peg",
+      "stabilnosc usdc"
+    ],
+    "keywords_en": [
+      "usdc 1 dollar",
+      "peg",
+      "usdc stable"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_062",
+    "topic": "stablecoins",
+    "question_pl": "Czy USDC jest rzeczywiście pokryte dolarami?",
+    "question_en": "Is USDC really backed by real dollars?",
+    "answer_pl": "Tak — Circle publikuje co miesiąc raport audytorski (od firmy Deloitte) pokazujący, że 100% USDC w obiegu ma pokrycie w realnych aktywach. Większość to amerykańskie obligacje skarbowe (najbezpieczniejsze aktywo finansowe świata), reszta to gotówka w bankach. Dzięki temu USDC uchodzi za najbardziej transparentny stablecoin na rynku — w przeciwieństwie do niektórych konkurentów, których rezerwy są mniej jasne.",
+    "answer_en": "Yes — Circle publishes a monthly audit report (from Deloitte) showing that 100% of USDC in circulation is backed by real assets. Most of it is US Treasury bonds (the safest financial asset in the world), the rest is cash in banks. This makes USDC widely regarded as the most transparent stablecoin on the market — unlike some competitors whose reserves are less clear.",
+    "level": 1,
+    "keywords_pl": [
+      "pokrycie usdc",
+      "rezerwy circle",
+      "backing usdc"
+    ],
+    "keywords_en": [
+      "usdc backing",
+      "circle reserves",
+      "usdc backed"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_063",
+    "topic": "stablecoins",
+    "question_pl": "Jaka jest różnica między USDC a USDT?",
+    "question_en": "What is the difference between USDC and USDT?",
+    "answer_pl": "Oba są stablecoinami 1:1 z dolarem, ale różnią się emitentami i transparentnością. USDC emituje Circle — amerykańska firma z comiesięcznymi audytami, regulowana przez USA i UE (MiCA). USDT emituje Tether — większy (większa kapitalizacja rynkowa, szerszy zasięg na giełdach), ale z historycznymi kontrowersjami wokół przejrzystości rezerw. Dla początkujących USDC uchodzi za 'bezpieczniejszy wybór'.",
+    "answer_en": "Both are 1:1 dollar-pegged stablecoins, but they differ in issuer and transparency. USDC is issued by Circle — an American firm with monthly audits, regulated by the US and EU (MiCA). USDT is issued by Tether — bigger (larger market cap, wider exchange coverage), but with historical controversies around reserve transparency. For beginners, USDC is considered the 'safer choice'.",
+    "level": 1,
+    "keywords_pl": [
+      "usdc usdt",
+      "roznica stablecoinow",
+      "tether vs circle"
+    ],
+    "keywords_en": [
+      "usdc vs usdt",
+      "stablecoin difference",
+      "tether vs circle"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_064",
+    "topic": "stablecoins",
+    "question_pl": "Czy USDC może stracić wartość?",
+    "question_en": "Can USDC lose its value?",
+    "answer_pl": "Teoretycznie tak, w praktyce bardzo rzadko. W marcu 2023 roku USDC na chwilę spadł do 0.88 USD, kiedy upadł Silicon Valley Bank (gdzie Circle trzymało część rezerw). Cena wróciła do 1 USD w ciągu kilku dni. Ryzyka to: bankructwo Circle, masowy run na rezerwy, lub zmiany regulacyjne. Dla porównania z Bitcoinem: USDC ma wahania cenowe rzędu 1-2% w kryzysie, BTC potrafi spaść o 50%.",
+    "answer_en": "Theoretically yes, in practice very rarely. In March 2023 USDC briefly dropped to 0.88 USD when Silicon Valley Bank (where Circle held some reserves) collapsed. The price returned to 1 USD within days. The risks are: Circle bankruptcy, a mass run on reserves, or regulatory changes. Compared to Bitcoin: USDC swings 1-2% in a crisis, BTC can drop 50%.",
+    "level": 2,
+    "keywords_pl": [
+      "usdc stracic wartosc",
+      "depeg",
+      "ryzyko usdc"
+    ],
+    "keywords_en": [
+      "usdc lose value",
+      "depeg",
+      "usdc risk"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_065",
+    "topic": "stablecoins",
+    "question_pl": "Czy bezpiecznie jest trzymać oszczędności w USDC?",
+    "question_en": "Is it safe to keep savings in USDC?",
+    "answer_pl": "Można, ale pamiętaj o różnicach w porównaniu z bankiem. W banku masz Bankowy Fundusz Gwarancyjny do 100 000 euro. USDC nie ma takiej gwarancji — jeśli Circle zbankrutuje, możesz stracić środki. Wiele osób trzyma część oszczędności w USDC (szczególnie gdy chcą zarabiać 4-5% APY w Aave, czego w banku nie dostaną), a część w banku dla bezpieczeństwa. Dywersyfikacja to klucz.",
+    "answer_en": "You can, but keep in mind the differences from a bank. Banks have deposit insurance up to 100,000 EUR. USDC doesn't have that guarantee — if Circle goes bankrupt, you could lose your funds. Many people keep part of their savings in USDC (especially when they want to earn 4-5% APY in Aave, which a bank won't give them), and part at a bank for safety. Diversification is key.",
+    "level": 1,
+    "keywords_pl": [
+      "oszczednosci usdc",
+      "trzymac usdc",
+      "usdc a bank"
+    ],
+    "keywords_en": [
+      "usdc savings",
+      "hold usdc",
+      "usdc vs bank"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_066",
+    "topic": "stablecoins",
+    "question_pl": "Jak kupić USDC w Polsce?",
+    "question_en": "How do I get USDC in Poland?",
+    "answer_pl": "Najłatwiej przez polską giełdę — Zondacrypto, Kanga lub Bitget. Zakładasz konto, robisz weryfikację tożsamości (dowód osobisty), przelewasz złotówki ze swojego banku, kupujesz USDC i wypłacasz do portfela. Proces trwa zwykle 1-2 dni za pierwszym razem (weryfikacja), potem już w kilka minut. Alternatywnie MoonPay lub Ramp Network pozwalają kupić USDC bezpośrednio w aplikacji portfela.",
+    "answer_en": "The easiest way is through a Polish exchange — Zondacrypto, Kanga, or Bitget. You open an account, complete identity verification (ID card), transfer PLN from your bank, buy USDC, and withdraw to your wallet. The process usually takes 1-2 days the first time (verification), then just a few minutes. Alternatively, MoonPay or Ramp Network let you buy USDC directly inside a wallet app.",
+    "level": 1,
+    "keywords_pl": [
+      "kupic usdc",
+      "usdc w polsce",
+      "zondacrypto",
+      "kanga"
+    ],
+    "keywords_en": [
+      "buy usdc",
+      "usdc poland",
+      "zondacrypto",
+      "kanga"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_067",
+    "topic": "stablecoins",
+    "question_pl": "Czy mogę zamienić USDC z powrotem na złotówki?",
+    "question_en": "Can I convert USDC back to PLN?",
+    "answer_pl": "Tak, ten sam proces, ale odwrotnie. Wysyłasz USDC z portfela na giełdę (Zondacrypto, Kanga), sprzedajesz za złotówki i robisz przelew na swoje konto bankowe. Pieniądze są zwykle na koncie w 1-2 godziny (ekspresowo) lub następnego dnia roboczego. Pamiętaj o rozliczeniu podatku — jeśli sprzedajesz USDC drożej niż kupowałeś, musisz wykazać zysk w PIT-38 (19%).",
+    "answer_en": "Yes, it's the same process, reversed. You send USDC from your wallet to an exchange (Zondacrypto, Kanga), sell for PLN, and transfer to your bank account. The money is usually in your account within 1-2 hours (express) or the next business day. Remember to declare tax — if you sell USDC higher than you bought, you need to report the gain on PIT-38 (19%).",
+    "level": 1,
+    "keywords_pl": [
+      "usdc na pln",
+      "wyplata na konto",
+      "zamiana zlotowki"
+    ],
+    "keywords_en": [
+      "usdc to pln",
+      "withdraw to bank",
+      "convert to fiat"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_068",
+    "topic": "stablecoins",
+    "question_pl": "Co to jest Circle?",
+    "question_en": "What is Circle?",
+    "answer_pl": "Circle to amerykańska firma założona w 2013 roku, która emituje USDC — jeden z największych stablecoinów na świecie. Siedziba jest w Bostonie, firma jest regulowana przez amerykańskie organy nadzoru finansowego i posiada licencje w USA, UE (zgodnie z MiCA) i w innych krajach. Circle współpracuje z BlackRock (największy fundusz inwestycyjny świata) jako zarządcą większości rezerw USDC.",
+    "answer_en": "Circle is an American company founded in 2013 that issues USDC — one of the largest stablecoins in the world. Headquartered in Boston, it's regulated by US financial authorities and licensed in the US, EU (under MiCA), and other jurisdictions. Circle works with BlackRock (the world's largest investment fund) as the manager of most USDC reserves.",
+    "level": 2,
+    "keywords_pl": [
+      "circle",
+      "emitent usdc",
+      "kto tworzy usdc"
+    ],
+    "keywords_en": [
+      "circle",
+      "usdc issuer",
+      "who makes usdc"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_069",
+    "topic": "stablecoins",
+    "question_pl": "Czy USDC jest regulowany?",
+    "question_en": "Is USDC regulated?",
+    "answer_pl": "Tak, USDC jest jednym z najlepiej regulowanych stablecoinów. W USA Circle ma licencje stanowe jako 'money transmitter', a od 2024 roku USDC jest zgodny z unijnym rozporządzeniem MiCA (Markets in Crypto-Assets), co pozwala na jego legalne używanie w całej UE. Circle jest również zarejestrowana jako 'e-money institution' we Francji, co jest jednym z najściślejszych reżimów w Europie.",
+    "answer_en": "Yes, USDC is one of the most regulated stablecoins. In the US, Circle holds state 'money transmitter' licenses, and since 2024 USDC is compliant with the EU's MiCA (Markets in Crypto-Assets) regulation, allowing legal use across the EU. Circle is also registered as an 'e-money institution' in France, which is one of the strictest regimes in Europe.",
+    "level": 2,
+    "keywords_pl": [
+      "regulacja usdc",
+      "mica",
+      "legalnosc usdc"
+    ],
+    "keywords_en": [
+      "usdc regulated",
+      "mica",
+      "usdc legal"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_070",
+    "topic": "stablecoins",
+    "question_pl": "Jakie są inne stablecoiny oprócz USDC?",
+    "question_en": "What other stablecoins are there besides USDC?",
+    "answer_pl": "Najpopularniejsze: (1) USDT (Tether) — największy, najpopularniejszy, ale mniej przejrzysty; (2) DAI — zdecentralizowany, zarządzany przez protokół MakerDAO zamiast jednej firmy; (3) EURC — 'cyfrowe euro' od Circle; (4) sDAI — DAI z wbudowanym yieldem (~5% APY); (5) USDe — syntetyczny stablecoin od Ethena, z yieldem z funding rates. Każdy ma inny profil ryzyka i różne zastosowania w DeFi.",
+    "answer_en": "The most popular: (1) USDT (Tether) — biggest, most popular, but less transparent; (2) DAI — decentralised, managed by the MakerDAO protocol instead of a single company; (3) EURC — 'digital euro' from Circle; (4) sDAI — DAI with built-in yield (~5% APY); (5) USDe — a synthetic stablecoin from Ethena, yielding from funding rates. Each has a different risk profile and different DeFi use cases.",
+    "level": 2,
+    "keywords_pl": [
+      "stablecoiny",
+      "usdt dai",
+      "inne stablecoiny"
+    ],
+    "keywords_en": [
+      "stablecoins",
+      "usdt dai",
+      "other stablecoins"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_071",
+    "topic": "stablecoins",
+    "question_pl": "Czy stablecoiny przynoszą zyski same z siebie?",
+    "question_en": "Do stablecoins earn interest by themselves?",
+    "answer_pl": "Nie — sam USDC w portfelu jest jak gotówka, nie generuje zysku. Żeby zarabiać, musisz wpłacić USDC do protokołu DeFi (Aave, Compound, Morpho), który generuje yield, albo wybrać stablecoin z wbudowanym yieldem (sDAI, sUSDe). To jak porównanie: złotówki pod poduszką vs lokata bankowa — te same pieniądze, ale jedna 'pracuje', druga nie.",
+    "answer_en": "No — USDC sitting in your wallet is like cash, it generates no yield. To earn, you must deposit USDC into a DeFi protocol (Aave, Compound, Morpho) that generates yield, or choose a stablecoin with built-in yield (sDAI, sUSDe). It's like comparing złoty under a mattress vs a bank deposit — same money, but one 'works', the other doesn't.",
+    "level": 1,
+    "keywords_pl": [
+      "zysk ze stablecoinow",
+      "odsetki usdc",
+      "zarabianie stablecoin"
+    ],
+    "keywords_en": [
+      "stablecoin yield",
+      "usdc interest",
+      "earning stablecoin"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_072",
+    "topic": "stablecoins",
+    "question_pl": "Czy USDC i USDT są wymienne?",
+    "question_en": "Are USDC and USDT interchangeable?",
+    "answer_pl": "W teorii oba są warte 1 dolara, więc handlowo są prawie wymienne. W praktyce są to różne tokeny — musisz je wymienić przez giełdę lub DEX (np. Uniswap, Curve). Kurs wymiany jest blisko 1:1, ale może być małe odchylenie (np. 1 USDC = 0.998 USDT). Dla większych kwot użyj Curve — specjalizuje się w stablecoinach i daje najlepszy kurs.",
+    "answer_en": "In theory both are worth 1 dollar, so commercially they're nearly interchangeable. In practice they're different tokens — you need to swap them via an exchange or DEX (e.g. Uniswap, Curve). The swap rate is close to 1:1, but there can be small deviation (e.g. 1 USDC = 0.998 USDT). For larger amounts use Curve — it specialises in stablecoins and offers the best rate.",
+    "level": 1,
+    "keywords_pl": [
+      "wymiana usdc usdt",
+      "zamiana stablecoinow",
+      "curve"
+    ],
+    "keywords_en": [
+      "swap usdc usdt",
+      "convert stablecoins",
+      "curve"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_073",
+    "topic": "stablecoins",
+    "question_pl": "Czy mogę kupić euro w krypto (EURC)?",
+    "question_en": "Can I buy a digital euro (EURC)?",
+    "answer_pl": "Tak, EURC to 'cyfrowe euro' od Circle — ten sam model co USDC, ale dla euro. Dostępne na Ethereum, Base, Solana i innych sieciach. Płynność jest mniejsza niż USDC (mniej par handlowych, niższe TVL w DeFi), ale wygodne, jeśli chcesz uniknąć ryzyka kursu USD/EUR. Dla polskich użytkowników handlujących głównie z UE, EURC może być lepszym wyborem niż USDC.",
+    "answer_en": "Yes, EURC is the 'digital euro' from Circle — same model as USDC but for euro. Available on Ethereum, Base, Solana, and other networks. Liquidity is lower than USDC (fewer trading pairs, smaller DeFi TVL), but convenient if you want to avoid USD/EUR exchange rate risk. For Polish users trading mainly within the EU, EURC may be a better fit than USDC.",
+    "level": 2,
+    "keywords_pl": [
+      "eurc",
+      "cyfrowe euro",
+      "stablecoin euro"
+    ],
+    "keywords_en": [
+      "eurc",
+      "digital euro",
+      "euro stablecoin"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_074",
+    "topic": "stablecoins",
+    "question_pl": "Czy USDC działa na każdym blockchainie?",
+    "question_en": "Does USDC work on every blockchain?",
+    "answer_pl": "Nie na każdym, ale na największych — Ethereum, Solana, Polygon, Arbitrum, Base, Optimism, Avalanche i kilku innych. Ważne: USDC na Ethereum to inny token niż USDC na Polygon, mimo tej samej nazwy. Żeby przenieść USDC między sieciami, użyj mostu (bridge) lub CCTP (oficjalnego mechanizmu Circle). Nigdy nie wysyłaj USDC z Ethereum na adres Solana — to różne sieci, pieniądze przepadną.",
+    "answer_en": "Not on every chain, but on the major ones — Ethereum, Solana, Polygon, Arbitrum, Base, Optimism, Avalanche, and several others. Important: USDC on Ethereum is a different token from USDC on Polygon, despite the same name. To move USDC between chains, use a bridge or CCTP (Circle's official mechanism). Never send USDC from Ethereum to a Solana address — different networks, funds will be lost.",
+    "level": 2,
+    "keywords_pl": [
+      "usdc sieci",
+      "usdc ethereum polygon",
+      "multi-chain usdc"
+    ],
+    "keywords_en": [
+      "usdc chains",
+      "usdc ethereum polygon",
+      "multi-chain usdc"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_075",
+    "topic": "stablecoins",
+    "question_pl": "Czy mogę otrzymywać pensję w USDC?",
+    "question_en": "Can I receive salary in USDC?",
+    "answer_pl": "Teoretycznie tak, jeśli pracodawca się zgodzi — rozwiązania jak Request Finance, Rise, Deel Crypto pozwalają wypłacać pensje w USDC. W praktyce w Polsce jest to rzadkie i rodzi komplikacje podatkowe (traktowane jako dochód w walucie obcej, z przeliczeniem na PLN w dniu wypłaty). Dla freelancerów pracujących dla zagranicznych klientów USDC bywa wygodnym rozwiązaniem — szybsze i tańsze niż SWIFT.",
+    "answer_en": "Theoretically yes, if the employer agrees — solutions like Request Finance, Rise, Deel Crypto allow salary payouts in USDC. In practice it's rare in Poland and creates tax complications (treated as foreign currency income with PLN conversion on the payment date). For freelancers working with foreign clients, USDC can be a convenient solution — faster and cheaper than SWIFT.",
+    "level": 2,
+    "keywords_pl": [
+      "pensja usdc",
+      "wynagrodzenie krypto",
+      "freelancer usdc"
+    ],
+    "keywords_en": [
+      "usdc salary",
+      "paid in usdc",
+      "freelancer usdc"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_076",
+    "topic": "getting_started",
+    "question_pl": "Jak kupić moje pierwsze krypto w Polsce?",
+    "question_en": "How do I buy my first crypto in Poland?",
+    "answer_pl": "Najprostsza ścieżka: (1) Załóż konto na polskiej giełdzie (Zondacrypto lub Kanga), (2) Przejdź weryfikację tożsamości (dowód osobisty, selfie); (3) Zrób przelew bankowy ze swojego banku (BLIK lub zwykły przelew); (4) Kup USDC lub Bitcoin za niewielką kwotę na start (np. 100-200 zł); (5) Zainstaluj portfel (MetaMask) i wypłać krypto na własny adres. Cały proces za pierwszym razem zajmuje 1-2 dni.",
+    "answer_en": "The simplest path: (1) Open an account on a Polish exchange (Zondacrypto or Kanga); (2) Complete identity verification (ID card, selfie); (3) Make a bank transfer from your bank (BLIK or regular transfer); (4) Buy USDC or Bitcoin with a small starter amount (e.g. 100-200 PLN); (5) Install a wallet (MetaMask) and withdraw crypto to your own address. The whole process takes 1-2 days the first time.",
+    "level": 1,
+    "keywords_pl": [
+      "pierwsze krypto",
+      "jak zaczac",
+      "kupic krypto polska"
+    ],
+    "keywords_en": [
+      "first crypto",
+      "how to start",
+      "buy crypto poland"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_077",
+    "topic": "getting_started",
+    "question_pl": "Jaka jest minimalna kwota, którą mogę zainwestować?",
+    "question_en": "What is the minimum amount I can invest?",
+    "answer_pl": "Technicznie bardzo mało — nawet 50 zł. Większość giełd ma minimum w okolicach 20-50 zł na zakup. Ale dla używania DeFi praktyczne minimum to 200-500 zł w USDC plus niewielka ilość natywnego tokena sieci (30-50 zł w ETH lub MATIC) na opłaty. Poniżej tych kwot opłaty sieciowe zjadają większość zysków. Dla realnego zarabiania sensowne są kwoty od 1000 zł w górę.",
+    "answer_en": "Technically very little — even 50 PLN. Most exchanges have minimums around 20-50 PLN per purchase. But for actually using DeFi, the practical minimum is 200-500 PLN in USDC plus a small amount of the network's native token (30-50 PLN in ETH or MATIC) for fees. Below those amounts, network fees eat most of the gains. For meaningful earnings, amounts from 1000 PLN upward make more sense.",
+    "level": 1,
+    "keywords_pl": [
+      "minimalna kwota",
+      "ile zainwestowac",
+      "male kwoty krypto"
+    ],
+    "keywords_en": [
+      "minimum amount",
+      "how much invest",
+      "small amounts crypto"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_078",
+    "topic": "getting_started",
+    "question_pl": "Czy muszę płacić podatek od krypto w Polsce?",
+    "question_en": "Do I have to pay taxes on crypto in Poland?",
+    "answer_pl": "Tak — zyski z krypto są opodatkowane w Polsce stawką 19% jako przychód z kapitałów pieniężnych. Rozliczasz je w PIT-38 raz w roku. Opodatkowanie dotyczy: zakup-sprzedaż (jeśli sprzedasz drożej niż kupiłeś), odsetki z DeFi, nagrody ze stakingu. Wymiana krypto na krypto (np. USDC na ETH) też może być opodatkowana. Przy większych kwotach użyj narzędzi typu Koinly lub skonsultuj się z doradcą podatkowym.",
+    "answer_en": "Yes — crypto profits are taxed in Poland at 19% as capital income. You report them annually on PIT-38. Taxation applies to: buy-sell (if you sell higher than you bought), DeFi interest, staking rewards. Crypto-to-crypto swaps (e.g. USDC to ETH) may also be taxable. For larger amounts, use tools like Koinly or consult a tax advisor.",
+    "level": 1,
+    "keywords_pl": [
+      "podatek krypto",
+      "pit krypto",
+      "podatek bitcoin polska"
+    ],
+    "keywords_en": [
+      "crypto tax",
+      "poland tax",
+      "bitcoin tax poland"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_079",
+    "topic": "getting_started",
+    "question_pl": "Czy krypto jest legalne w Polsce?",
+    "question_en": "Is crypto legal in Poland?",
+    "answer_pl": "Tak, krypto jest w pełni legalne w Polsce i całej Unii Europejskiej. Od 2024 roku obowiązuje rozporządzenie MiCA, które reguluje rynek krypto w UE. Giełdy krypto działające w Polsce muszą być zarejestrowane w KNF jako Virtual Asset Service Provider. Użytkownicy mogą swobodnie kupować, sprzedawać, trzymać i korzystać z krypto — wystarczy rozliczać podatki.",
+    "answer_en": "Yes, crypto is fully legal in Poland and across the European Union. Since 2024, the MiCA regulation governs the EU crypto market. Crypto exchanges operating in Poland must be registered with the KNF as Virtual Asset Service Providers. Users are free to buy, sell, hold, and use crypto — just remember to pay taxes.",
+    "level": 1,
+    "keywords_pl": [
+      "legalne krypto",
+      "krypto w polsce",
+      "prawo krypto"
+    ],
+    "keywords_en": [
+      "crypto legal",
+      "crypto poland",
+      "crypto law"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_080",
+    "topic": "getting_started",
+    "question_pl": "Jakiej aplikacji użyć na początek?",
+    "question_en": "What app should I use to start?",
+    "answer_pl": "Podstawowy zestaw to: (1) Giełda — Zondacrypto lub Kanga do kupna za złotówki; (2) Portfel — MetaMask (najpopularniejszy) lub Rabby (bezpieczniejszy, pokazuje skutki transakcji); (3) Eksplorator — Etherscan do sprawdzania transakcji. Na start wystarczy. Dla większych kwot dodaj Ledger (portfel sprzętowy). Unikaj instalowania wielu aplikacji 'na zapas' — mniej to bezpieczniej.",
+    "answer_en": "The basic kit is: (1) Exchange — Zondacrypto or Kanga for buying with PLN; (2) Wallet — MetaMask (most popular) or Rabby (safer, shows transaction consequences); (3) Explorer — Etherscan for checking transactions. That's enough to start. For larger amounts, add a Ledger (hardware wallet). Avoid installing many apps 'just in case' — less is safer.",
+    "level": 1,
+    "keywords_pl": [
+      "aplikacje krypto",
+      "pierwsza aplikacja",
+      "metamask zondacrypto"
+    ],
+    "keywords_en": [
+      "crypto apps",
+      "first app",
+      "metamask zondacrypto"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_081",
+    "topic": "getting_started",
+    "question_pl": "Jak krok po kroku założyć pierwszy portfel?",
+    "question_en": "How do I set up my first wallet step by step?",
+    "answer_pl": "(1) Wejdź na oficjalną stronę metamask.io (wpisz ręcznie, nie z Google!); (2) Pobierz rozszerzenie do przeglądarki lub aplikację mobilną; (3) Kliknij 'Create new wallet', ustaw hasło; (4) Zapisz 12 słów frazy odzyskiwania na PAPIERZE (nie w telefonie, nie w mailu); (5) Potwierdź frazę w aplikacji; (6) Wyślij sobie bardzo małą kwotę testową, żeby sprawdzić, że działa. Zabezpiecz frazę jak najważniejszy dokument.",
+    "answer_en": "(1) Go to the official metamask.io (type manually, not from Google!); (2) Download the browser extension or mobile app; (3) Click 'Create new wallet', set a password; (4) Write down the 12-word seed phrase on PAPER (not on your phone, not in email); (5) Confirm the phrase in the app; (6) Send yourself a very small test amount to verify it works. Secure the phrase like your most important document.",
+    "level": 1,
+    "keywords_pl": [
+      "zalozenie portfela",
+      "krok po kroku",
+      "setup metamask"
+    ],
+    "keywords_en": [
+      "create wallet",
+      "step by step",
+      "metamask setup"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_082",
+    "topic": "getting_started",
+    "question_pl": "Powinienem zacząć od Bitcoina, czy czegoś innego?",
+    "question_en": "Should I start with Bitcoin or something else?",
+    "answer_pl": "Zależy od celu. Jeśli chcesz 'inwestycję długoterminową' podobną do złota — Bitcoin. Jeśli chcesz używać DeFi, zarabiać odsetki, wymieniać waluty bez banku — USDC (stablecoin). Dla większości początkujących najsensowniejsza ścieżka to: zacznij od małej kwoty w USDC (żeby zrozumieć mechanikę bez ryzyka cenowego), potem decyduj, czy interesuje Cię Bitcoin jako inwestycja.",
+    "answer_en": "It depends on the goal. If you want a 'long-term investment' similar to gold — Bitcoin. If you want to use DeFi, earn interest, swap currencies without a bank — USDC (stablecoin). For most beginners the most sensible path is: start with a small amount in USDC (to learn the mechanics without price risk), then decide whether Bitcoin as an investment interests you.",
+    "level": 1,
+    "keywords_pl": [
+      "bitcoin czy usdc",
+      "od czego zaczac",
+      "pierwszy zakup"
+    ],
+    "keywords_en": [
+      "bitcoin or usdc",
+      "where to start",
+      "first purchase"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_083",
+    "topic": "getting_started",
+    "question_pl": "Jaki jest najbezpieczniejszy sposób zacząć z DeFi?",
+    "question_en": "What is the safest way to start with DeFi?",
+    "answer_pl": "Ścieżka dla ostrożnych: (1) Kup 200-500 zł USDC na Zondacrypto; (2) Wypłać na MetaMask, na sieć Polygon (najniższe opłaty); (3) Wejdź na app.aave.com, połącz portfel; (4) Zdeponuj USDC — zaczniesz zarabiać ~4% APY od razu; (5) Monitoruj przez 2-4 tygodnie, zanim zwiększysz kwotę. To najprostsza 'pierwsza ścieżka' DeFi — Aave jest sprawdzony od 2020 roku, Polygon ma znikome opłaty, USDC jest stabilny.",
+    "answer_en": "The careful path: (1) Buy 200-500 PLN of USDC on Zondacrypto; (2) Withdraw to MetaMask on the Polygon network (lowest fees); (3) Go to app.aave.com, connect wallet; (4) Deposit USDC — you start earning ~4% APY immediately; (5) Monitor for 2-4 weeks before increasing the amount. It's the simplest 'first path' in DeFi — Aave has a proven track record since 2020, Polygon has tiny fees, USDC is stable.",
+    "level": 1,
+    "keywords_pl": [
+      "bezpieczne defi",
+      "pierwsza inwestycja defi",
+      "aave start"
+    ],
+    "keywords_en": [
+      "safe defi",
+      "first defi investment",
+      "aave start"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_084",
+    "topic": "getting_started",
+    "question_pl": "Jak zamienić złotówki na krypto?",
+    "question_en": "How do I convert PLN to crypto?",
+    "answer_pl": "Najszybciej przez polską giełdę — Zondacrypto, Kanga lub Bitget. Po weryfikacji robisz przelew BLIK-iem (natychmiast) lub zwykłym przelewem bankowym (kilka godzin). Kupujesz krypto za złotówki, potem wypłacasz na własny portfel. Alternatywnie — MoonPay lub Ramp Network bezpośrednio w aplikacji portfela (wygodniejsze, ale opłaty wyższe, około 3-5%).",
+    "answer_en": "Fastest via a Polish exchange — Zondacrypto, Kanga, or Bitget. After verification, you transfer via BLIK (instant) or a regular bank transfer (a few hours). You buy crypto for PLN, then withdraw to your own wallet. Alternatively — MoonPay or Ramp Network directly inside a wallet app (more convenient, but higher fees, around 3-5%).",
+    "level": 1,
+    "keywords_pl": [
+      "pln na krypto",
+      "zamiana zlotowki",
+      "przelew na gielde"
+    ],
+    "keywords_en": [
+      "pln to crypto",
+      "convert polish",
+      "bank to exchange"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_085",
+    "topic": "getting_started",
+    "question_pl": "Czy potrzebuję księgowego do krypto?",
+    "question_en": "Do I need an accountant for crypto?",
+    "answer_pl": "Dla małych kwot i prostych operacji (np. kup i trzymaj kilka tysięcy zł) — raczej nie. Samodzielnie rozliczysz się w PIT-38. Dla większych kwot, częstych transakcji, DeFi z wieloma protokołami, albo stakingu — tak, warto skonsultować się z księgowym specjalizującym się w krypto. Narzędzia typu Koinly lub CoinTracker agregują historię transakcji i generują raport podatkowy, który możesz przekazać księgowemu.",
+    "answer_en": "For small amounts and simple operations (e.g. buy and hold a few thousand PLN) — probably not. You can self-file on PIT-38. For larger amounts, frequent transactions, DeFi across many protocols, or staking — yes, consult an accountant specialising in crypto. Tools like Koinly or CoinTracker aggregate transaction history and generate tax reports you can hand to an accountant.",
+    "level": 1,
+    "keywords_pl": [
+      "ksiegowy krypto",
+      "rozliczenie krypto",
+      "doradca podatkowy"
+    ],
+    "keywords_en": [
+      "crypto accountant",
+      "crypto tax filing",
+      "tax advisor"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_086",
+    "topic": "getting_started",
+    "question_pl": "Czy mogę inwestować w krypto regularnie co miesiąc?",
+    "question_en": "Can I invest in crypto regularly every month?",
+    "answer_pl": "Tak — ta strategia nazywa się DCA (Dollar Cost Averaging) i jest popularna wśród osób długoterminowo wierzących w krypto. Kupujesz stałą kwotę (np. 200 zł) co tydzień lub miesiąc, niezależnie od ceny. Dzięki temu 'uśredniasz' cenę wejścia i unikasz próby zgadywania najlepszego momentu. Zondacrypto i inne giełdy mają automatyczne zakupy cykliczne, które ułatwiają DCA.",
+    "answer_en": "Yes — this strategy is called DCA (Dollar Cost Averaging) and is popular among long-term crypto believers. You buy a fixed amount (e.g. 200 PLN) weekly or monthly, regardless of price. This 'averages' your entry price and avoids trying to time the market. Zondacrypto and other exchanges have automated recurring purchases that make DCA easy.",
+    "level": 1,
+    "keywords_pl": [
+      "dca",
+      "regularne zakupy",
+      "systematyczne inwestowanie"
+    ],
+    "keywords_en": [
+      "dca",
+      "recurring buys",
+      "systematic investing"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_087",
+    "topic": "getting_started",
+    "question_pl": "Ile czasu zajmuje nauka krypto dla początkującego?",
+    "question_en": "How long does it take for a beginner to learn crypto?",
+    "answer_pl": "Podstawy (kupno, portfel, wysyłanie) można opanować w 1-2 godziny. Komfort z DeFi (lending, DEX-y, pule płynności) przychodzi po 1-2 miesiącach regularnego używania. Pełne zrozumienie zaawansowanych konceptów (impermanent loss, leveraged staking, RWA) zajmuje 6-12 miesięcy. Klucz to uczyć się przy małych kwotach — każda pomyłka przy 50 zł to tania lekcja, ta sama przy 5000 zł jest bolesna.",
+    "answer_en": "The basics (buying, wallet, sending) can be mastered in 1-2 hours. Comfort with DeFi (lending, DEXes, liquidity pools) comes after 1-2 months of regular use. Full understanding of advanced concepts (impermanent loss, leveraged staking, RWA) takes 6-12 months. The key is learning with small amounts — a mistake with 50 PLN is a cheap lesson, the same with 5000 PLN is painful.",
+    "level": 1,
+    "keywords_pl": [
+      "nauka krypto",
+      "ile czasu",
+      "opanowanie defi"
+    ],
+    "keywords_en": [
+      "learning crypto",
+      "how long",
+      "mastering defi"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_088",
+    "topic": "getting_started",
+    "question_pl": "Co to jest BLIK na giełdzie krypto?",
+    "question_en": "What is BLIK on a crypto exchange?",
+    "answer_pl": "BLIK to polska metoda natychmiastowych płatności, która na giełdach krypto (Zondacrypto, Kanga) pozwala doładować konto w 5 sekund — zamiast czekać na zwykły przelew 1-2 godziny. Generujesz 6-cyfrowy kod w aplikacji swojego banku, wpisujesz na giełdzie, zatwierdzasz w banku, i gotowe. Opłata BLIK jest zwykle mała (kilka groszy do kilku złotych). Idealne dla małych, częstych zakupów.",
+    "answer_en": "BLIK is a Polish instant payment method that, on crypto exchanges (Zondacrypto, Kanga), lets you top up your account in 5 seconds — instead of waiting 1-2 hours for a regular transfer. You generate a 6-digit code in your bank's app, type it on the exchange, confirm in your bank, and done. The BLIK fee is usually small (a few cents to a few złoty). Ideal for small, frequent purchases.",
+    "level": 1,
+    "keywords_pl": [
+      "blik",
+      "platnosc blik",
+      "doladowanie gieldy"
+    ],
+    "keywords_en": [
+      "blik",
+      "blik payment",
+      "exchange deposit"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_089",
+    "topic": "getting_started",
+    "question_pl": "Czy muszę zgłaszać krypto do urzędu skarbowego?",
+    "question_en": "Do I have to report crypto to the tax office?",
+    "answer_pl": "Tak, ale tylko gdy sprzedajesz krypto za złotówki (lub za inną walutę fiat) ze zyskiem. Samo trzymanie krypto nie wymaga zgłoszenia. Rozliczasz w PIT-38 — podajesz przychód (łączną wartość sprzedaży) i koszty (łączną wartość zakupu), a podatek (19%) płacisz od różnicy. Jeśli nie sprzedałeś nic w danym roku, nie musisz składać PIT-38. Polskie giełdy same raportują transakcje do US, więc urząd i tak wie.",
+    "answer_en": "Yes, but only when you sell crypto for PLN (or another fiat currency) at a profit. Just holding crypto doesn't require reporting. You file on PIT-38 — you report revenue (total sales value) and costs (total purchase value), and pay tax (19%) on the difference. If you didn't sell anything in a given year, you don't have to file PIT-38. Polish exchanges report transactions to the tax office anyway, so they already know.",
+    "level": 1,
+    "keywords_pl": [
+      "zgloszenie krypto",
+      "urzad skarbowy",
+      "pit 38 krypto"
+    ],
+    "keywords_en": [
+      "report crypto",
+      "tax office",
+      "pit 38 crypto"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_090",
+    "topic": "getting_started",
+    "question_pl": "Jakie są najczęstsze błędy początkujących?",
+    "question_en": "What are the most common beginner mistakes?",
+    "answer_pl": "Top 5: (1) Zapisanie frazy odzyskiwania w telefonie lub mailu zamiast na papierze; (2) Klikanie w reklamy Google zamiast wpisywania adresów ręcznie; (3) Łączenie głównego portfela ze świeżymi, nieznanymi aplikacjami DeFi; (4) Inwestowanie w meme-coiny z TikToka bez zrozumienia projektu; (5) Wysyłanie dużej kwoty bez wcześniejszego testu małą. Większość strat w krypto wynika z tych pięciu błędów, nie z 'hakerów'.",
+    "answer_en": "Top 5: (1) Saving the seed phrase on a phone or in email instead of on paper; (2) Clicking Google ads instead of typing addresses manually; (3) Connecting your main wallet to fresh, unknown DeFi apps; (4) Investing in TikTok memecoins without understanding the project; (5) Sending large amounts without first testing with a small one. Most crypto losses come from these five mistakes, not from 'hackers'.",
+    "level": 1,
+    "keywords_pl": [
+      "bledy poczatkujacych",
+      "typowe bledy",
+      "czego unikac"
+    ],
+    "keywords_en": [
+      "beginner mistakes",
+      "common errors",
+      "what to avoid"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_091",
+    "topic": "blockchain",
+    "question_pl": "Jaka jest różnica między Ethereum a Bitcoinem?",
+    "question_en": "What is the difference between Ethereum and Bitcoin?",
+    "answer_pl": "Bitcoin jest jak 'cyfrowe złoto' — jego głównym celem jest przechowywanie wartości i wysyłanie pieniędzy. Ethereum to 'komputer świata' — pozwala uruchamiać aplikacje (smart kontrakty) na blockchainie, dzięki czemu działa na nim cały DeFi, NFT i tysiące innych projektów. Bitcoin jest starszy (2009 vs 2015) i bardziej 'konserwatywny', Ethereum bardziej elastyczny i programowalny.",
+    "answer_en": "Bitcoin is like 'digital gold' — its main purpose is storing value and sending money. Ethereum is the 'world computer' — it lets you run applications (smart contracts) on the blockchain, which is how all of DeFi, NFTs, and thousands of other projects operate. Bitcoin is older (2009 vs 2015) and more 'conservative'; Ethereum is more flexible and programmable.",
+    "level": 1,
+    "keywords_pl": [
+      "ethereum bitcoin",
+      "roznica btc eth",
+      "bitcoin a ethereum"
+    ],
+    "keywords_en": [
+      "ethereum bitcoin",
+      "btc vs eth",
+      "bitcoin vs ethereum"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_092",
+    "topic": "blockchain",
+    "question_pl": "Czym jest blockchain Base?",
+    "question_en": "What is the Base blockchain?",
+    "answer_pl": "Base to blockchain 'warstwy drugiej' (Layer 2) zbudowany na Ethereum przez firmę Coinbase, uruchomiony w 2023 roku. Działa znacznie szybciej i taniej niż główne Ethereum (opłaty w groszach zamiast złotówek), zachowując jego bezpieczeństwo. Base szybko stał się jedną z najpopularniejszych sieci DeFi, szczególnie dla początkujących i mniejszych kwot. Większość głównych protokołów (Aave, Uniswap) działa na Base.",
+    "answer_en": "Base is a 'Layer 2' blockchain built on Ethereum by the Coinbase company, launched in 2023. It runs much faster and cheaper than mainnet Ethereum (fees in cents instead of złoty), while preserving its security. Base quickly became one of the most popular DeFi networks, especially for beginners and smaller amounts. Most major protocols (Aave, Uniswap) run on Base.",
+    "level": 2,
+    "keywords_pl": [
+      "base",
+      "layer 2",
+      "l2",
+      "coinbase"
+    ],
+    "keywords_en": [
+      "base",
+      "layer 2",
+      "l2",
+      "coinbase"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_093",
+    "topic": "blockchain",
+    "question_pl": "Dlaczego jest tyle różnych blockchainów?",
+    "question_en": "Why are there so many different blockchains?",
+    "answer_pl": "Bo każdy ma inne kompromisy między szybkością, kosztem a bezpieczeństwem — trudno wszystko mieć naraz. Ethereum jest bezpieczne i zdecentralizowane, ale wolniejsze i droższe. Solana jest błyskawiczna i tania, ale z rzadkimi awariami. Polygon i Base łączą bezpieczeństwo Ethereum z tanimi opłatami. Różne blockchainy to też różne społeczności, filozofie i zastosowania — trochę jak Windows, Mac i Linux w świecie komputerów.",
+    "answer_en": "Because each has different trade-offs between speed, cost, and security — you can't have all at once. Ethereum is secure and decentralised, but slower and more expensive. Solana is lightning-fast and cheap, with occasional outages. Polygon and Base combine Ethereum's security with low fees. Different blockchains also represent different communities, philosophies, and use cases — a bit like Windows, Mac, and Linux in the computer world.",
+    "level": 1,
+    "keywords_pl": [
+      "rozne blockchainy",
+      "ile sieci",
+      "multi chain"
+    ],
+    "keywords_en": [
+      "many blockchains",
+      "different chains",
+      "multi chain"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_094",
+    "topic": "blockchain",
+    "question_pl": "Co oznacza 'on-chain'?",
+    "question_en": "What does 'on-chain' mean?",
+    "answer_pl": "'On-chain' znaczy 'zapisany na blockchainie' — każda akcja, która odbywa się bezpośrednio w sieci blockchain i jest publicznie zapisana. Wysłanie USDC do kogoś, deponowanie w Aave, wymiana na Uniswap — wszystko to on-chain. Przeciwieństwem jest 'off-chain' — akcje poza blockchainem, np. dyskusja na Discordzie, dane w bazach projektów, transakcje na scentralizowanych giełdach (które zapisują się w ich bazie, nie w blockchainie).",
+    "answer_en": "'On-chain' means 'recorded on the blockchain' — any action that happens directly on the blockchain network and is publicly logged. Sending USDC to someone, depositing into Aave, swapping on Uniswap — all of these are on-chain. The opposite is 'off-chain' — actions outside the blockchain, e.g. Discord discussions, data in project databases, transactions on centralised exchanges (which are logged in their database, not on the blockchain).",
+    "level": 2,
+    "keywords_pl": [
+      "on chain",
+      "off chain",
+      "na lancuchu"
+    ],
+    "keywords_en": [
+      "on chain",
+      "off chain",
+      "on-chain meaning"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_095",
+    "topic": "blockchain",
+    "question_pl": "Co to jest eksplorator blockchainu?",
+    "question_en": "What is a block explorer?",
+    "answer_pl": "Eksplorator blockchainu (block explorer) to strona internetowa, która pokazuje publicznie wszystko, co dzieje się w blockchainie — transakcje, adresy portfeli, smart kontrakty, bloki. Dla Ethereum to Etherscan, dla Solany Solscan, dla Polygon Polygonscan. Wklejasz hash transakcji lub adres portfela i widzisz pełne szczegóły. Przydatne do weryfikacji, czy transakcja dotarła, do sprawdzenia adresów, i do śledzenia aktywności.",
+    "answer_en": "A block explorer is a website that publicly shows everything happening on the blockchain — transactions, wallet addresses, smart contracts, blocks. For Ethereum it's Etherscan, for Solana it's Solscan, for Polygon it's Polygonscan. You paste a transaction hash or wallet address and see full details. Useful for verifying transactions, checking addresses, and tracking activity.",
+    "level": 1,
+    "keywords_pl": [
+      "etherscan",
+      "eksplorator",
+      "block explorer",
+      "solscan"
+    ],
+    "keywords_en": [
+      "etherscan",
+      "explorer",
+      "block explorer",
+      "solscan"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_096",
+    "topic": "blockchain",
+    "question_pl": "Co to jest Layer 2?",
+    "question_en": "What is a Layer 2?",
+    "answer_pl": "Layer 2 (L2) to dodatkowa 'warstwa' zbudowana na głównym blockchainie (najczęściej Ethereum), która przetwarza transakcje szybciej i taniej, a potem 'zapisuje' je zbiorczo na warstwie głównej. Najpopularniejsze L2: Arbitrum, Optimism, Base, Polygon. Zaleta: opłaty groszowe zamiast kilkudziesięciu złotych. Wada: dodatkowa 'warstwa' oznacza większą złożoność i więcej smart kontraktów, które mogą mieć bugi.",
+    "answer_en": "Layer 2 (L2) is an extra 'layer' built on top of a main blockchain (usually Ethereum) that processes transactions faster and cheaper, then 'records' them in bulk on the main layer. The most popular L2s: Arbitrum, Optimism, Base, Polygon. Advantage: cents in fees instead of dozens of PLN. Disadvantage: an extra 'layer' means more complexity and more smart contracts that can have bugs.",
+    "level": 2,
+    "keywords_pl": [
+      "layer 2",
+      "l2",
+      "arbitrum optimism",
+      "warstwa druga"
+    ],
+    "keywords_en": [
+      "layer 2",
+      "l2",
+      "arbitrum optimism",
+      "scaling"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_097",
+    "topic": "blockchain",
+    "question_pl": "Co to jest 'gas' i 'gas fee'?",
+    "question_en": "What are 'gas' and 'gas fee'?",
+    "answer_pl": "Gas to 'paliwo' do transakcji w sieciach Ethereum-podobnych — każda operacja (wysłanie tokenów, wymiana, interakcja z DeFi) kosztuje określoną ilość gasu. Gas fee to łączny koszt w walucie sieci (ETH, MATIC, SOL) = ilość gasu × aktualna cena gasu. Ceny gasu zmieniają się w czasie rzeczywistym w zależności od obciążenia sieci — dlatego opłata za tę samą transakcję może być różna w różnych porach dnia.",
+    "answer_en": "Gas is the 'fuel' for transactions on Ethereum-like networks — every operation (sending tokens, swapping, interacting with DeFi) costs a certain amount of gas. The gas fee is the total cost in the network's native token (ETH, MATIC, SOL) = gas amount × current gas price. Gas prices fluctuate in real time based on network load — which is why the same transaction can cost different amounts at different times of day.",
+    "level": 1,
+    "keywords_pl": [
+      "gas",
+      "gas fee",
+      "oplata sieciowa",
+      "koszty transakcji"
+    ],
+    "keywords_en": [
+      "gas",
+      "gas fee",
+      "network fee",
+      "transaction cost"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_098",
+    "topic": "blockchain",
+    "question_pl": "Co to jest hash transakcji?",
+    "question_en": "What is a transaction hash?",
+    "answer_pl": "Hash transakcji to unikalny identyfikator każdej transakcji na blockchainie — długi ciąg znaków (66 znaków dla Ethereum) zaczynający się od 0x. Kiedy wysyłasz krypto, portfel pokazuje Ci 'tx hash' — możesz wkleić go w Etherscan (lub inny eksplorator) i zobaczyć pełne szczegóły: czy transakcja się zakończyła, do kogo poszła, ile opłaty, w którym bloku została zapisana. To jak 'numer listu poleconego' dla krypto.",
+    "answer_en": "A transaction hash is the unique identifier of every transaction on a blockchain — a long string of characters (66 characters on Ethereum) starting with 0x. When you send crypto, the wallet shows you the 'tx hash' — you can paste it into Etherscan (or another explorer) and see full details: whether the transaction completed, where it went, the fee, and which block it was recorded in. It's like a 'registered mail tracking number' for crypto.",
+    "level": 2,
+    "keywords_pl": [
+      "hash transakcji",
+      "tx hash",
+      "identyfikator transakcji"
+    ],
+    "keywords_en": [
+      "transaction hash",
+      "tx hash",
+      "tx id"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_099",
+    "topic": "blockchain",
+    "question_pl": "Czy wszystkie blockchainy są bezpieczne?",
+    "question_en": "Are all blockchains safe?",
+    "answer_pl": "Nie — bezpieczeństwo mocno się różni. Bitcoin i Ethereum są uważane za najbezpieczniejsze — nigdy nie zostały 'zhakowane' na poziomie protokołu. Popularne Layer 2 (Arbitrum, Base, Optimism, Polygon) też są bardzo bezpieczne. Nowe, małe blockchainy mają większe ryzyko — mniejsza liczba walidatorów, mniej audytów, krótsza historia. L2Beat.com publikuje rankingi bezpieczeństwa wszystkich większych sieci, warto zajrzeć przed wyborem.",
+    "answer_en": "No — safety varies a lot. Bitcoin and Ethereum are considered the safest — they've never been 'hacked' at the protocol level. Popular Layer 2s (Arbitrum, Base, Optimism, Polygon) are also very safe. New, small blockchains carry more risk — fewer validators, fewer audits, shorter history. L2Beat.com publishes safety rankings of all major networks — worth a look before choosing.",
+    "level": 2,
+    "keywords_pl": [
+      "bezpieczenstwo blockchain",
+      "ktora siec",
+      "ryzyko sieci"
+    ],
+    "keywords_en": [
+      "blockchain safety",
+      "which network",
+      "chain risk"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  },
+  {
+    "id": "qa_100",
+    "topic": "blockchain",
+    "question_pl": "Czy blockchain jest anonimowy?",
+    "question_en": "Is blockchain anonymous?",
+    "answer_pl": "Lepiej powiedzieć 'pseudonimowy' niż anonimowy. Twoje imię i nazwisko nie są zapisane w blockchainie — widać tylko adresy portfeli. Ale wszystkie transakcje są publiczne i nie do usunięcia. Jeśli ktoś powiąże Twój adres portfela z Twoją tożsamością (np. przez giełdę z KYC), może śledzić całą Twoją historię. Dla realnej prywatności używa się wielu portfeli, nowych adresów dla wrażliwych operacji i narzędzi zachowujących prywatność.",
+    "answer_en": "It's more accurate to say 'pseudonymous' than anonymous. Your name isn't written into the blockchain — only wallet addresses are. But every transaction is public and unerasable. If someone links your wallet address to your identity (e.g. via a KYC-compliant exchange), they can trace your entire history. For real privacy, people use multiple wallets, new addresses for sensitive operations, and privacy-preserving tools.",
+    "level": 2,
+    "keywords_pl": [
+      "anonimowosc blockchain",
+      "prywatnosc",
+      "pseudonimowy"
+    ],
+    "keywords_en": [
+      "blockchain anonymous",
+      "privacy",
+      "pseudonymous"
+    ],
+    "safety_note_pl": null,
+    "safety_note_en": null
+  }
+]
