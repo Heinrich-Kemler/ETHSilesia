@@ -51,20 +51,32 @@ export async function POST(request: Request) {
     // --- AI enabled path: full RAG pipeline ----------------------------
     const supabase = getSupabaseAdminClient();
 
-    // 1. Zidentyfikuj i wczytaj wewnętrzne ID usera na podstawie privy_id (jeśli został podany)
+    // 1. Zidentyfikuj i wczytaj wewnętrzne ID usera na podstawie privy_id
     let internalUserId: string | null = null;
     let userLevel = 1;
+    let userStrongTopics = "brak";
+    let userWeakTopics = "brak";
 
     if (body.userId) {
       const { data: userRecord } = await supabase
         .from("users")
-        .select("id, level")
+        .select("id, level, strong_topics, weak_topics")
         .eq("privy_id", body.userId)
         .single();
 
       if (userRecord) {
         internalUserId = userRecord.id;
         userLevel = userRecord.level || 1;
+        userStrongTopics =
+          Array.isArray(userRecord.strong_topics) &&
+          userRecord.strong_topics.length > 0
+            ? userRecord.strong_topics.join(", ")
+            : "brak";
+        userWeakTopics =
+          Array.isArray(userRecord.weak_topics) &&
+          userRecord.weak_topics.length > 0
+            ? userRecord.weak_topics.join(", ")
+            : "brak";
       }
     }
 
@@ -78,7 +90,7 @@ export async function POST(request: Request) {
 
     const messages = [];
 
-    // 3. RAG - Połącz się z Gemini aby sczytać wektory wiedzy usera (3072 z gemini-embedding-001)
+    // 3. RAG - Połącz się z Gemini aby sczytać wektory wiedzy usera
     const geminiApiKey = process.env.GEMINI_API_KEY;
     if (!geminiApiKey) throw new Error("Missing GEMINI_API_KEY");
 
@@ -122,21 +134,52 @@ export async function POST(request: Request) {
       )
       .join("\n\n");
 
-    // 4. Stworzenie System Promptu
-    const systemInstruction = `Jesteś Skarbnikiem, wirtualnym opiekunem użytkownika na platformie ETH Silesia.
-Dostosowujesz się do poziomu edukacji usera (jego poziom to: ${userLevel}). Twoi rozmówcy to początkujący, zwykli ludzie bez pojęcia o krypto (często totalni laicy).
+    // 4a. Pobierz aktywne alerty bezpieczeństwa
+    const { data: activeAlerts } = await supabase
+      .from("scam_alerts")
+      .select("title_pl, summary_pl, severity, threat_type")
+      .eq("active", true)
+      .order("detected_at", { ascending: false })
+      .limit(5);
 
-Zasady, bezwzględnie:
-1. Rozmawiaj ze "zwykłym człowiekiem z ulicy" - używaj bardzo prostych metafor z życia codziennego (np. sejf, cyfrowa gotówka).
-2. Pamiętaj, absolutnie zero krypto slangu (żadnych skrótów typu DYOR, HODL, wagmi, DeFi, FUD itp.). Tłumacz wszystko po ludzku.
-3. Nigdy nie polecaj ani nie wymieniaj giełdy Zonda/ZondaCrypto w swoich odpowiedziach.
-4. Zawsze i bezwzględnie odpowiadaj JEDYNIE w języku polskim, niezależnie od tego, w jakim języku użytkownik ządał pytanie.
+    const alertsContext = (activeAlerts || [])
+      .map(
+        (a: {
+          title_pl: string;
+          summary_pl: string;
+          severity: string;
+          threat_type: string;
+        }) => `- [${a.severity.toUpperCase()}] ${a.title_pl}: ${a.summary_pl}`,
+      )
+      .join("\n");
 
-Poniżej znajduje się wstrzyknięta wiedza specjalistyczna:
----
+    // 4b. Stworzenie System Promptu
+    const systemInstruction = `Jesteś Skarbnikiem — mądrym i wyedukowanym przewodnikiem, który pomaga ludziom bezpiecznie poruszać się w świecie DeFi i Web3. Zostałeś nazwany na cześć legendarnego śląskiego ducha kopalni, który strzeże skarbów.
+
+Profil użytkownika:
+- Poziom: ${userLevel} (1=totalny nowicjusz, 2=ciekawski, 3=doświadczony)
+- Język: polski
+- Słabe tematy: ${userWeakTopics}
+- Silne tematy: ${userStrongTopics}
+
+Powiązana wiedza z naszej bazy danych:
 ${context}
----
-Odpowiadaj konkretnie, krótko i po ludzku. Nigdy nie dawaj i nie sugeruj porad inwestycyjnych.`;
+
+Aktywne zagrożenia bezpieczeństwa w tym tygodniu:
+${alertsContext || "Brak nowych zagrożeń."}
+
+Jeśli użytkownik pyta o temat powiązany z powyższymi zagrożeniami, odnieś się do nich konkretnie i wyraźnie pokaż ostrzeżenie bezpieczeństwa.
+
+Zasady:
+- Zawsze odpowiadaj w języku polskim.
+- Poziom 1: używaj prostego języka i codziennych metafor (zero slangu).
+- Poziom 2: możesz używać terminów DeFi, ale najpierw krótko wyjaśnij każdy z nich.
+- Poziom 3: możesz swobodnie używać technicznego języka.
+- Jeśli użytkownik wspomni o "seed phrase" (frazie odzyskiwania) lub "private key" (kluczu prywatnym): ZAWSZE ostrzegaj, aby nigdy nie dzielił się nimi z nikim.
+- Nigdy nie dawaj i nie sugeruj porad inwestycyjnych.
+- Ogranicz odpowiedzi do 150 słów, chyba że użytkownik prosi o więcej szczegółów.
+- Zakończ każdą wypowiedź jednym pytaniem uzupełniającym (follow-up question), aby zachęcić do dalszej nauki.
+- Bądź ciepły, przyjazny i zachęcający, nigdy protekcjonalny (nie wymądrzaj się).`;
 
     messages.push({ role: "system", content: systemInstruction });
 
