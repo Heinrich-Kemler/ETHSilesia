@@ -1,0 +1,11 @@
+{
+  "name": "Próba Zdana",
+  "description": "Awarded for completing the boss battle trial.",
+  "external_url": "https://skarbnik.app/badges/4",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/4.png",
+  "attributes": [
+    { "trait_type": "Badge ID", "value": 4 },
+    { "trait_type": "Tier", "value": "Champion" },
+    { "trait_type": "Trigger", "value": "Boss battle completed" }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Strażnik Skarbu",
+  "description": "Awarded for a 7-day activity streak.",
+  "external_url": "https://skarbnik.app/badges/5",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/5.png",
+  "attributes": [
+    { "trait_type": "Badge ID", "value": 5 },
+    { "trait_type": "Tier", "value": "Guardian" },
+    { "trait_type": "Trigger", "value": "7-day streak" }
+  ]
+}
