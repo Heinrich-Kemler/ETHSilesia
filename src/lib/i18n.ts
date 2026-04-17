@@ -390,6 +390,111 @@ export const translations = {
     pl: "Super, lecę dalej",
     en: "Nice, keep going",
   },
+
+  // Profile page + nav
+  navProfile: { pl: "Profil", en: "Profile" },
+  profileKicker: {
+    pl: "Twój profil",
+    en: "Your profile",
+  },
+  profileUsernamePlaceholder: {
+    pl: "Ustaw nazwę użytkownika",
+    en: "Set a username",
+  },
+  profileEditUsername: {
+    pl: "Edytuj nazwę użytkownika",
+    en: "Edit username",
+  },
+  profileSave: { pl: "Zapisz", en: "Save" },
+  profileCancel: { pl: "Anuluj", en: "Cancel" },
+  profileUsernameEmpty: {
+    pl: "Nazwa nie może być pusta.",
+    en: "Username cannot be empty.",
+  },
+  profileUsernameSaved: {
+    pl: "Nazwa zapisana.",
+    en: "Username saved.",
+  },
+  profileUsernameError: {
+    pl: "Nie udało się zapisać. Spróbuj ponownie.",
+    en: "Couldn't save. Please try again.",
+  },
+  profileCopyWallet: {
+    pl: "Kopiuj adres portfela",
+    en: "Copy wallet address",
+  },
+  profileCopied: { pl: "Skopiowano", en: "Copied" },
+  profileMemberSince: {
+    pl: "Dołączył(a):",
+    en: "Member since:",
+  },
+
+  // Stats row
+  profileStatLevel: { pl: "Poziom", en: "Level" },
+  profileStatXp: { pl: "Całkowite XP", en: "Total XP" },
+  profileStatStreak: { pl: "Passa", en: "Streak" },
+  profileStatQuests: { pl: "Questy", en: "Quests" },
+  profileXpToNext: {
+    pl: "{remaining} XP do następnego poziomu",
+    en: "{remaining} XP to next level",
+  },
+  profileMaxLevel: {
+    pl: "Maksymalny poziom",
+    en: "Max level reached",
+  },
+  profileDayOne: { pl: "dzień", en: "day" },
+  profileDays: { pl: "dni", en: "days" },
+
+  // XP progress section
+  profileXpProgressLabel: {
+    pl: "Postęp poziomu",
+    en: "Level progress",
+  },
+
+  // Badges preview
+  profileBadgesTitle: {
+    pl: "Odznaki",
+    en: "Badges",
+  },
+  profileViewAllBadges: {
+    pl: "Zobacz wszystkie",
+    en: "View all",
+  },
+  profileNoBadgesYet: {
+    pl: "Jeszcze brak odznak — ukończ quest, aby zdobyć pierwszą.",
+    en: "No badges yet — finish a quest to earn your first.",
+  },
+
+  // Completed quests
+  profileCompletedQuests: {
+    pl: "Ukończone questy",
+    en: "Completed quests",
+  },
+  profileNoQuestsYet: {
+    pl: "Nie ukończyłeś jeszcze żadnego questa.",
+    en: "You haven't completed any quests yet.",
+  },
+
+  // Settings
+  profileSettings: { pl: "Ustawienia", en: "Settings" },
+  profileSettingLanguage: { pl: "Język", en: "Language" },
+  profileSettingTheme: { pl: "Motyw", en: "Theme" },
+  profileThemeDark: { pl: "Ciemny", en: "Dark" },
+  profileThemeLight: { pl: "Jasny", en: "Light" },
+
+  // Account actions
+  profileAccountActions: {
+    pl: "Ustawienia konta",
+    en: "Account",
+  },
+  profileDisconnect: {
+    pl: "Rozłącz portfel",
+    en: "Disconnect wallet",
+  },
+  profileDemoReadOnly: {
+    pl: "Tryb demo — zmiany nie są zapisywane.",
+    en: "Demo mode — changes are not saved.",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
