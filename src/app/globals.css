@@ -10,9 +10,9 @@
   --color-red: #ef4444;
   --color-white: #ffffff;
 
-  --font-heading: "Cinzel", serif;
-  --font-body: "Inter", sans-serif;
-  --font-mono: "Space Mono", monospace;
+  --font-heading: var(--font-cinzel), "Cinzel", serif;
+  --font-body: var(--font-inter), "Inter", sans-serif;
+  --font-mono: var(--font-space-mono), "Space Mono", monospace;
 }
 
 /* ==========================================================

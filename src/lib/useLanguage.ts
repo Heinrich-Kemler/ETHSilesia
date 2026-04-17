@@ -1,28 +1,54 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+/**
+ * Language hook — backed by localStorage, synchronised across every
+ * consumer and tab via useSyncExternalStore. Replaces the older
+ * useState + useEffect-read pattern that violated React 19's
+ * `set-state-in-effect` rule.
+ */
+
+import { useCallback, useSyncExternalStore } from "react";
 import type { Lang } from "./i18n";
 
 const STORAGE_KEY = "skarbnik-lang";
 
-export function useLanguage() {
-  const [lang, setLangState] = useState<Lang>("pl");
+/** Cross-hook listeners so same-tab writes trigger a re-render too. */
+const listeners = new Set<() => void>();
 
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "en" || stored === "pl") {
-      setLangState(stored);
-    }
-  }, []);
+function subscribe(cb: () => void): () => void {
+  listeners.add(cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    listeners.delete(cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
+function getSnapshot(): Lang {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  return stored === "en" ? "en" : "pl";
+}
+
+// Server render has no storage — default matches <html lang="pl">.
+function getServerSnapshot(): Lang {
+  return "pl";
+}
+
+function writeLang(lang: Lang): void {
+  localStorage.setItem(STORAGE_KEY, lang);
+  listeners.forEach((cb) => cb());
+}
+
+export function useLanguage() {
+  const lang = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const setLang = useCallback((l: Lang) => {
-    setLangState(l);
-    localStorage.setItem(STORAGE_KEY, l);
+    writeLang(l);
   }, []);
 
   const toggle = useCallback(() => {
-    setLang(lang === "pl" ? "en" : "pl");
-  }, [lang, setLang]);
+    writeLang(getSnapshot() === "pl" ? "en" : "pl");
+  }, []);
 
   return { lang, setLang, toggle };
 }

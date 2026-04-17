@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Award, Trophy, Lock } from "lucide-react";
@@ -12,7 +12,11 @@ import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { useDemoMode } from "@/lib/useDemoMode";
 import { t } from "@/lib/i18n";
 import { BADGES, inferEarnedBadgeIds } from "@/lib/badgeRegistry";
-import { getCurrentStreak } from "@/lib/streak";
+import {
+  getCurrentStreak,
+  getStreakVersion,
+  subscribeStreak,
+} from "@/lib/streak";
 
 /**
  * Showcase page for the 5 SkarbnikBadges ERC-1155 collection.
@@ -36,7 +40,6 @@ export default function BadgesPage() {
     login,
     logout,
   } = useSkarbnikUser();
-  const [streakDays, setStreakDays] = useState(0);
 
   // Auth redirect — same pattern as /quest.
   useEffect(() => {
@@ -45,10 +48,16 @@ export default function BadgesPage() {
     if (status === "unauthenticated") router.replace("/");
   }, [ready, status, demo, router]);
 
-  // Read current streak from the shared localStorage-backed store.
-  useEffect(() => {
-    setStreakDays(getCurrentStreak(user?.id ?? null));
-  }, [user?.id]);
+  // Subscribe to the shared streak store so badge inference stays live.
+  const streakVersion = useSyncExternalStore(
+    subscribeStreak,
+    getStreakVersion,
+    () => 0
+  );
+  const streakDays = useMemo(() => {
+    void streakVersion; // recompute when the streak store writes
+    return getCurrentStreak(user?.id ?? null);
+  }, [user?.id, streakVersion]);
 
   const level = (user?.level ?? 1) as 1 | 2 | 3 | 4;
   const earnedIds = useMemo(
@@ -74,7 +83,7 @@ export default function BadgesPage() {
         demo={demo}
       />
 
-      <div className="max-w-6xl mx-auto px-6 pt-24 pb-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-8 h-8 rounded-full border-2 border-gold-themed/30 border-t-gold-themed animate-spin" />

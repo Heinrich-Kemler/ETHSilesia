@@ -98,7 +98,7 @@ export default function QuestHubPage() {
         demo={demo}
       />
 
-      <div className="max-w-6xl mx-auto px-6 pt-24 pb-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-8 h-8 rounded-full border-2 border-gold-themed/30 border-t-gold-themed animate-spin" />

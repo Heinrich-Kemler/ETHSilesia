@@ -43,6 +43,15 @@ export default function AssessPage() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // Destructure primitives so the effect only re-runs on real changes
+  // rather than every time Privy hands us a new object reference.
+  const privyReady = privy?.ready ?? false;
+  const privyAuthenticated = privy?.authenticated ?? false;
+  const privyUserId = privy?.user?.id ?? null;
+  const privyWallet = privy?.user?.wallet?.address ?? null;
+  const privyEmail =
+    privy?.user?.email?.address ?? privy?.user?.google?.email ?? null;
+
   // ---------- ON MOUNT: check if user is already assessed ----------
   useEffect(() => {
     let cancelled = false;
@@ -55,27 +64,23 @@ export default function AssessPage() {
       }
 
       // If Privy unavailable (no app id), just show the intro.
-      if (!privy || !privy.ready) return;
+      if (!privyReady) return;
 
-      if (!privy.authenticated || !privy.user) {
+      if (!privyAuthenticated || !privyUserId) {
         setPhase("intro");
         return;
       }
 
-      const wallet = privy.user.wallet?.address;
-      if (!wallet) return; // wait for embedded wallet
+      if (!privyWallet) return; // wait for embedded wallet
 
       try {
         const res = await fetch("/api/users/create", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            privyId: privy.user.id,
-            walletAddress: wallet,
-            email:
-              privy.user.email?.address ??
-              privy.user.google?.email ??
-              undefined,
+            privyId: privyUserId,
+            walletAddress: privyWallet,
+            email: privyEmail ?? undefined,
           }),
         });
         if (!res.ok) {
@@ -102,7 +107,15 @@ export default function AssessPage() {
     return () => {
       cancelled = true;
     };
-  }, [demo, privy, router]);
+  }, [
+    demo,
+    privyReady,
+    privyAuthenticated,
+    privyUserId,
+    privyWallet,
+    privyEmail,
+    router,
+  ]);
 
   // ---------- quiz navigation ----------
   const total = ASSESSMENT_QUESTIONS.length;
@@ -175,7 +188,7 @@ export default function AssessPage() {
         demo={demo}
       />
 
-      <div className="max-w-3xl mx-auto px-6 pt-28 pb-16">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         <AnimatePresence mode="wait">
           {phase === "checking" && (
             <motion.div

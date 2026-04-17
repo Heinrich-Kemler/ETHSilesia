@@ -98,7 +98,7 @@ export default function LeaderboardPage() {
         demo={demo}
       />
 
-      <div className="max-w-3xl mx-auto px-6 pt-24 pb-24">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         <Link
           href={demo ? "/quest?demo=true" : "/quest"}
           className="inline-flex items-center gap-2 text-muted-themed hover:text-themed text-sm mb-6"

@@ -2,7 +2,6 @@
 
 import { use, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
@@ -43,7 +42,6 @@ export default function ActiveQuestPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const router = useRouter();
   const { lang, toggle: toggleLang } = useLanguage();
   const { theme, toggle: toggleTheme } = useTheme();
   const demo = useDemoMode();
@@ -58,7 +56,6 @@ export default function ActiveQuestPage({
   const [correctCount, setCorrectCount] = useState(0);
   const [aiExplanation, setAiExplanation] = useState<string>("");
   const [aiLoading, setAiLoading] = useState(false);
-  const [timerStart, setTimerStart] = useState<number>(0);
   const [elapsed, setElapsed] = useState(0);
   const [locked, setLocked] = useState(false);
   const [completionResult, setCompletionResult] = useState<{
@@ -81,7 +78,6 @@ export default function ActiveQuestPage({
       return;
     }
     setPhase("quiz");
-    setTimerStart(Date.now());
     setElapsed(0);
   }, [quest]);
 
@@ -94,7 +90,6 @@ export default function ActiveQuestPage({
       }
       return;
     }
-    setTimerStart(Date.now());
     setElapsed(0);
     timerRef.current = setInterval(() => {
       setElapsed((e) => {
@@ -303,7 +298,7 @@ export default function ActiveQuestPage({
           onLogout={logout}
           demo={demo}
         />
-        <div className="max-w-2xl mx-auto px-6 pt-28 text-center">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-24 text-center">
           <h1 className="font-heading text-3xl font-bold text-themed mb-4">
             {lang === "pl" ? "Quest nie znaleziony" : "Quest not found"}
           </h1>
@@ -355,7 +350,7 @@ export default function ActiveQuestPage({
         demo={demo}
       />
 
-      <div className="max-w-3xl mx-auto px-6 pt-24 pb-16">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         {phase === "quiz" && (
           <>
             {/* Quest header */}
