@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { Flame, Trophy, Check } from "lucide-react";
 import { t, type Lang } from "@/lib/i18n";
-import { getRecentDays, getStreakStats, type DayCell } from "@/lib/streak";
+import {
+  getRecentDays,
+  getStreakStats,
+  getStreakVersion,
+  subscribeStreak,
+  type DayCell,
+} from "@/lib/streak";
 
 type Props = {
   lang: Lang;
@@ -13,25 +19,31 @@ type Props = {
   days?: number;
 };
 
+function getServerStreakVersion(): number {
+  return 0;
+}
+
 /**
  * Compact streak visualiser: current + best stats on the left, a 7-day
- * activity strip on the right. Reads from localStorage so it picks up
- * fresh activity on navigation back to /quest.
+ * activity strip on the right. Backed by the `streak` localStorage
+ * store — re-renders automatically whenever `markActiveDay()` writes.
  */
 export default function StreakCalendar({ lang, userId, days = 7 }: Props) {
-  const [cells, setCells] = useState<DayCell[]>([]);
-  const [current, setCurrent] = useState(0);
-  const [best, setBest] = useState(0);
+  // Subscribe to streak writes so the strip + counters refresh live.
+  const version = useSyncExternalStore(
+    subscribeStreak,
+    getStreakVersion,
+    getServerStreakVersion
+  );
 
-  // Recompute on mount + whenever the user/lang changes. The page is
-  // navigated to fresh after a quest completes, so this is enough to
-  // pick up new activity without needing a global store.
-  useEffect(() => {
-    setCells(getRecentDays(userId, days, lang));
-    const stats = getStreakStats(userId);
-    setCurrent(stats.current);
-    setBest(stats.best);
-  }, [userId, days, lang]);
+  const cells = useMemo<DayCell[]>(() => {
+    void version; // recompute when the streak store writes
+    return getRecentDays(userId, days, lang);
+  }, [userId, days, lang, version]);
+  const { current, best } = useMemo(() => {
+    void version; // recompute when the streak store writes
+    return getStreakStats(userId);
+  }, [userId, version]);
 
   const hasStreak = current > 0;
 

@@ -54,9 +54,42 @@ function write(userId: string | null, data: StreakData): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(bucketKey(userId), JSON.stringify(data));
+    notifyStreakChange();
   } catch {
     // localStorage quota / access errors are non-fatal — drop silently.
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* In-tab pub/sub so `useSyncExternalStore`-backed hooks re-render     */
+/* after `markActiveDay()` writes. `storage` events don't fire in the  */
+/* same tab, so we maintain our own listener set + a version counter  */
+/* that consumers can read as a cheap snapshot.                        */
+/* ------------------------------------------------------------------ */
+const streakListeners = new Set<() => void>();
+let streakVersion = 0;
+
+function notifyStreakChange(): void {
+  streakVersion++;
+  streakListeners.forEach((cb) => cb());
+}
+
+export function subscribeStreak(cb: () => void): () => void {
+  streakListeners.add(cb);
+  if (typeof window !== "undefined") {
+    window.addEventListener("storage", cb);
+  }
+  return () => {
+    streakListeners.delete(cb);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("storage", cb);
+    }
+  };
+}
+
+/** Monotonic token — increments every time the store is written. */
+export function getStreakVersion(): number {
+  return streakVersion;
 }
 
 /**

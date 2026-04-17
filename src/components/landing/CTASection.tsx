@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { t } from "@/lib/i18n";
@@ -25,13 +26,14 @@ export default function CTASection({ lang }: { lang: Lang }) {
           <p className="relative text-secondary-themed text-lg mb-8 max-w-lg mx-auto">
             {t("ctaDesc", lang)}
           </p>
-          <button
-            className="relative group flex items-center justify-center gap-2 mx-auto text-white font-heading font-bold text-lg px-10 py-4 rounded-xl transition-all gradient-gold-themed"
+          <Link
+            href="/assess"
+            className="relative inline-flex group items-center justify-center gap-2 mx-auto text-white font-heading font-bold text-lg px-10 py-4 rounded-xl transition-all gradient-gold-themed"
             style={{ boxShadow: "0 0 30px var(--gold-glow)" }}
           >
             {t("ctaButton", lang)}
             <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
+          </Link>
         </motion.div>
       </div>
     </section>
