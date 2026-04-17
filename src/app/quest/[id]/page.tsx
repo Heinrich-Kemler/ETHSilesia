@@ -29,6 +29,7 @@ import {
   questTitle,
   type Quest,
 } from "@/lib/quests";
+import { markActiveDay } from "@/lib/streak";
 import { useToast } from "@/components/ui/Toast";
 
 type Phase = "loading" | "quiz" | "complete" | "not-found";
@@ -188,6 +189,9 @@ export default function ActiveQuestPage({
     if (!quest) return;
     const totalQ = quest.questions.length;
     const xpEarned = Math.round((correctCount * quest.xp) / totalQ);
+
+    // Mark today active for the streak tracker (idempotent, runs in demo + real paths).
+    markActiveDay(user?.id ?? null);
 
     // Demo mode → skip the server call, show synthetic success.
     if (isDemo) {

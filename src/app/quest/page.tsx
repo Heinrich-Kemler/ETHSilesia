@@ -16,6 +16,7 @@ import AppNav from "@/components/app/AppNav";
 import ChatPanel, { ChatFab } from "@/components/app/ChatPanel";
 import ChapterPath from "@/components/app/ChapterPath";
 import DailyChallenge from "@/components/app/DailyChallenge";
+import StreakCalendar from "@/components/app/StreakCalendar";
 import { useLanguage } from "@/lib/useLanguage";
 import { useTheme } from "@/lib/useTheme";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
@@ -116,6 +117,9 @@ export default function QuestHubPage() {
               streak={(user as { streak_days?: number } | null)?.streak_days ?? 0}
               isDemo={isDemo}
             />
+
+            {/* Streak calendar — 7-day activity strip */}
+            <StreakCalendar lang={lang} userId={user?.id ?? null} />
 
             {/* Daily Challenge */}
             <DailyChallenge
