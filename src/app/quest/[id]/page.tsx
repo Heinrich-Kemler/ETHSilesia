@@ -30,6 +30,7 @@ import {
   type Quest,
 } from "@/lib/quests";
 import { markActiveDay } from "@/lib/streak";
+import CelebrationModal from "@/components/app/CelebrationModal";
 import { useToast } from "@/components/ui/Toast";
 
 type Phase = "loading" | "quiz" | "complete" | "not-found";
@@ -66,6 +67,10 @@ export default function ActiveQuestPage({
     levelUp: boolean;
     badgeEarned: number | null;
   } | null>(null);
+  // Sequenced celebration: show level-up first (if any), then badge (if any).
+  const [celebrationStep, setCelebrationStep] = useState<
+    "level-up" | "badge" | "done"
+  >("done");
   const demoAppend = demo ? "?demo=true" : "";
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -257,30 +262,15 @@ export default function ActiveQuestPage({
         badgeEarned: data.badgeEarned,
       });
       setPhase("complete");
+      // Trigger the sequenced celebration modal. Level-up wins the first slot
+      // if present; otherwise a badge takes it. Any remaining reward shows
+      // after the user dismisses the first modal.
+      if (data.levelUp) setCelebrationStep("level-up");
+      else if (data.badgeEarned) setCelebrationStep("badge");
       toast({
         variant: "success",
         message: t("toastQuestCompleted", lang, { xp: xpEarned }),
       });
-      if (data.levelUp) {
-        // best-effort lookup — levelUp implies a new level computed server-side
-        toast({
-          variant: "level-up",
-          message: t("toastLevelUp", lang, {
-            level: t(levelNameKey(Math.min(3, (user.level ?? 1) + 1) as 1 | 2 | 3), lang),
-          }),
-        });
-      }
-      if (data.badgeEarned) {
-        toast({
-          variant: "level-up",
-          message: t("toastBadge", lang, {
-            name: t(
-              ("badge" + data.badgeEarned) as TranslationKey,
-              lang
-            ),
-          }),
-        });
-      }
       await refetch();
     } catch {
       toast({
@@ -591,6 +581,39 @@ export default function ActiveQuestPage({
           />
         )}
       </div>
+
+      {/* Sequenced celebration overlays. Level-up shows first; if a badge
+          was also earned, it shows after the level-up modal is dismissed. */}
+      {completionResult?.levelUp && (
+        <CelebrationModal
+          open={celebrationStep === "level-up"}
+          lang={lang}
+          variant="level-up"
+          newLevel={
+            Math.min(4, (user?.level ?? 2)) as 2 | 3 | 4
+          }
+          levelName={t(
+            levelNameKey(
+              Math.min(3, (user?.level ?? 1)) as 1 | 2 | 3
+            ),
+            lang
+          )}
+          onClose={() =>
+            setCelebrationStep(
+              completionResult?.badgeEarned ? "badge" : "done"
+            )
+          }
+        />
+      )}
+      {completionResult?.badgeEarned && (
+        <CelebrationModal
+          open={celebrationStep === "badge"}
+          lang={lang}
+          variant="badge"
+          badgeId={completionResult.badgeEarned}
+          onClose={() => setCelebrationStep("done")}
+        />
+      )}
     </main>
   );
 }

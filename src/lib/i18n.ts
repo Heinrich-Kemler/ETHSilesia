@@ -333,6 +333,63 @@ export const translations = {
     pl: "Rekord: {count}",
     en: "Best: {count}",
   },
+
+  // Badges showcase + nav
+  navBadges: { pl: "Odznaki", en: "Badges" },
+  badgesKicker: {
+    pl: "Kolekcja NFT",
+    en: "NFT collection",
+  },
+  badgesTitle: {
+    pl: "Twoje odznaki Skarbnika",
+    en: "Your Skarbnik badges",
+  },
+  badgesSubtitle: {
+    pl: "Odblokowuj odznaki ERC-1155 na sieci Base, ucząc się i zdobywając passę.",
+    en: "Unlock ERC-1155 badges on Base as you learn and build your streak.",
+  },
+  badgesCollected: {
+    pl: "Zebrane",
+    en: "Collected",
+  },
+  badgesOnChainTitle: {
+    pl: "Każda odznaka to NFT na Base Sepolia",
+    en: "Each badge is an NFT on Base Sepolia",
+  },
+  badgesOnChainBody: {
+    pl: "Po zdobyciu odznaki nasze automaty mintują ją do Twojego portfela jako token ERC-1155. To Twoja weryfikowalna historia nauki on-chain.",
+    en: "When you earn a badge, our mint queue drops it into your wallet as an ERC-1155 token — a verifiable on-chain record of what you've learned.",
+  },
+  badgesDemoNotice: {
+    pl: "Tryb demo — postęp nie jest zapisywany on-chain.",
+    en: "Demo mode — progress is not recorded on-chain.",
+  },
+  badgeEarned: {
+    pl: "Zdobyte",
+    en: "Earned",
+  },
+
+  // Celebration modal (level-up + badge)
+  celebrationLevelUpTitle: {
+    pl: "Awans!",
+    en: "Level up!",
+  },
+  celebrationLevelUpSubtitle: {
+    pl: "Jesteś teraz {level}",
+    en: "You're now {level}",
+  },
+  celebrationLevelUpBody: {
+    pl: "Nowy poziom odblokowany. Nowe questy czekają — wróć jutro, żeby utrzymać passę.",
+    en: "A new tier is unlocked. Fresh quests are live — come back tomorrow to keep your streak alive.",
+  },
+  celebrationBadgeTitle: {
+    pl: "Nowa odznaka!",
+    en: "New badge unlocked!",
+  },
+  celebrationContinue: {
+    pl: "Super, lecę dalej",
+    en: "Nice, keep going",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
