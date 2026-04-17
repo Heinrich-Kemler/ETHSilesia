@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import LanguageToggle from "@/components/ui/LanguageToggle";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { t } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
@@ -84,7 +83,6 @@ export default function Navbar({
         {/* Right side */}
         <div className="hidden md:flex items-center gap-3">
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <LanguageToggle lang={lang} onToggle={onToggleLang} />
           <button className="flex items-center gap-2 bg-gold-themed hover:bg-gold-dim-themed text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
             <LogIn className="w-4 h-4" />
             {t("navLogin", lang)}
@@ -94,7 +92,6 @@ export default function Navbar({
         {/* Mobile hamburger */}
         <div className="flex md:hidden items-center gap-2">
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <LanguageToggle lang={lang} onToggle={onToggleLang} />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="text-themed"
