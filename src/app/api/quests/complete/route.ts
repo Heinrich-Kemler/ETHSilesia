@@ -5,6 +5,7 @@ import {
   calculateNextStreakDays,
   isBossBattleQuest,
 } from "@/lib/server/gameLogic";
+import { ensureBadgeMintJob } from "@/lib/server/badgeMinting";
 import { getSupabaseAdminClient } from "@/lib/server/supabaseAdmin";
 
 export const runtime = "nodejs";
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
 
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, total_xp, level, streak_days, last_active")
+      .select("id, wallet_address, total_xp, level, streak_days, last_active")
       .eq("id", userId)
       .maybeSingle();
 
@@ -154,35 +155,86 @@ export async function POST(request: Request) {
 
     const uniquePotentialBadges = [...new Set(potentialBadges)];
 
-    let badgeEarned: number | null = null;
+    if (uniquePotentialBadges.length === 0) {
+      return NextResponse.json({
+        newXP,
+        levelUp,
+        badgeEarned: null,
+        badgesEarned: [],
+        mintJobsEnqueued: 0,
+      });
+    }
 
-    if (uniquePotentialBadges.length > 0) {
-      const { data: existingBadges, error: existingBadgesError } = await supabase
-        .from("badges")
-        .select("badge_id")
-        .eq("user_id", userId)
-        .in("badge_id", uniquePotentialBadges);
+    const { data: existingBadges, error: existingBadgesError } = await supabase
+      .from("badges")
+      .select("badge_id")
+      .eq("user_id", userId)
+      .in("badge_id", uniquePotentialBadges);
 
-      if (existingBadgesError) {
+    if (existingBadgesError) {
+      return NextResponse.json(
+        {
+          error: "Failed while checking existing badges.",
+          details: existingBadgesError.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    const { data: trackedMintJobs, error: trackedMintJobsError } = await supabase
+      .from("badge_mint_jobs")
+      .select("badge_id")
+      .eq("user_id", userId)
+      .in("badge_id", uniquePotentialBadges);
+
+    if (trackedMintJobsError) {
+      return NextResponse.json(
+        {
+          error: "Failed while checking tracked badge mint jobs.",
+          details: trackedMintJobsError.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    const trackedBadgeIds = new Set([
+      ...(existingBadges ?? []).map((badge) => badge.badge_id),
+      ...(trackedMintJobs ?? []).map((job) => job.badge_id),
+    ]);
+
+    const badgesEarned = uniquePotentialBadges.filter(
+      (badgeId) => !trackedBadgeIds.has(badgeId)
+    );
+
+    const enqueuedJobIds: string[] = [];
+
+    for (const badgeId of badgesEarned) {
+      try {
+        const job = await ensureBadgeMintJob(supabase, {
+          userId,
+          walletAddress: user.wallet_address,
+          badgeId,
+        });
+        enqueuedJobIds.push(job.id);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown error";
         return NextResponse.json(
           {
-            error: "Failed while checking existing badges.",
-            details: existingBadgesError.message,
+            error: "Failed while enqueueing badge mint jobs.",
+            details: message,
           },
           { status: 500 }
         );
       }
-
-      const existingBadgeIds = new Set(
-        (existingBadges ?? []).map((badge) => badge.badge_id)
-      );
-
-      badgeEarned =
-        uniquePotentialBadges.find((badgeId) => !existingBadgeIds.has(badgeId)) ||
-        null;
     }
 
-    return NextResponse.json({ newXP, levelUp, badgeEarned });
+    return NextResponse.json({
+      newXP,
+      levelUp,
+      badgeEarned: badgesEarned[0] ?? null,
+      badgesEarned,
+      mintJobsEnqueued: enqueuedJobIds.length,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
