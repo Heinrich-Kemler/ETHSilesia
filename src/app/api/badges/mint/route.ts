@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
 import { ethers } from "ethers";
+import {
+  ensureBadgeMintJob,
+  mintBadgeDirect,
+  processBadgeMintJob,
+  processNextPendingBadgeMintJob,
+  resolveBadgeContractAddress,
+} from "@/lib/server/badgeMinting";
 import { BADGE_IDS } from "@/lib/server/gameLogic";
 import { getSupabaseAdminClient } from "@/lib/server/supabaseAdmin";
 
@@ -12,31 +17,23 @@ type MintBadgeBody = {
   badgeId?: number;
   walletAddress?: string;
   txHash?: string;
+  processPending?: boolean;
 };
 
 const MIN_BADGE_ID = BADGE_IDS.FIRST_QUEST_COMPLETED;
 const MAX_BADGE_ID = BADGE_IDS.TREASURE_GUARDIAN;
-const BADGES_ABI = [
-  "function mintBadge(address to, uint256 badgeId) external",
-] as const;
 
-function resolveBadgeContractAddress(): string | null {
-  const envAddress = process.env.SKARBNIK_BADGES_ADDRESS?.trim();
-  if (envAddress) {
-    return envAddress;
-  }
-
-  const deploymentsPath = path.join(process.cwd(), "deployments.json");
-  if (!existsSync(deploymentsPath)) {
+function parseBadgeId(value: number | undefined): number | null {
+  if (typeof value !== "number" || Number.isNaN(value)) {
     return null;
   }
 
-  const raw = readFileSync(deploymentsPath, "utf8");
-  const parsed = JSON.parse(raw) as {
-    baseSepolia?: { SkarbnikBadges?: { address?: string } };
-  };
+  const badgeId = Math.floor(value);
+  if (badgeId < MIN_BADGE_ID || badgeId > MAX_BADGE_ID) {
+    return null;
+  }
 
-  return parsed.baseSepolia?.SkarbnikBadges?.address ?? null;
+  return badgeId;
 }
 
 export async function POST(request: Request) {
@@ -46,113 +43,111 @@ export async function POST(request: Request) {
     const userId = body.userId?.trim();
     const walletAddress = body.walletAddress?.trim();
     const providedTxHash = body.txHash?.trim();
-    const badgeId =
-      typeof body.badgeId === "number" ? Math.floor(body.badgeId) : NaN;
+    const processPending = body.processPending === true;
+    const badgeId = parseBadgeId(body.badgeId);
 
-    if (Number.isNaN(badgeId)) {
-      return NextResponse.json(
-        { error: "badgeId is required." },
-        { status: 400 }
-      );
-    }
+    const supabase = getSupabaseAdminClient();
 
-    if (badgeId < MIN_BADGE_ID || badgeId > MAX_BADGE_ID) {
-      return NextResponse.json({ error: "Invalid badgeId." }, { status: 400 });
-    }
-
-    let txHash: string;
-    let blockNumber: number | null = null;
-    const contractAddress = resolveBadgeContractAddress();
-
-    if (!providedTxHash) {
-      if (!walletAddress || !ethers.isAddress(walletAddress)) {
+    if (providedTxHash) {
+      if (!userId || badgeId === null) {
         return NextResponse.json(
           {
             error:
-              "walletAddress is required and must be a valid EVM address when txHash is not provided.",
+              "userId and valid badgeId are required when txHash is provided.",
           },
           { status: 400 }
         );
       }
 
-      if (!contractAddress) {
-        return NextResponse.json(
+      const { data, error } = await supabase
+        .from("badges")
+        .upsert(
           {
-            error:
-              "Badge contract address not configured. Deploy first or set SKARBNIK_BADGES_ADDRESS.",
+            user_id: userId,
+            badge_id: badgeId,
+            tx_hash: providedTxHash,
+            minted_at: new Date().toISOString(),
           },
+          { onConflict: "user_id,badge_id" }
+        )
+        .select("*")
+        .single();
+
+      if (error) {
+        return NextResponse.json(
+          { error: "Failed to save mint transaction.", details: error.message },
           { status: 500 }
         );
       }
 
-      const privateKey = process.env.PRIVATE_KEY?.trim();
-      if (!privateKey) {
-        return NextResponse.json(
-          {
-            error:
-              "Missing PRIVATE_KEY for on-chain minting in /api/badges/mint.",
-          },
-          { status: 500 }
-        );
-      }
-
-      const provider = new ethers.JsonRpcProvider(
-        process.env.BASE_SEPOLIA_RPC || "https://sepolia.base.org"
-      );
-      const signer = new ethers.Wallet(privateKey, provider);
-      const contract = new ethers.Contract(contractAddress, BADGES_ABI, signer);
-
-      const tx = await contract.mintBadge(walletAddress, badgeId);
-      const receipt = await tx.wait();
-
-      txHash = tx.hash;
-      blockNumber = receipt?.blockNumber ?? null;
-    } else {
-      txHash = providedTxHash;
+      return NextResponse.json({
+        mode: "record",
+        txHash: providedTxHash,
+        badge: data,
+      });
     }
 
-    let badgeRecord: Record<string, unknown> | null = null;
-    let databaseSaved = false;
-    let databaseError: string | null = null;
+    if (processPending) {
+      const processedJob = await processNextPendingBadgeMintJob(supabase, {
+        userId,
+        badgeId: badgeId ?? undefined,
+      });
+
+      return NextResponse.json({
+        mode: "process_pending",
+        processed: Boolean(processedJob),
+        job: processedJob,
+      });
+    }
+
+    if (badgeId === null) {
+      return NextResponse.json(
+        { error: "Valid badgeId is required." },
+        { status: 400 }
+      );
+    }
+
+    if (!walletAddress || !ethers.isAddress(walletAddress)) {
+      return NextResponse.json(
+        {
+          error: "walletAddress is required and must be a valid EVM address.",
+        },
+        { status: 400 }
+      );
+    }
 
     if (userId) {
-      try {
-        const supabase = getSupabaseAdminClient();
-        const { data, error } = await supabase
-          .from("badges")
-          .upsert(
-            {
-              user_id: userId,
-              badge_id: badgeId,
-              tx_hash: txHash,
-              minted_at: new Date().toISOString(),
-            },
-            { onConflict: "user_id,badge_id" }
-          )
-          .select("*")
-          .single();
+      const job = await ensureBadgeMintJob(supabase, {
+        userId,
+        walletAddress,
+        badgeId,
+      });
 
-        if (error) {
-          databaseError = error.message;
-        } else {
-          badgeRecord = data;
-          databaseSaved = true;
-        }
-      } catch (error) {
-        databaseError =
-          error instanceof Error ? error.message : "Unknown database error";
-      }
+      const processedJob = await processBadgeMintJob(supabase, job.id);
+
+      return NextResponse.json({
+        mode: "queue",
+        badgeId,
+        walletAddress,
+        contractAddress: resolveBadgeContractAddress(),
+        txHash: processedJob.tx_hash,
+        status: processedJob.status,
+        attemptCount: processedJob.attempt_count,
+        errorMessage: processedJob.error_message,
+        job: processedJob,
+      });
     }
 
+    const result = await mintBadgeDirect({ walletAddress, badgeId });
+
     return NextResponse.json({
-      txHash,
+      mode: "direct",
       badgeId,
-      walletAddress: walletAddress ?? null,
-      contractAddress: contractAddress ?? null,
-      blockNumber,
-      databaseSaved,
-      databaseError,
-      badge: badgeRecord,
+      walletAddress,
+      contractAddress: result.contractAddress,
+      txHash: result.txHash,
+      blockNumber: result.blockNumber,
+      alreadyOwned: result.alreadyOwned,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
