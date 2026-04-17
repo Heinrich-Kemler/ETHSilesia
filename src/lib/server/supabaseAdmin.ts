@@ -19,16 +19,19 @@ export function getSupabaseAdminClient(): SupabaseClient {
 
   const supabaseUrl =
     getEnv("SUPABASE_URL") ?? getEnv("NEXT_PUBLIC_SUPABASE_URL");
-  const serviceRoleKey = getEnv("SUPABASE_SERVICE_KEY");
+  const serviceRoleKey =
+    getEnv("SUPABASE_SERVICE_KEY") ?? getEnv("SUPABASE_SERVICE_ROLE_KEY");
 
   if (!supabaseUrl) {
     throw new Error(
-      "Missing SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL) for server-side Supabase access."
+      "Missing SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL) for server-side Supabase access.",
     );
   }
 
   if (!serviceRoleKey) {
-    throw new Error("Missing SUPABASE_SERVICE_KEY for server-side Supabase access.");
+    throw new Error(
+      "Missing SUPABASE_SERVICE_KEY for server-side Supabase access.",
+    );
   }
 
   cachedClient = createClient(supabaseUrl, serviceRoleKey, {
