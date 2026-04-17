@@ -278,11 +278,44 @@ export const translations = {
     en: "Level up! You are now {level}",
   },
   toastBadge: { pl: "Zdobyto odznakę: {name}", en: "Badge earned: {name}" },
+  toastDailyCorrect: {
+    pl: "Dzienne wyzwanie ukończone! +{xp} XP",
+    en: "Daily challenge complete! +{xp} XP",
+  },
+  toastDailyWrong: {
+    pl: "Dziś nie ten raz — wróć jutro po nowe wyzwanie.",
+    en: "Not today — come back tomorrow for a new challenge.",
+  },
 
   // Demo mode
   demoBanner: {
     pl: "Tryb demo — dane tymczasowe",
     en: "Demo mode — data is not persisted",
+  },
+
+  // Daily Challenge
+  dailyTitle: { pl: "Dzienne wyzwanie", en: "Daily Challenge" },
+  dailySubtitle: {
+    pl: "Jedno pytanie dziennie, bonus XP, zachowujesz streak.",
+    en: "One question per day, bonus XP, keeps your streak alive.",
+  },
+  dailyReward: { pl: "+{xp} XP nagrody", en: "+{xp} XP reward" },
+  dailyAnswered: { pl: "Odpowiedziano", en: "Answered" },
+  dailyCorrect: { pl: "Poprawnie", en: "Correct" },
+  dailyWrong: { pl: "Niepoprawnie", en: "Incorrect" },
+  dailyNextIn: { pl: "Następne za {time}", en: "Next in {time}" },
+  dailyCta: { pl: "Rozpocznij wyzwanie", en: "Start challenge" },
+  dailyStreakShield: {
+    pl: "Utrzymuje Twój streak",
+    en: "Keeps your streak alive",
+  },
+  dailyDoneToday: {
+    pl: "Dzisiejsze wyzwanie ukończone. Wróć jutro!",
+    en: "Today's challenge is done. Come back tomorrow!",
+  },
+  dailyCorrectAnswerWas: {
+    pl: "Poprawna odpowiedź:",
+    en: "Correct answer:",
   },
 } as const;
 

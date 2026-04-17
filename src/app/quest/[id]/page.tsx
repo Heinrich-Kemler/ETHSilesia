@@ -389,7 +389,7 @@ export default function ActiveQuestPage({
               </span>
             </div>
 
-            {/* Progress bar (3 segments) */}
+            {/* Progress bar (one segment per question) */}
             <div className="flex items-center gap-2 mb-4">
               {Array.from({ length: totalQ }).map((_, i) => {
                 const active = i <= qIndex;

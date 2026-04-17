@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import AppNav from "@/components/app/AppNav";
 import ChatPanel, { ChatFab } from "@/components/app/ChatPanel";
+import DailyChallenge from "@/components/app/DailyChallenge";
 import { useLanguage } from "@/lib/useLanguage";
 import { useTheme } from "@/lib/useTheme";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
@@ -121,6 +122,13 @@ export default function QuestHubPage() {
               xpPercent={xp.percent}
               streak={(user as { streak_days?: number } | null)?.streak_days ?? 0}
               isDemo={isDemo}
+            />
+
+            {/* Daily Challenge */}
+            <DailyChallenge
+              lang={lang}
+              unlockedLevel={level}
+              userId={user?.id ?? null}
             />
 
             {/* Quest grid — show current-level quests, with higher levels locked */}

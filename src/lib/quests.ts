@@ -1,6 +1,9 @@
 /**
  * Centralised quest catalogue. All quest data, metadata, and questions
  * live here so pages can import them without the server.
+ *
+ * Each quest now ships with 6 questions (original 3 + 3 deeper follow-ups).
+ * Scoring scales with `questions.length` — see /quest/[id]/page.tsx.
  */
 
 import type { Lang } from "./i18n";
@@ -19,14 +22,15 @@ export type Quest = {
   titleEn: string;
   xp: number;
   stars: 1 | 2 | 3;
-  questions: [QuizQuestion, QuizQuestion, QuizQuestion];
+  /** Minimum 1 question; we currently ship 6 per quest. */
+  questions: readonly [QuizQuestion, ...QuizQuestion[]];
 };
 
 function pl_en(pl: string, en: string): QuizOption {
   return { pl, en };
 }
 
-/** Helper to make a 3-question quest. */
+/** Helper to make a quest. */
 function q(
   id: string,
   level: 1 | 2 | 3,
@@ -34,7 +38,7 @@ function q(
   titleEn: string,
   xp: number,
   stars: 1 | 2 | 3,
-  questions: [QuizQuestion, QuizQuestion, QuizQuestion]
+  questions: readonly [QuizQuestion, ...QuizQuestion[]]
 ): Quest {
   return { id, level, titlePl, titleEn, xp, stars, questions };
 }
@@ -93,6 +97,48 @@ export const QUESTS: Quest[] = [
         ],
         correctIndex: 1,
       },
+      {
+        question: pl_en(
+          "Co oznacza 'zdecentralizowany'?",
+          "What does 'decentralised' mean?"
+        ),
+        options: [
+          pl_en("Kontrolowany przez jedną firmę", "Controlled by one company"),
+          pl_en(
+            "Rozproszony między wielu uczestników",
+            "Distributed across many participants"
+          ),
+          pl_en("Zablokowany przez rząd", "Blocked by the government"),
+          pl_en("Przechowywany w chmurze Amazon", "Stored on Amazon cloud"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Pierwszą znaną kryptowalutą blockchain był...",
+          "The first well-known blockchain cryptocurrency was..."
+        ),
+        options: [
+          pl_en("Ethereum", "Ethereum"),
+          pl_en("Bitcoin", "Bitcoin"),
+          pl_en("Dogecoin", "Dogecoin"),
+          pl_en("Litecoin", "Litecoin"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Co zapewnia bezpieczeństwo blockchainu?",
+          "What secures a blockchain?"
+        ),
+        options: [
+          pl_en("Kryptografia i konsensus sieci", "Cryptography and network consensus"),
+          pl_en("Program antywirusowy", "An antivirus program"),
+          pl_en("Hasło administratora", "An admin password"),
+          pl_en("SMS potwierdzający", "A confirmation SMS"),
+        ],
+        correctIndex: 0,
+      },
     ]
   ),
   q(
@@ -141,6 +187,51 @@ export const QUESTS: Quest[] = [
           pl_en("Portfel bankowy", "A bank wallet"),
         ],
         correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Klucz prywatny daje Ci...",
+          "A private key gives you..."
+        ),
+        options: [
+          pl_en("Dostęp do WiFi", "Access to WiFi"),
+          pl_en(
+            "Pełną kontrolę nad środkami w portfelu",
+            "Full control over the wallet's funds"
+          ),
+          pl_en("Darmowe tokeny co miesiąc", "Free tokens every month"),
+          pl_en("Zniżkę w sklepie", "A shop discount"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "'Not your keys, not your coins' oznacza...",
+          "'Not your keys, not your coins' means..."
+        ),
+        options: [
+          pl_en(
+            "Jeśli ktoś inny trzyma klucze, nie kontrolujesz środków",
+            "If someone else holds your keys, you don't control the funds"
+          ),
+          pl_en("Trzeba mieć klucze od mieszkania", "You need keys to your apartment"),
+          pl_en("Zapłać więcej za bezpieczeństwo", "Pay more for security"),
+          pl_en("Musisz mieć wiele portfeli", "You need multiple wallets"),
+        ],
+        correctIndex: 0,
+      },
+      {
+        question: pl_en(
+          "Najbezpieczniejszy backup frazy seed to...",
+          "The safest backup of your seed phrase is..."
+        ),
+        options: [
+          pl_en("Zdjęcie w telefonie", "A photo on your phone"),
+          pl_en("Email do samego siebie", "An email to yourself"),
+          pl_en("Zapis na papierze w sejfie", "Written on paper in a safe"),
+          pl_en("Publikacja na X/Twitterze", "Posted on X/Twitter"),
+        ],
+        correctIndex: 2,
       },
     ]
   ),
@@ -191,6 +282,48 @@ export const QUESTS: Quest[] = [
         ],
         correctIndex: 1,
       },
+      {
+        question: pl_en("Kto emituje USDC?", "Who issues USDC?"),
+        options: [
+          pl_en("Circle", "Circle"),
+          pl_en("Bitcoin Foundation", "Bitcoin Foundation"),
+          pl_en("Polski rząd", "The Polish government"),
+          pl_en("Apple", "Apple"),
+        ],
+        correctIndex: 0,
+      },
+      {
+        question: pl_en(
+          "Dlaczego stablecoiny są popularne w DeFi?",
+          "Why are stablecoins popular in DeFi?"
+        ),
+        options: [
+          pl_en("Bo są bezwartościowe", "Because they're worthless"),
+          pl_en(
+            "Stabilna wartość do handlu i oszczędzania",
+            "Stable value for trading and saving"
+          ),
+          pl_en("Bo dają 1000% APY", "Because they offer 1000% APY"),
+          pl_en("Bo są w pełni anonimowe", "Because they are fully anonymous"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Co oznacza, że stablecoin 'tracił peg'?",
+          "What does it mean when a stablecoin 'loses its peg'?"
+        ),
+        options: [
+          pl_en("Nic szczególnego", "Nothing special"),
+          pl_en(
+            "Jego cena odbiega od 1 USD — ryzyko dla użytkowników",
+            "Its price diverges from 1 USD — a risk to holders"
+          ),
+          pl_en("Staje się Bitcoinem", "It becomes Bitcoin"),
+          pl_en("Rząd go odkupuje", "The government buys it back"),
+        ],
+        correctIndex: 1,
+      },
     ]
   ),
   q(
@@ -237,6 +370,54 @@ export const QUESTS: Quest[] = [
           pl_en("Nie — jest nieodwracalna", "No — it's irreversible"),
           pl_en("Tylko za opłatą", "Only for a fee"),
           pl_en("Tylko w weekendy", "Only on weekends"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Do wysłania transakcji potrzebujesz...",
+          "To send a transaction you need..."
+        ),
+        options: [
+          pl_en("Konta w banku", "A bank account"),
+          pl_en(
+            "Adresu odbiorcy i środków na gas",
+            "The recipient address and funds for gas"
+          ),
+          pl_en("Dowodu osobistego", "A national ID"),
+          pl_en("Zgody notariusza", "A notary's approval"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Co to jest adres blockchain?",
+          "What is a blockchain address?"
+        ),
+        options: [
+          pl_en("Mieszkanie w Warszawie", "An apartment in Warsaw"),
+          pl_en(
+            "Publiczny identyfikator konta on-chain",
+            "A public on-chain account identifier"
+          ),
+          pl_en("Numer IP komputera", "A computer's IP address"),
+          pl_en("Adres email", "An email address"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Transakcja w statusie 'pending' oznacza...",
+          "A transaction in 'pending' state means..."
+        ),
+        options: [
+          pl_en("Została anulowana", "It was cancelled"),
+          pl_en(
+            "Czeka na potwierdzenie w sieci",
+            "It is waiting for network confirmation"
+          ),
+          pl_en("Nie istnieje", "It doesn't exist"),
+          pl_en("Została zwrócona", "It was refunded"),
         ],
         correctIndex: 1,
       },
@@ -291,6 +472,57 @@ export const QUESTS: Quest[] = [
           pl_en("Nikt — jest spalany", "Nobody — it is burned"),
         ],
         correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Jak zwykle obniżyć gas fee?",
+          "How can you usually reduce a gas fee?"
+        ),
+        options: [
+          pl_en(
+            "Wysyłać w godzinach szczytu",
+            "Send during peak hours"
+          ),
+          pl_en(
+            "Wybrać mniej obciążony moment w sieci",
+            "Pick a less busy moment on the network"
+          ),
+          pl_en("Wymienić komputer", "Replace your computer"),
+          pl_en("Zadzwonić do Ethereum", "Call Ethereum"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Na jakiej warstwie gas jest zwykle znacznie tańszy niż Ethereum L1?",
+          "Where is gas typically much cheaper than Ethereum L1?"
+        ),
+        options: [
+          pl_en("Na Księżycu", "On the moon"),
+          pl_en(
+            "Na rozwiązaniach L2 (Base, Arbitrum, Optimism)",
+            "On L2 rollups (Base, Arbitrum, Optimism)"
+          ),
+          pl_en("W banku", "At a bank"),
+          pl_en("Nigdzie", "Nowhere"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Co to jest 'gas limit'?",
+          "What is a 'gas limit'?"
+        ),
+        options: [
+          pl_en(
+            "Maksymalna ilość gazu, którą jesteś gotów zapłacić za transakcję",
+            "The maximum amount of gas you're willing to spend on a transaction"
+          ),
+          pl_en("Limit wieku użytkownika", "A user age limit"),
+          pl_en("Limit litrów paliwa", "A fuel volume limit"),
+          pl_en("Limit transakcji dziennie", "A daily transaction cap"),
+        ],
+        correctIndex: 0,
       },
     ]
   ),
@@ -348,6 +580,54 @@ export const QUESTS: Quest[] = [
         ],
         correctIndex: 0,
       },
+      {
+        question: pl_en("TVL w DeFi oznacza...", "TVL in DeFi means..."),
+        options: [
+          pl_en(
+            "Wartość zablokowaną w protokole (Total Value Locked)",
+            "Total Value Locked in the protocol"
+          ),
+          pl_en("Czas do wypłaty", "Time until withdrawal"),
+          pl_en("Typ tokena", "A token type"),
+          pl_en("Rodzaj audytu", "A type of audit"),
+        ],
+        correctIndex: 0,
+      },
+      {
+        question: pl_en(
+          "Największa zaleta DeFi nad tradycyjnymi finansami?",
+          "Biggest advantage of DeFi over traditional finance?"
+        ),
+        options: [
+          pl_en("Wyższe opłaty", "Higher fees"),
+          pl_en(
+            "Dostępność 24/7 bez pośrednika",
+            "24/7 access without a middleman"
+          ),
+          pl_en("Wolniejsze rozliczenia", "Slower settlement"),
+          pl_en("Więcej papierologii", "More paperwork"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "'Non-custodial' znaczy, że...",
+          "'Non-custodial' means..."
+        ),
+        options: [
+          pl_en(
+            "Ktoś inny trzyma Twoje środki",
+            "Someone else holds your funds"
+          ),
+          pl_en(
+            "Ty posiadasz klucze i masz pełną kontrolę",
+            "You hold the keys and have full control"
+          ),
+          pl_en("Zarządza tym państwo", "The state manages it"),
+          pl_en("Portfel zawsze offline", "A wallet that is always offline"),
+        ],
+        correctIndex: 1,
+      },
     ]
   ),
   q(
@@ -396,6 +676,42 @@ export const QUESTS: Quest[] = [
           pl_en("PayPal", "PayPal"),
         ],
         correctIndex: 2,
+      },
+      {
+        question: pl_en("AMM w DEX-ach oznacza...", "AMM on DEXes stands for..."),
+        options: [
+          pl_en("Automated Market Maker", "Automated Market Maker"),
+          pl_en("Anti-Money Machine", "Anti-Money Machine"),
+          pl_en("Auto-Mined Money", "Auto-Mined Money"),
+          pl_en("Asset Management Method", "Asset Management Method"),
+        ],
+        correctIndex: 0,
+      },
+      {
+        question: pl_en("Slippage to...", "Slippage is..."),
+        options: [
+          pl_en("Typ tokena", "A token type"),
+          pl_en(
+            "Różnica między oczekiwaną a rzeczywistą ceną wymiany",
+            "The difference between the expected and actual swap price"
+          ),
+          pl_en("Opłata sieci", "A network fee"),
+          pl_en("Rodzaj portfela", "A kind of wallet"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Na DEX transakcje wykonują...",
+          "On a DEX, transactions are executed by..."
+        ),
+        options: [
+          pl_en("Pracownicy giełdy", "Exchange staff"),
+          pl_en("Smart kontrakty", "Smart contracts"),
+          pl_en("Prezes giełdy", "The exchange's CEO"),
+          pl_en("Bank Rezerw Federalnych", "The Federal Reserve"),
+        ],
+        correctIndex: 1,
       },
     ]
   ),
@@ -449,6 +765,54 @@ export const QUESTS: Quest[] = [
         ],
         correctIndex: 1,
       },
+      {
+        question: pl_en("Staking to...", "Staking is..."),
+        options: [
+          pl_en("Odlewanie tokenów", "Casting new tokens"),
+          pl_en(
+            "Blokowanie tokenów dla bezpieczeństwa sieci i nagród",
+            "Locking tokens to secure the network and earn rewards"
+          ),
+          pl_en("Kupowanie tokenów za gotówkę", "Buying tokens with cash"),
+          pl_en("Usuwanie tokenów", "Deleting tokens"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Główna różnica między APR a APY?",
+          "Main difference between APR and APY?"
+        ),
+        options: [
+          pl_en("Żadna — to to samo", "None — they are the same"),
+          pl_en(
+            "APY uwzględnia procent składany, APR nie",
+            "APY includes compound interest, APR does not"
+          ),
+          pl_en("APR jest zawsze wyższy", "APR is always higher"),
+          pl_en("Różne waluty", "Different currencies"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Która obietnica powinna zapalić czerwoną lampkę?",
+          "Which promise should raise a red flag?"
+        ),
+        options: [
+          pl_en("5% APY w stablecoin poolu", "5% APY in a stablecoin pool"),
+          pl_en(
+            "Historyczny, stabilny zwrot",
+            "Historically stable returns"
+          ),
+          pl_en(
+            "Gwarantowane 1000% APY bez ryzyka",
+            "Guaranteed 1000% APY with no risk"
+          ),
+          pl_en("Transparentna tokenomika", "Transparent tokenomics"),
+        ],
+        correctIndex: 2,
+      },
     ]
   ),
   q(
@@ -498,6 +862,51 @@ export const QUESTS: Quest[] = [
           pl_en("Część opłat transakcyjnych", "A share of trading fees"),
           pl_en("Diamenty", "Diamonds"),
           pl_en("Akcje giełdowe", "Stock shares"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "LP Token reprezentuje...",
+          "An LP token represents..."
+        ),
+        options: [
+          pl_en("Twój udział w puli płynności", "Your share of the liquidity pool"),
+          pl_en("NFT psa", "A dog NFT"),
+          pl_en("Hasło do konta", "An account password"),
+          pl_en("Bilet lotniczy", "A plane ticket"),
+        ],
+        correctIndex: 0,
+      },
+      {
+        question: pl_en(
+          "W puli AMM stosunek tokenów jest...",
+          "In an AMM pool, the token ratio is..."
+        ),
+        options: [
+          pl_en("Stały na zawsze", "Fixed forever"),
+          pl_en(
+            "Regulowany przez arbitraż i handel",
+            "Regulated by arbitrage and trading"
+          ),
+          pl_en("Ustalany przez rząd", "Set by the government"),
+          pl_en("Całkowicie losowy", "Completely random"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Pule z bardzo niskim TVL są...",
+          "Pools with very low TVL are..."
+        ),
+        options: [
+          pl_en("Najbezpieczniejsze", "The safest"),
+          pl_en(
+            "Bardziej podatne na manipulację ceny i duży slippage",
+            "More prone to price manipulation and large slippage"
+          ),
+          pl_en("Zawsze opłacalne", "Always profitable"),
+          pl_en("Nieczynne", "Always offline"),
         ],
         correctIndex: 1,
       },
@@ -553,6 +962,51 @@ export const QUESTS: Quest[] = [
           ),
           pl_en("Tylko w niedzielę", "Only on Sundays"),
           pl_en("Zmienia się sam", "It changes itself"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Na którym blockchainie powstały pierwsze popularne smart kontrakty?",
+          "Which blockchain pioneered popular smart contracts?"
+        ),
+        options: [
+          pl_en("Bitcoin", "Bitcoin"),
+          pl_en("Ethereum", "Ethereum"),
+          pl_en("Dogecoin", "Dogecoin"),
+          pl_en("Cardano", "Cardano"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Po co wykonuje się audyty smart kontraktów?",
+          "Why are smart-contract audits performed?"
+        ),
+        options: [
+          pl_en("Dla estetyki", "For aesthetics"),
+          pl_en(
+            "Aby wykryć błędy i podatności zanim stracą użytkownicy",
+            "To find bugs and vulnerabilities before users lose funds"
+          ),
+          pl_en("Dla wzrostu PKB", "To grow GDP"),
+          pl_en("Po to by płacić podatki", "In order to pay taxes"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Znanym historycznym atakiem na smart kontrakt jest...",
+          "A famous historical smart-contract exploit is..."
+        ),
+        options: [
+          pl_en("Przecena w sklepie", "A store discount"),
+          pl_en(
+            "Atak na The DAO w 2016 roku",
+            "The DAO hack of 2016"
+          ),
+          pl_en("Bankructwo Lehman Brothers", "Lehman Brothers' bankruptcy"),
+          pl_en("Awaria systemu ZUS", "A ZUS system outage"),
         ],
         correctIndex: 1,
       },
@@ -612,6 +1066,54 @@ export const QUESTS: Quest[] = [
         ],
         correctIndex: 0,
       },
+      {
+        question: pl_en(
+          "Dlaczego IL jest 'impermanent'?",
+          "Why is IL called 'impermanent'?"
+        ),
+        options: [
+          pl_en("Bo zawsze znika", "Because it always disappears"),
+          pl_en(
+            "Bo może zniknąć, jeśli ceny wrócą do wartości początkowych",
+            "Because it can vanish if prices return to their starting values"
+          ),
+          pl_en("Bo zakazał go rząd", "Because the government banned it"),
+          pl_en("Bo nie istnieje", "Because it doesn't exist"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "IL jest największy, gdy...",
+          "IL is largest when..."
+        ),
+        options: [
+          pl_en("Ceny są stabilne", "Prices are stable"),
+          pl_en(
+            "Jedna cena mocno rośnie lub spada względem drugiej",
+            "One price moves sharply up or down relative to the other"
+          ),
+          pl_en("Nie ma handlu w puli", "There is no trading in the pool"),
+          pl_en("Token zmienia nazwę", "The token is renamed"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Jak ograniczyć ekspozycję na IL?",
+          "How can you reduce IL exposure?"
+        ),
+        options: [
+          pl_en(
+            "Używając pul stablecoin–stablecoin (np. USDC/DAI)",
+            "By using stablecoin–stablecoin pools (e.g. USDC/DAI)"
+          ),
+          pl_en("Wybierając memecoin pule", "By picking memecoin pools"),
+          pl_en("Dodając więcej dźwigni", "By adding more leverage"),
+          pl_en("Usuwając portfel", "By deleting the wallet"),
+        ],
+        correctIndex: 0,
+      },
     ]
   ),
   q(
@@ -664,6 +1166,54 @@ export const QUESTS: Quest[] = [
         ],
         correctIndex: 0,
       },
+      {
+        question: pl_en(
+          "Główna korzyść dla inwestora tradycyjnego?",
+          "The main benefit for a traditional investor?"
+        ),
+        options: [
+          pl_en(
+            "Dostęp do większej liczby aktywów 24/7 z mniejszymi progami",
+            "Access to more assets 24/7 with lower entry thresholds"
+          ),
+          pl_en("Całkowity brak regulacji", "Total deregulation"),
+          pl_en("Stuprocentowa anonimowość", "100% anonymity"),
+          pl_en("Brak opodatkowania", "No taxation"),
+        ],
+        correctIndex: 0,
+      },
+      {
+        question: pl_en(
+          "Kto zwykle tokenizuje obligacje?",
+          "Who typically tokenises bonds?"
+        ),
+        options: [
+          pl_en("Użytkownicy anonimowych forów", "Anonymous forum users"),
+          pl_en(
+            "Regulowane instytucje finansowe",
+            "Regulated financial institutions"
+          ),
+          pl_en("Twórcy memów", "Meme creators"),
+          pl_en("Artyści NFT", "NFT artists"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Największe ryzyko RWA to...",
+          "The biggest risk of RWA is..."
+        ),
+        options: [
+          pl_en("Zbyt niskie APY", "APY being too low"),
+          pl_en(
+            "Ryzyko emitenta (off-chain) i regulacyjne",
+            "Issuer (off-chain) and regulatory risk"
+          ),
+          pl_en("Brak memów", "A shortage of memes"),
+          pl_en("Za mały wybór kolorów", "Too few colour options"),
+        ],
+        correctIndex: 1,
+      },
     ]
   ),
   q(
@@ -715,6 +1265,51 @@ export const QUESTS: Quest[] = [
           pl_en("Sprzedawanie na stracie", "Selling at a loss"),
         ],
         correctIndex: 0,
+      },
+      {
+        question: pl_en(
+          "Który polski regulator zajmuje się nadzorem rynku finansowego?",
+          "Which Polish regulator oversees the financial market?"
+        ),
+        options: [
+          pl_en("ZUS", "ZUS"),
+          pl_en("KNF (Komisja Nadzoru Finansowego)", "KNF (Polish FSA)"),
+          pl_en("MSZ", "MSZ"),
+          pl_en("Lasy Państwowe", "State Forests"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Rozsądna zasada 'position sizing' to...",
+          "A sensible 'position sizing' rule is..."
+        ),
+        options: [
+          pl_en("Wszystko na jedną kartę", "All in on one bet"),
+          pl_en(
+            "Inwestuj tylko tyle, ile jesteś w stanie stracić",
+            "Invest only what you can afford to lose"
+          ),
+          pl_en("Zawsze na kredyt", "Always on credit"),
+          pl_en("Minimum 50% portfela w jednym tokenie", "Minimum 50% of portfolio in one token"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Wiarygodne źródła audytów smart kontraktów to...",
+          "Reputable sources for smart-contract audits are..."
+        ),
+        options: [
+          pl_en("Anonimowe konta na X", "Anonymous accounts on X"),
+          pl_en(
+            "Renomowane firmy: OpenZeppelin, CertiK, Trail of Bits",
+            "Reputable firms: OpenZeppelin, CertiK, Trail of Bits"
+          ),
+          pl_en("Losowe TikToki", "Random TikToks"),
+          pl_en("Grupa na Telegramie", "A Telegram group"),
+        ],
+        correctIndex: 1,
       },
     ]
   ),
@@ -771,6 +1366,57 @@ export const QUESTS: Quest[] = [
         ],
         correctIndex: 0,
       },
+      {
+        question: pl_en(
+          "Rug pull najczęściej dotyczy...",
+          "Rug pulls most often affect..."
+        ),
+        options: [
+          pl_en(
+            "Dużych, audytowanych protokołów z długą historią",
+            "Large, audited protocols with long track records"
+          ),
+          pl_en(
+            "Nowych, nieaudytowanych memecoinów",
+            "New, unaudited memecoins"
+          ),
+          pl_en("Bitcoina", "Bitcoin"),
+          pl_en("Euro", "The euro"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "'Soft rug' to...",
+          "A 'soft rug' is..."
+        ),
+        options: [
+          pl_en("Rodzaj NFT", "A type of NFT"),
+          pl_en(
+            "Stopniowe porzucanie projektu przez zespół",
+            "A team slowly abandoning the project"
+          ),
+          pl_en("Delikatne ogłoszenie partnerstwa", "A soft partnership announcement"),
+          pl_en("Dywan z IKEA", "A rug from IKEA"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Do weryfikacji tokena przydają się m.in...",
+          "Useful tools to verify a token include..."
+        ),
+        options: [
+          pl_en("Google Docs", "Google Docs"),
+          pl_en(
+            "Etherscan, DEXScreener, raporty audytów",
+            "Etherscan, DEXScreener, audit reports"
+          ),
+          pl_en("Wikipedia i nic więcej", "Wikipedia only"),
+          pl_en("Archiwum Allegro", "The Allegro archive"),
+        ],
+        correctIndex: 1,
+      },
     ]
   ),
   q(
@@ -825,6 +1471,54 @@ export const QUESTS: Quest[] = [
           pl_en("Ignoruj ryzyko", "Ignore the risk"),
         ],
         correctIndex: 0,
+      },
+      {
+        question: pl_en(
+          "BLIK to typowo...",
+          "BLIK is typically..."
+        ),
+        options: [
+          pl_en("Kryptowaluta", "A cryptocurrency"),
+          pl_en(
+            "Polski system płatności mobilnych",
+            "A Polish mobile payment system"
+          ),
+          pl_en("Giełda DEX", "A DEX"),
+          pl_en("Rozwiązanie L2", "An L2 rollup"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Portfel wielopodpisowy (multisig)...",
+          "A multisig wallet..."
+        ),
+        options: [
+          pl_en("Wymaga tylko jednego podpisu", "Needs just one signature"),
+          pl_en(
+            "Wymaga wielu podpisów do zatwierdzenia transakcji",
+            "Requires multiple signatures to approve a transaction"
+          ),
+          pl_en("Nie istnieje", "Does not exist"),
+          pl_en("Działa tylko z Bitcoinem", "Only works with Bitcoin"),
+        ],
+        correctIndex: 1,
+      },
+      {
+        question: pl_en(
+          "Ostateczna złota zasada Skarbnika to...",
+          "Skarbnik's ultimate golden rule is..."
+        ),
+        options: [
+          pl_en("Kup wszystko co widzisz", "Buy everything you see"),
+          pl_en(
+            "Zawsze DYOR i bezpieczeństwo przede wszystkim",
+            "Always DYOR and security first"
+          ),
+          pl_en("Podążaj za FOMO", "Follow the FOMO"),
+          pl_en("Nie włączaj 2FA", "Skip 2FA"),
+        ],
+        correctIndex: 1,
       },
     ]
   ),
