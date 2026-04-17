@@ -23,7 +23,6 @@ import {
   ChevronRight,
   Lock,
 } from "lucide-react";
-import AppNav from "@/components/app/AppNav";
 import { useLanguage } from "@/lib/useLanguage";
 import { useTheme } from "@/lib/useTheme";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
@@ -82,7 +81,6 @@ export default function ProfilePage() {
     status,
     isDemo,
     ready,
-    login,
     logout,
     refetch,
   } = useSkarbnikUser();
@@ -210,17 +208,6 @@ export default function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-themed">
-      <AppNav
-        lang={lang}
-        onToggleLang={toggleLang}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        authenticated={!!user}
-        onLogin={login}
-        onLogout={logout}
-        demo={demo}
-      />
-
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         {loading ? (
           <div className="flex items-center justify-center py-20">

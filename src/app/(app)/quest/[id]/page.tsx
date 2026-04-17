@@ -15,9 +15,7 @@ import {
   Award,
   BookOpen,
 } from "lucide-react";
-import AppNav from "@/components/app/AppNav";
 import { useLanguage } from "@/lib/useLanguage";
-import { useTheme } from "@/lib/useTheme";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { useDemoMode } from "@/lib/useDemoMode";
 import { t } from "@/lib/i18n";
@@ -42,10 +40,9 @@ export default function ActiveQuestPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { lang, toggle: toggleLang } = useLanguage();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { lang } = useLanguage();
   const demo = useDemoMode();
-  const { user, isDemo, login, logout, refetch } = useSkarbnikUser();
+  const { user, isDemo, refetch } = useSkarbnikUser();
   const toast = useToast();
 
   const quest = useMemo<Quest | undefined>(() => getQuestById(id), [id]);
@@ -288,16 +285,6 @@ export default function ActiveQuestPage({
   if (phase === "not-found") {
     return (
       <main className="min-h-screen bg-themed">
-        <AppNav
-          lang={lang}
-          onToggleLang={toggleLang}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          authenticated={!!user}
-          onLogin={login}
-          onLogout={logout}
-          demo={demo}
-        />
         <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-24 text-center">
           <h1 className="font-heading text-3xl font-bold text-themed mb-4">
             {lang === "pl" ? "Quest nie znaleziony" : "Quest not found"}
@@ -317,16 +304,6 @@ export default function ActiveQuestPage({
   if (!quest || phase === "loading") {
     return (
       <main className="min-h-screen bg-themed">
-        <AppNav
-          lang={lang}
-          onToggleLang={toggleLang}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          authenticated={!!user}
-          onLogin={login}
-          onLogout={logout}
-          demo={demo}
-        />
         <div className="flex items-center justify-center py-28">
           <div className="w-8 h-8 rounded-full border-2 border-gold-themed/30 border-t-gold-themed animate-spin" />
         </div>
@@ -339,17 +316,6 @@ export default function ActiveQuestPage({
 
   return (
     <main className="min-h-screen bg-themed">
-      <AppNav
-        lang={lang}
-        onToggleLang={toggleLang}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        authenticated={!!user}
-        onLogin={login}
-        onLogout={logout}
-        demo={demo}
-      />
-
       <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         {phase === "quiz" && (
           <>
