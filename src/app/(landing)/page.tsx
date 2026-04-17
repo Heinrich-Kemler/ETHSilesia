@@ -2,7 +2,6 @@
 
 import { useLanguage } from "@/lib/useLanguage";
 import { useTheme } from "@/lib/useTheme";
-import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
 import StatsSection from "@/components/landing/StatsSection";
 import HowItWorks from "@/components/landing/HowItWorks";
@@ -12,18 +11,17 @@ import CTASection from "@/components/landing/CTASection";
 import Footer from "@/components/landing/Footer";
 import ChatWidget from "@/components/ui/ChatWidget";
 
+/**
+ * Landing page content. The transparent <Navbar> is provided by the
+ * sibling layout at `src/app/(landing)/layout.tsx`, not here — that
+ * keeps the nav mounted across any future intra-group navigation.
+ */
 export default function Home() {
-  const { lang, toggle: toggleLang } = useLanguage();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { lang } = useLanguage();
+  const { theme } = useTheme();
 
   return (
     <div className="min-h-screen">
-      <Navbar
-        lang={lang}
-        onToggleLang={toggleLang}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-      />
       <HeroSection lang={lang} theme={theme} />
       <StatsSection lang={lang} />
       <HowItWorks lang={lang} />

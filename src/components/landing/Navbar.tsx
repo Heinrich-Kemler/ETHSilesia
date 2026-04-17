@@ -16,12 +16,10 @@ const navLinks = [
 
 export default function Navbar({
   lang,
-  onToggleLang,
   theme,
   onToggleTheme,
 }: {
   lang: Lang;
-  onToggleLang: () => void;
   theme: Theme;
   onToggleTheme: () => void;
 }) {

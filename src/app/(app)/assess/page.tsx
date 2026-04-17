@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, ChevronRight, Sparkles, Shield, Crown } from "lucide-react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useLanguage } from "@/lib/useLanguage";
-import { useTheme } from "@/lib/useTheme";
 import { t } from "@/lib/i18n";
 import {
   ASSESSMENT_QUESTIONS,
@@ -15,7 +14,6 @@ import {
 } from "@/lib/assessment";
 import { levelNameKey } from "@/lib/quests";
 import { useDemoMode } from "@/lib/useDemoMode";
-import AppNav from "@/components/app/AppNav";
 import { useToast } from "@/components/ui/Toast";
 
 type Phase = "checking" | "intro" | "quiz" | "result";
@@ -30,8 +28,7 @@ function useSafePrivy() {
 
 export default function AssessPage() {
   const router = useRouter();
-  const { lang, toggle: toggleLang } = useLanguage();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { lang } = useLanguage();
   const demo = useDemoMode();
   const privy = useSafePrivy();
   const toast = useToast();
@@ -177,17 +174,6 @@ export default function AssessPage() {
   // ---------- UI ----------
   return (
     <main className="min-h-screen bg-themed">
-      <AppNav
-        lang={lang}
-        onToggleLang={toggleLang}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        authenticated={privy?.authenticated ?? false}
-        onLogin={privy?.login}
-        onLogout={privy?.logout}
-        demo={demo}
-      />
-
       <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         <AnimatePresence mode="wait">
           {phase === "checking" && (

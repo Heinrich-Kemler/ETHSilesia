@@ -4,10 +4,8 @@ import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Award, Trophy, Lock } from "lucide-react";
-import AppNav from "@/components/app/AppNav";
 import BadgeCard from "@/components/app/BadgeCard";
 import { useLanguage } from "@/lib/useLanguage";
-import { useTheme } from "@/lib/useTheme";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { useDemoMode } from "@/lib/useDemoMode";
 import { t } from "@/lib/i18n";
@@ -28,8 +26,7 @@ import {
  */
 export default function BadgesPage() {
   const router = useRouter();
-  const { lang, toggle: toggleLang } = useLanguage();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { lang } = useLanguage();
   const demo = useDemoMode();
   const {
     user,
@@ -37,8 +34,6 @@ export default function BadgesPage() {
     status,
     isDemo,
     ready,
-    login,
-    logout,
   } = useSkarbnikUser();
 
   // Auth redirect — same pattern as /quest.
@@ -72,17 +67,6 @@ export default function BadgesPage() {
 
   return (
     <main className="min-h-screen bg-themed">
-      <AppNav
-        lang={lang}
-        onToggleLang={toggleLang}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        authenticated={!!user}
-        onLogin={login}
-        onLogout={logout}
-        demo={demo}
-      />
-
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-24">
         {loading ? (
           <div className="flex items-center justify-center py-20">

@@ -1,14 +1,28 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChevronRight, ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
 import SkarbnikMascot from "@/components/ui/SkarbnikMascot";
+import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { t } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
 import type { Theme } from "@/lib/useTheme";
 
 export default function HeroSection({ lang, theme }: { lang: Lang; theme: Theme }) {
+  const router = useRouter();
+  const { status, isDemo, login } = useSkarbnikUser();
+
+  // Authenticated → jump into the quest hub.
+  // Not authenticated → open the Privy login modal. Demo users count as
+  // authenticated so the CTA still works with `?demo=true`.
+  const handleStart = () => {
+    if (status === "authenticated" || isDemo) {
+      router.push("/quest");
+    } else {
+      login();
+    }
+  };
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background effects */}
@@ -75,14 +89,15 @@ export default function HeroSection({ lang, theme }: { lang: Lang; theme: Theme 
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <Link
-                href="/assess"
+              <button
+                type="button"
+                onClick={handleStart}
                 className="group flex items-center justify-center gap-2 gradient-gold-themed text-white font-heading font-bold text-base px-8 py-4 rounded-xl transition-all"
                 style={{ boxShadow: `0 0 30px var(--gold-glow)` }}
               >
                 {t("heroCta", lang)}
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              </button>
               <a
                 href="#how"
                 className="flex items-center justify-center gap-2 border border-themed hover:border-muted-themed text-secondary-themed hover:text-themed font-medium text-base px-8 py-4 rounded-xl transition-all"
