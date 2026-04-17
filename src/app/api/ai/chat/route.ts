@@ -1,57 +1,194 @@
 import { NextResponse } from "next/server";
-import {
-  getOpenAIClient,
-  getOpenAIModel,
-  normalizeLanguage,
-  SKARBNIK_SYSTEM_PROMPT,
-} from "@/lib/server/openaiClient";
+import { GoogleGenerativeAI, TaskType } from "@google/generative-ai";
+import { getSupabaseAdminClient } from "@/lib/server/supabaseAdmin";
 
+// Odblokuj długie przetwarzanie jeśli Grok będzie zamulał
+export const maxDuration = 30;
 export const runtime = "nodejs";
 
 type ChatBody = {
   message?: string;
   language?: string;
+  userId?: string; // Tu frontend prześle użytkownika np. poświadczenia Privy
+  sessionId?: string; // Losowo generowany identyfikator sesji z przeglądarki
 };
 
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as ChatBody;
-    const message = body.message?.trim();
+    const userQuery = body.message?.trim();
+    const sessionId = body.sessionId || "anonymous-session";
+    const userLang = body.language === "en" ? "English" : "Polish";
 
-    if (!message) {
+    if (!userQuery) {
       return NextResponse.json(
         { error: "message is required." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const language = normalizeLanguage(body.language);
-    const client = getOpenAIClient();
+    const supabase = getSupabaseAdminClient();
 
-    const response = await client.responses.create({
-      model: getOpenAIModel(),
-      instructions: `${SKARBNIK_SYSTEM_PROMPT} Reply in ${
-        language === "pl" ? "Polish" : "English"
-      } unless the user asks to switch language.`,
-      input: message,
-      max_output_tokens: 220,
+    // 1. Zidentyfikuj i wczytaj wewnętrzne ID usera na podstawie privy_id (jeśli został podany)
+    let internalUserId: string | null = null;
+    let userLevel = 1;
+
+    if (body.userId) {
+      const { data: userRecord } = await supabase
+        .from("users")
+        .select("id, level")
+        .eq("privy_id", body.userId)
+        .single();
+
+      if (userRecord) {
+        internalUserId = userRecord.id;
+        userLevel = userRecord.level || 1;
+      }
+    }
+
+    // 2. Pobierz historię (limit do 6 ostatnich wiadomości dla niezapapychania okna kontekstu)
+    const { data: historyData } = await supabase
+      .from("chat_history")
+      .select("role, content")
+      .eq("session_id", sessionId)
+      .order("created_at", { ascending: false })
+      .limit(6);
+
+    const messages = [];
+
+    // 3. RAG - Połącz się z Gemini aby sczytać wektory wiedzy usera (3072 z gemini-embedding-001)
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    if (!geminiApiKey) throw new Error("Missing GEMINI_API_KEY");
+
+    const genAI = new GoogleGenerativeAI(geminiApiKey);
+    const embedModel = genAI.getGenerativeModel({
+      model: "models/gemini-embedding-001",
     });
 
-    const output = response.output_text?.trim();
+    const embedRes = await embedModel.embedContent({
+      content: { role: "user", parts: [{ text: userQuery }] },
+      taskType: TaskType.RETRIEVAL_QUERY,
+    });
 
-    if (!output) {
+    const { data: documents, error: rpcError } = await supabase.rpc(
+      "match_documents",
+      {
+        query_embedding: embedRes.embedding.values,
+        match_threshold: 0.15,
+        match_count: 2,
+      },
+    );
+
+    if (rpcError) {
+      console.error("RAG Error:", rpcError.message);
+    }
+
+    // Przepisanie kontekstu
+    const context = (documents || [])
+      .map(
+        (doc: {
+          question_en: string;
+          answer_en: string;
+          question_pl: string;
+          answer_pl: string;
+        }) => {
+          if (userLang === "English") {
+            return `[Context Question]: ${doc.question_en}\n[Context Answer]: ${doc.answer_en}`;
+          }
+          return `[Pytanie z bazy wiedzy]: ${doc.question_pl}\n[Odpowiedź z bazy wiedzy]: ${doc.answer_pl}`;
+        },
+      )
+      .join("\n\n");
+
+    // 4. Stworzenie System Promptu
+    const systemInstruction = `Jesteś Skarbnikiem, wirtualnym opiekunem użytkownika na platformie ETH Silesia. 
+Dostosowujesz się do poziomu edukacji usera (jego poziom to: ${userLevel}). Twoi rozmówcy to początkujący, zwykli ludzie bez pojęcia o krypto (często totalni laicy).
+
+Zasady, bezwzględnie:
+1. Rozmawiaj ze "zwykłym człowiekiem z ulicy" - używaj bardzo prostych metafor z życia codziennego (np. sejf, cyfrowa gotówka).
+2. Pamiętaj, absolutnie zero krypto slangu (żadnych skrótów typu DYOR, HODL, wagmi, DeFi, FUD itp.). Tłumacz wszystko po ludzku.
+3. Nigdy nie polecaj ani nie wymieniaj giełdy Zonda/ZondaCrypto w swoich odpowiedziach.
+4. Zawsze i bezwzględnie odpowiadaj JEDYNIE w języku polskim, niezależnie od tego, w jakim języku użytkownik ządał pytanie.
+
+Poniżej znajduje się wstrzyknięta wiedza specjalistyczna:
+---
+${context}
+---
+Odpowiadaj konkretnie, krótko i po ludzku. Nigdy nie dawaj i nie sugeruj porad inwestycyjnych.`;
+
+    messages.push({ role: "system", content: systemInstruction });
+
+    // 5. Dopasowanie odwróconej chronologicznie historii z bazy pod Groka
+    if (historyData && historyData.length > 0) {
+      const history = historyData.reverse().map((h) => ({
+        role: h.role === "model" ? "assistant" : "user",
+        content: h.content,
+      }));
+      messages.push(...history);
+    }
+
+    messages.push({ role: "user", content: userQuery });
+
+    // 6. Odpytanie Groka przez Fetch REST API
+    const xaiApiKey = process.env.XAI_API_KEY;
+    if (!xaiApiKey) throw new Error("Missing XAI_API_KEY");
+
+    const grokRes = await fetch("https://api.x.ai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${xaiApiKey}`,
+      },
+      body: JSON.stringify({
+        model: "grok-4-1-fast-non-reasoning", // Taki model miałeś ustawiony w tescie
+        messages: messages,
+        max_tokens: 300,
+        temperature: 0.5,
+      }),
+    });
+
+    if (!grokRes.ok) {
+      const errorText = await grokRes.text();
+      console.error("Grok Error Response:", errorText);
+      throw new Error(`Grok API returned status ${grokRes.status}`);
+    }
+
+    const chatCompletion = await grokRes.json();
+    const responseText = chatCompletion.choices?.[0]?.message?.content;
+
+    if (!responseText) {
       return NextResponse.json(
         { error: "AI did not return a response." },
-        { status: 502 }
+        { status: 502 },
       );
     }
 
-    return NextResponse.json({ response: output });
+    // 7. Zapisanie historii na spokojnie w tle, używamy waitUntil lub po prostu await
+    if (internalUserId || sessionId !== "anonymous-session") {
+      await supabase.from("chat_history").insert([
+        {
+          user_id: internalUserId, // null akceptowane jeśli anonimowy pod warunkiem ze schemat zezwala, lub jesli zrobiles w migracji
+          session_id: sessionId,
+          role: "user",
+          content: userQuery,
+        },
+        {
+          user_id: internalUserId,
+          session_id: sessionId,
+          role: "model",
+          content: responseText,
+        },
+      ]);
+    }
+
+    // Odpowiedź dla ChatWidget.tsx
+    return NextResponse.json({ response: responseText });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Chat route error:", message);
     return NextResponse.json(
       { error: "AI chat request failed.", details: message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

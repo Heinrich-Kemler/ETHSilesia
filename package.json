@@ -11,6 +11,7 @@
     "deploy:base-sepolia": "hardhat run scripts/deploy-skarbnik-badges.js --network baseSepolia"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@openzeppelin/contracts": "^5.6.1",
     "@privy-io/react-auth": "^3.21.3",
     "@supabase/supabase-js": "^2.103.2",
