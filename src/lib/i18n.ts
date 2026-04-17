@@ -147,10 +147,153 @@ export const translations = {
     en: "How do I start with DeFi?",
   },
   chatSuggestion3: { pl: "Co to jest staking?", en: "What is staking?" },
+
+  // Assessment
+  assessTitle: {
+    pl: "Ocena początkowa",
+    en: "Initial assessment",
+  },
+  assessIntro: {
+    pl: "Odpowiedz na 5 pytań, aby ustalić Twój poziom.",
+    en: "Answer 5 questions so we can set your starting level.",
+  },
+  assessQuestionOf: { pl: "Pytanie {current} z {total}", en: "Question {current} of {total}" },
+  assessCorrect: { pl: "Dobra odpowiedź!", en: "Correct!" },
+  assessWrong: { pl: "Nie do końca.", en: "Not quite." },
+  assessResultTitle: {
+    pl: "Twój początkowy poziom",
+    en: "Your starting level",
+  },
+  assessScore: { pl: "Wynik: {score}/5", en: "Score: {score}/5" },
+  assessBegin: { pl: "Rozpocznij", en: "Begin" },
+  assessWelcomeL1: {
+    pl: "Zaczynasz jako Zielony Skarbnik. Poprowadzimy Cię od podstaw.",
+    en: "You start as Green Skarbnik. We'll guide you from the basics.",
+  },
+  assessWelcomeL2: {
+    pl: "Znasz już podstawy — witaj jako Srebrny Skarbnik.",
+    en: "You already know the basics — welcome, Silver Skarbnik.",
+  },
+  assessWelcomeL3: {
+    pl: "Mistrzostwo — wkraczasz jako Złoty Skarbnik.",
+    en: "Mastery — you enter as Gold Skarbnik.",
+  },
+  levelGreen: { pl: "Zielony Skarbnik", en: "Green Skarbnik" },
+  levelSilver: { pl: "Srebrny Skarbnik", en: "Silver Skarbnik" },
+  levelGold: { pl: "Złoty Skarbnik", en: "Gold Skarbnik" },
+
+  // Assessment questions
+  aQ1: { pl: "Co to jest blockchain?", en: "What is a blockchain?" },
+  aQ1a: { pl: "Rodzaj kryptowaluty", en: "A kind of cryptocurrency" },
+  aQ1b: { pl: "Zdecentralizowana baza danych", en: "A decentralised database" },
+  aQ1c: { pl: "Aplikacja bankowa", en: "A banking app" },
+  aQ1d: { pl: "Rodzaj inwestycji", en: "A type of investment" },
+
+  aQ2: { pl: "Czym jest USDC?", en: "What is USDC?" },
+  aQ2a: { pl: "Akcje spółki", en: "Company shares" },
+  aQ2b: { pl: "Stablecoin powiązany z dolarem", en: "A stablecoin pegged to the dollar" },
+  aQ2c: { pl: "Token do gier", en: "A gaming token" },
+  aQ2d: { pl: "Polska waluta cyfrowa", en: "A Polish digital currency" },
+
+  aQ3: { pl: "Co to jest portfel kryptowalutowy?", en: "What is a crypto wallet?" },
+  aQ3a: { pl: "Fizyczny portfel", en: "A physical wallet" },
+  aQ3b: { pl: "Aplikacja przechowująca klucze", en: "An app that stores your keys" },
+  aQ3c: { pl: "Konto bankowe", en: "A bank account" },
+  aQ3d: { pl: "Giełda kryptowalut", en: "A crypto exchange" },
+
+  aQ4: { pl: "Czym jest DeFi?", en: "What is DeFi?" },
+  aQ4a: { pl: "Nowy rodzaj banku", en: "A new kind of bank" },
+  aQ4b: { pl: "Zdecentralizowane finanse", en: "Decentralised finance" },
+  aQ4c: { pl: "Gra komputerowa", en: "A computer game" },
+  aQ4d: { pl: "Technologia płatności", en: "A payments technology" },
+
+  aQ5: { pl: "Co to jest yield farming?", en: "What is yield farming?" },
+  aQ5a: { pl: "Hodowla zwierząt", en: "Animal farming" },
+  aQ5b: { pl: "Zarabianie na kryptowalutach", en: "Earning on crypto assets" },
+  aQ5c: { pl: "Kopanie kryptowalut", en: "Crypto mining" },
+  aQ5d: { pl: "Handel akcjami", en: "Trading stocks" },
+
+  // Quest Hub
+  questHubTitle: { pl: "Twoje questy", en: "Your quests" },
+  questHubSubtitle: {
+    pl: "Wybierz quest, aby kontynuować naukę",
+    en: "Pick a quest to keep learning",
+  },
+  questLevel: { pl: "Poziom", en: "Level" },
+  questXP: { pl: "XP", en: "XP" },
+  questStreak: { pl: "Dni z rzędu", en: "Day streak" },
+  questStart: { pl: "Start", en: "Start" },
+  questReplay: { pl: "Powtórz", en: "Replay" },
+  questLocked: { pl: "Zablokowane", en: "Locked" },
+  questCompleted: { pl: "Ukończone", en: "Completed" },
+  questAvailable: { pl: "Dostępne", en: "Available" },
+  questUnlockAt: {
+    pl: "Odblokuj na poziomie {level}",
+    en: "Unlocks at level {level}",
+  },
+  leaderboardPreview: { pl: "Top 3 graczy", en: "Top 3 players" },
+  seeFullLeaderboard: { pl: "Zobacz pełny ranking", en: "See full leaderboard" },
+  rank: { pl: "Pozycja", en: "Rank" },
+  player: { pl: "Gracz", en: "Player" },
+  logOut: { pl: "Wyloguj", en: "Log out" },
+
+  // Active Quest
+  quizQuestionOf: { pl: "Pytanie {current} z {total}", en: "Question {current} of {total}" },
+  quizNext: { pl: "Następne pytanie", en: "Next question" },
+  quizFinish: { pl: "Zakończ quest", en: "Finish quest" },
+  quizTimeOut: { pl: "Czas minął", en: "Time's up" },
+  quizAiThinking: { pl: "Skarbnik myśli...", en: "Skarbnik is thinking..." },
+  quizCorrectLabel: { pl: "Poprawnie", en: "Correct" },
+  quizWrongLabel: { pl: "Niepoprawnie", en: "Incorrect" },
+  quizCompleteTitle: { pl: "Quest ukończony!", en: "Quest complete!" },
+  quizCompleteScore: { pl: "{score} z {total} poprawnych", en: "{score} of {total} correct" },
+  quizXpEarned: { pl: "Zdobyte XP", en: "XP earned" },
+  quizLevelUpTitle: { pl: "Awans na nowy poziom!", en: "Level up!" },
+  quizLevelUpNew: { pl: "Jesteś teraz", en: "You are now" },
+  quizBadgeEarned: { pl: "Zdobyto odznakę", en: "Badge earned" },
+  quizBackHub: { pl: "Powrót do questów", en: "Back to Quest Hub" },
+  badge1: { pl: "Początkujący Skarbnik", en: "First Steps" },
+  badge2: { pl: "Srebrny Skarbnik", en: "Silver Skarbnik" },
+  badge3: { pl: "Złoty Skarbnik", en: "Gold Skarbnik" },
+  badge4: { pl: "Próba Zdana", en: "Trial Passed" },
+  badge5: { pl: "Strażnik Skarbu", en: "Treasure Guardian" },
+
+  // Leaderboard page
+  leaderboardPageTitle: { pl: "Ranking sezonu", en: "Season leaderboard" },
+  leaderboardSeason: { pl: "Sezon 1 — kończy się {date}", en: "Season 1 — ends {date}" },
+  leaderboardEmpty: {
+    pl: "Brak graczy w tym sezonie. Ukończ quest, aby pojawić się tutaj.",
+    en: "No players this season. Complete a quest to show up here.",
+  },
+  leaderboardYou: { pl: "Ty", en: "You" },
+
+  // Toasts
+  toastGenericError: {
+    pl: "Coś poszło nie tak. Spróbuj ponownie.",
+    en: "Something went wrong. Try again.",
+  },
+  toastQuestCompleted: { pl: "Quest ukończony! +{xp} XP", en: "Quest completed! +{xp} XP" },
+  toastLevelUp: {
+    pl: "Awans! Jesteś teraz {level}",
+    en: "Level up! You are now {level}",
+  },
+  toastBadge: { pl: "Zdobyto odznakę: {name}", en: "Badge earned: {name}" },
+
+  // Demo mode
+  demoBanner: {
+    pl: "Tryb demo — dane tymczasowe",
+    en: "Demo mode — data is not persisted",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
 
-export function t(key: TranslationKey, lang: Lang): string {
-  return translations[key][lang];
+export function t(
+  key: TranslationKey,
+  lang: Lang,
+  vars?: Record<string, string | number>
+): string {
+  const raw = translations[key][lang];
+  if (!vars) return raw;
+  return raw.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
 }

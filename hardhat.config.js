@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 require("@nomicfoundation/hardhat-ethers");
 require("@nomicfoundation/hardhat-verify");
-require("dotenv").config();
-
-const privateKey = process.env.PRIVATE_KEY;
+require("dotenv").config({ path: [".env.local", ".env"] });
 
 /** @type {import('hardhat/config').HardhatUserConfig} */
 module.exports = {
@@ -19,9 +17,9 @@ module.exports = {
   },
   networks: {
     baseSepolia: {
-      url: process.env.BASE_SEPOLIA_RPC || "https://sepolia.base.org",
+      url: "https://sepolia.base.org",
       chainId: 84532,
-      accounts: privateKey ? [privateKey] : [],
+      accounts: [process.env.PRIVATE_KEY].filter(Boolean),
     },
   },
   etherscan: {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Mono } from "next/font/google";
 import PrivyProvider from "@/components/providers/PrivyProvider";
+import { ToastProvider } from "@/components/ui/Toast";
 import "./globals.css";
 
 const inter = Inter({
@@ -34,7 +35,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen">
-        <PrivyProvider>{children}</PrivyProvider>
+        <PrivyProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </PrivyProvider>
       </body>
     </html>
   );

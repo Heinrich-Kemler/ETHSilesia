@@ -7,6 +7,10 @@ type CreateUserBody = {
   privyId?: string;
   walletAddress?: string;
   email?: string;
+  /** Optional: set starting level/XP from an assessment (new users only). */
+  level?: number;
+  initialXP?: number;
+  language?: "pl" | "en";
 };
 
 function generateUsername(walletAddress: string, email?: string): string {
@@ -38,17 +42,70 @@ export async function POST(request: Request) {
 
     const supabase = getSupabaseAdminClient();
 
+    // Look up existing user — if they exist we preserve their progress
+    // and only refresh last_active. Assessment-provided level/XP only
+    // apply when we're creating a brand-new row.
+    const { data: existing, error: lookupError } = await supabase
+      .from("users")
+      .select("id, total_xp, level")
+      .eq("privy_id", privyId)
+      .maybeSingle();
+
+    if (lookupError) {
+      return NextResponse.json(
+        { error: "Failed to look up user.", details: lookupError.message },
+        { status: 500 }
+      );
+    }
+
+    const nowIso = new Date().toISOString();
+
+    if (existing) {
+      // Existing user: just bump last_active (and language if provided).
+      const updatePayload: Record<string, unknown> = { last_active: nowIso };
+      if (body.language === "pl" || body.language === "en") {
+        updatePayload.language = body.language;
+      }
+      const { data: updated, error: updateError } = await supabase
+        .from("users")
+        .update(updatePayload)
+        .eq("id", existing.id)
+        .select("*")
+        .single();
+
+      if (updateError) {
+        return NextResponse.json(
+          { error: "Failed to refresh user.", details: updateError.message },
+          { status: 500 }
+        );
+      }
+      return NextResponse.json({ user: updated, created: false });
+    }
+
+    const lvl =
+      typeof body.level === "number" && body.level >= 1 && body.level <= 4
+        ? Math.floor(body.level)
+        : 1;
+    const xp =
+      typeof body.initialXP === "number" && body.initialXP >= 0
+        ? Math.floor(body.initialXP)
+        : 0;
+    const lang = body.language === "en" ? "en" : "pl";
+
     const payload = {
       privy_id: privyId,
       wallet_address: walletAddress.toLowerCase(),
       google_email: email || null,
       username: generateUsername(walletAddress, email),
-      last_active: new Date().toISOString(),
+      level: lvl,
+      total_xp: xp,
+      language: lang,
+      last_active: nowIso,
     };
 
     const { data, error } = await supabase
       .from("users")
-      .upsert(payload, { onConflict: "privy_id" })
+      .insert(payload)
       .select("*")
       .single();
 
@@ -59,7 +116,7 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ user: data });
+    return NextResponse.json({ user: data, created: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(

@@ -40,3 +40,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# hardhat build output — regenerated on compile, not source-of-truth
+/artifacts
+/cache
+/typechain-types
+
+# local/private deployment records (e.g., addresses tied to sensitive networks)
+deployments.local.json
+deployments.private.json
+
+# macOS recursive
+**/.DS_Store
+
