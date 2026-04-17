@@ -77,13 +77,13 @@ export default function CoachSection({ lang, theme }: { lang: Lang; theme: Theme
                   </div>
                   <div className="bg-elevated-themed rounded-xl rounded-tl-sm px-4 py-3">
                     <div className="flex gap-1">
-                      <span className="w-2 h-2 rounded-full bg-text-muted animate-bounce" />
+                      <span className="w-2 h-2 rounded-full bg-muted-themed animate-bounce" />
                       <span
-                        className="w-2 h-2 rounded-full bg-text-muted animate-bounce"
+                        className="w-2 h-2 rounded-full bg-muted-themed animate-bounce"
                         style={{ animationDelay: "0.15s" }}
                       />
                       <span
-                        className="w-2 h-2 rounded-full bg-text-muted animate-bounce"
+                        className="w-2 h-2 rounded-full bg-muted-themed animate-bounce"
                         style={{ animationDelay: "0.3s" }}
                       />
                     </div>

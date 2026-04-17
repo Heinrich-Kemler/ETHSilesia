@@ -140,12 +140,22 @@
   .border-magenta-themed\/5  { border-color: color-mix(in srgb, var(--magenta) 5%, transparent); }
   .border-magenta-themed\/20 { border-color: color-mix(in srgb, var(--magenta) 20%, transparent); }
 
-  /* Gradients (via inline style or these helpers) */
+  /* Extra backgrounds */
+  .bg-card-themed\/30   { background-color: color-mix(in srgb, var(--bg-card) 30%, transparent); }
+  .bg-muted-themed      { background-color: var(--text-muted); }
+
+  /* Gradients */
   .gradient-gold-themed {
     background: linear-gradient(to right, var(--gold), var(--gold-dim));
   }
   .gradient-gold-cyan-themed {
     background: linear-gradient(to bottom right, var(--gold), var(--cyan));
+  }
+  .gradient-text-themed {
+    background: linear-gradient(to right, var(--gold), var(--cyan), var(--gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   /* Hover variants */

@@ -71,7 +71,7 @@ const styles: Record<string, { bg: string; icon: string; border: string }> = {
 
 export default function FeaturesSection({ lang }: { lang: Lang }) {
   return (
-    <section id="features" className="relative py-24 bg-bg-card/30">
+    <section id="features" className="relative py-24 bg-card-themed/30">
       {/* Background accent */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan/[0.02] rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gold/[0.02] rounded-full blur-[100px] pointer-events-none" />

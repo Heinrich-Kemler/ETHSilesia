@@ -52,7 +52,7 @@ export default function HeroSection({ lang, theme }: { lang: Lang; theme: Theme 
               className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6"
             >
               <span className="text-themed">{t("heroHeading", lang).split(" ").slice(0, -1).join(" ")}{" "}</span>
-              <span className="bg-gradient-to-r from-gold via-cyan to-gold bg-clip-text text-transparent">
+              <span className="gradient-text-themed">
                 {t("heroHeading", lang).split(" ").slice(-1)}
               </span>
             </motion.h1>
@@ -74,7 +74,7 @@ export default function HeroSection({ lang, theme }: { lang: Lang; theme: Theme 
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <button className="group flex items-center justify-center gap-2 bg-gradient-to-r from-gold to-gold-dim hover:from-gold hover:to-gold text-white font-heading font-bold text-base px-8 py-4 rounded-xl transition-all hover:shadow-[0_0_30px_rgba(201,168,76,0.25)]">
+              <button className="group flex items-center justify-center gap-2 gradient-gold-themed text-white font-heading font-bold text-base px-8 py-4 rounded-xl transition-all" style={{ boxShadow: `0 0 30px var(--gold-glow)` }}>
                 {t("heroCta", lang)}
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
