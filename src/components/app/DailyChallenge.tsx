@@ -15,6 +15,7 @@ import {
   todayISO,
   type DailyResult,
 } from "@/lib/dailyChallenge";
+import { markActiveDay } from "@/lib/streak";
 import { useToast } from "@/components/ui/Toast";
 
 type Props = {
@@ -75,6 +76,7 @@ export default function DailyChallenge({
         earnedXp: earned,
       };
       saveDailyResult(userId, saved);
+      markActiveDay(userId);
       setResult(saved);
 
       if (isCorrect) {

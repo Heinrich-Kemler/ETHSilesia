@@ -317,6 +317,22 @@ export const translations = {
     pl: "Poprawna odpowiedź:",
     en: "Correct answer:",
   },
+  streakCalendarTitle: {
+    pl: "Twoja passa",
+    en: "Your streak",
+  },
+  streakCurrent: {
+    pl: "{count} dni pod rząd",
+    en: "{count}-day streak",
+  },
+  streakEmpty: {
+    pl: "Zacznij dziś",
+    en: "Start today",
+  },
+  streakBest: {
+    pl: "Rekord: {count}",
+    en: "Best: {count}",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
