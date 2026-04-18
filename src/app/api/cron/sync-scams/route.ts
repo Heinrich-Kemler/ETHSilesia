@@ -104,13 +104,14 @@ WAŻNE:
 
 export async function GET(request: Request) {
   // ── Auth: Vercel Cron sends CRON_SECRET in Authorization header ──
+  // Fail CLOSED: if CRON_SECRET is unset, every caller is rejected. Previously
+  // the wrapping `if (cronSecret)` made this endpoint publicly triggerable
+  // when the env was missing — an attacker could burn xAI credits + DB writes.
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${cronSecret}`) {
-      console.warn("[sync-scams] ⛔ Unauthorized request blocked");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const authHeader = request.headers.get("authorization");
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    console.warn("[sync-scams] ⛔ Unauthorized request blocked");
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const supabase = getSupabaseAdminClient();
