@@ -52,6 +52,12 @@ type HookResult = {
   login: () => void;
   logout: () => Promise<void>;
   ready: boolean;
+  /**
+   * Raw Privy SDK auth state, independent of our app-level sync status.
+   * Useful for detecting stuck sessions (Privy says authed but our
+   * /api/users/create hasn't caught up). Always `false` in demo mode.
+   */
+  privyAuthenticated: boolean;
 };
 
 function isDemoParam(): boolean {
@@ -179,6 +185,7 @@ export function useSkarbnikUser(): HookResult {
         login: () => {},
         logout: async () => {},
         ready: true,
+        privyAuthenticated: false,
       };
     }
     return {
@@ -192,6 +199,7 @@ export function useSkarbnikUser(): HookResult {
       login,
       logout,
       ready: privyReady,
+      privyAuthenticated: privyAuthed,
     };
   }, [
     demo,
@@ -204,5 +212,6 @@ export function useSkarbnikUser(): HookResult {
     login,
     logout,
     privyReady,
+    privyAuthed,
   ]);
 }
