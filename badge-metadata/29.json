@@ -1,0 +1,12 @@
+{
+  "name": "Mistrz Poziomu 3",
+  "description": "Awarded for completing all level 3 quests.",
+  "external_url": "https://skarbnik.app/badges/29",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/level3.jpg",
+  "attributes": [
+    { "trait_type": "Badge ID", "value": 29 },
+    { "trait_type": "Tier", "value": "Level" },
+    { "trait_type": "Level", "value": 3 },
+    { "trait_type": "Trigger", "value": "All level 3 quests completed" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "Quest: Smart Kontrakty",
+  "description": "Quest completion badge for smart contracts.",
+  "external_url": "https://skarbnik.app/badges/21",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 21
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l2-smart"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

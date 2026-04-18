@@ -1,0 +1,11 @@
+{
+  "name": "Yield i Staking",
+  "description": "Awarded for completing the yield and staking quest path.",
+  "external_url": "https://skarbnik.app/badges/9",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    { "trait_type": "Badge ID", "value": 9 },
+    { "trait_type": "Tier", "value": "Path" },
+    { "trait_type": "Trigger", "value": "Yield + impermanent loss quests" }
+  ]
+}

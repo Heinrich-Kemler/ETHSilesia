@@ -1,0 +1,24 @@
+{
+  "name": "Quest: Ryzyko",
+  "description": "Quest completion badge for protocol risk analysis.",
+  "external_url": "https://skarbnik.app/badges/24",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 24
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l3-risk"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

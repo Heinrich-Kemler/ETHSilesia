@@ -1,0 +1,24 @@
+{
+  "name": "Quest: Transakcja",
+  "description": "Quest completion badge for transaction flow.",
+  "external_url": "https://skarbnik.app/badges/15",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 15
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l1-transaction"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

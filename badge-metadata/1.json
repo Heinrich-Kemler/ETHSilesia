@@ -2,7 +2,7 @@
   "name": "Początkujący Skarbnik",
   "description": "Awarded for completing your first quest.",
   "external_url": "https://skarbnik.app/badges/1",
-  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/1.png",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
   "attributes": [
     { "trait_type": "Badge ID", "value": 1 },
     { "trait_type": "Tier", "value": "Bronze" },

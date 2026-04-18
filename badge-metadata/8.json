@@ -1,0 +1,11 @@
+{
+  "name": "Nawigator DEX",
+  "description": "Awarded for completing the DeFi, DEX, and liquidity quest path.",
+  "external_url": "https://skarbnik.app/badges/8",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    { "trait_type": "Badge ID", "value": 8 },
+    { "trait_type": "Tier", "value": "Path" },
+    { "trait_type": "Trigger", "value": "DeFi + DEX + liquidity quests" }
+  ]
+}

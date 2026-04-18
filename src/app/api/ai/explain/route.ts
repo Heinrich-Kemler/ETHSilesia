@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
+import { ApiError, logServerError, toApiError } from "@/lib/server/apiErrors";
 import {
   getOpenAIClient,
   getOpenAIModel,
   normalizeLanguage,
   SKARBNIK_SYSTEM_PROMPT,
 } from "@/lib/server/openaiClient";
+import { assertRateLimit } from "@/lib/server/rateLimit";
 
 export const runtime = "nodejs";
 
@@ -39,6 +41,12 @@ function staticExplanation(
 
 export async function POST(request: Request) {
   try {
+    assertRateLimit(request, {
+      key: "ai-explain",
+      maxRequests: 30,
+      windowMs: 60 * 1000,
+    });
+
     const body = (await request.json()) as ExplainBody;
 
     const question = body.question?.trim();
@@ -46,12 +54,9 @@ export async function POST(request: Request) {
     const correctAnswer = body.correctAnswer?.trim();
 
     if (!question || !userAnswer || !correctAnswer) {
-      return NextResponse.json(
-        {
-          error:
-            "question, userAnswer, and correctAnswer are all required.",
-        },
-        { status: 400 }
+      throw new ApiError(
+        400,
+        "question, userAnswer, and correctAnswer are all required."
       );
     }
 
@@ -90,10 +95,17 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ explanation: output });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const apiError = toApiError(error, "AI explain request failed.");
+    if (apiError.status >= 500) {
+      logServerError("api/ai/explain", error);
+    }
     return NextResponse.json(
-      { error: "AI explain request failed.", details: message },
-      { status: 500 }
+      {
+        error: apiError.exposeMessage
+          ? apiError.message
+          : "AI explain request failed.",
+      },
+      { status: apiError.status }
     );
   }
 }

@@ -1,9 +1,29 @@
+import {
+  BADGE_MAX_ID,
+  BADGE_MIN_ID,
+  QUEST_TOPIC_BADGE_RULES,
+} from "@/lib/badgeMappings";
+
 export const BADGE_IDS = {
   FIRST_QUEST_COMPLETED: 1,
   SILVER_TREASURER: 2,
   GOLDEN_TREASURER: 3,
   TRIAL_PASSED: 4,
   TREASURE_GUARDIAN: 5,
+  BLOCKCHAIN_WALLET_SCHOLAR: 6,
+  STABLECOIN_TOKEN_KEEPER: 7,
+  DEX_PATHFINDER: 8,
+  YIELD_STAKING_STRATEGIST: 9,
+  SMART_CONTRACT_ARTISAN: 10,
+  SAFETY_SENTINEL: 11,
+  LEVEL_1_MASTER: 27,
+  LEVEL_2_MASTER: 28,
+  LEVEL_3_MASTER: 29,
+} as const;
+
+export const BADGE_ID_RANGE = {
+  MIN: BADGE_MIN_ID,
+  MAX: BADGE_MAX_ID,
 } as const;
 
 export function calculateLevelFromXp(totalXp: number): number {
@@ -57,3 +77,5 @@ export function isBossBattleQuest(questId: string): boolean {
     normalized.includes(keyword)
   );
 }
+
+export { QUEST_TOPIC_BADGE_RULES };
