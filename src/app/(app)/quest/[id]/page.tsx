@@ -28,6 +28,7 @@ import {
   questTitle,
   type Quest,
 } from "@/lib/quests";
+import { getBadgeById, badgeName } from "@/lib/badgeRegistry";
 import { markActiveDay } from "@/lib/streak";
 import CelebrationModal from "@/components/app/CelebrationModal";
 import Confetti from "@/components/ui/Confetti";
@@ -197,8 +198,8 @@ export default function ActiveQuestPage({
               idx >= 0
                 ? q.options[idx][lang]
                 : lang === "pl"
-                ? "(brak odpowiedzi)"
-                : "(no answer)",
+                  ? "(brak odpowiedzi)"
+                  : "(no answer)",
             correctAnswer: q.options[q.correctIndex][lang],
             language: lang,
           }),
@@ -213,56 +214,31 @@ export default function ActiveQuestPage({
                 ? "Czas minął. Poprawna odpowiedź jest zaznaczona na zielono."
                 : "Time's up. The correct answer is highlighted in green."
               : lang === "pl"
-              ? "Nie udało się pobrać wyjaśnienia, ale poprawna odpowiedź jest zaznaczona na zielono."
-              : "Couldn't fetch an explanation, but the correct answer is highlighted in green."
+                ? "Nie udało się pobrać wyjaśnienia, ale poprawna odpowiedź jest zaznaczona na zielono."
+                : "Couldn't fetch an explanation, but the correct answer is highlighted in green.",
           );
         }
       } catch {
         setAiExplanation(
           lang === "pl"
             ? "Brak połączenia z AI. Poprawna odpowiedź jest zaznaczona na zielono."
-            : "AI connection failed. The correct answer is highlighted in green."
+            : "AI connection failed. The correct answer is highlighted in green.",
         );
       } finally {
         setAiLoading(false);
       }
     },
-    [quest, qIndex, lang, locked]
+    [quest, qIndex, lang, locked],
   );
-
-  const goNext = useCallback(() => {
-    if (!quest) return;
-    if (qIndex + 1 < quest.questions.length) {
-      setQIndex((i) => i + 1);
-      setSelected(null);
-      setAiExplanation("");
-      setLocked(false);
-      return;
-    }
-    // all done — complete
-    void finishQuest();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [qIndex, quest]);
 
   const finishQuest = useCallback(async () => {
     if (!quest) return;
     const totalQ = quest.questions.length;
-    // No partial credit. A single wrong answer blocks XP AND leaves
-    // the quest uncompleted server-side, so the user can replay for
-    // full XP. Previously we did `Math.round((correctCount*xp)/total)`
-    // which handed out 66% XP for 2/3 — that created the "I got some
-    // XP but the next level didn't unlock" confusion because the
-    // server's completion gate still requires `answersTotal === score`.
     const allCorrect = correctCount === totalQ;
     const xpEarned = allCorrect ? quest.xp : 0;
 
-    // Streak counts engagement, not success, so bump it either way.
     markActiveDay(user?.id ?? null);
 
-    // Partial-score branch: keep the failure entirely client-side.
-    // We skip the /api/quests/complete POST because a) the server
-    // would 400 on score < answersTotal, and b) we want the quest to
-    // stay in its un-completed state so the retry earns full XP.
     if (!allCorrect) {
       setCompletionResult({
         xpEarned: 0,
@@ -275,7 +251,6 @@ export default function ActiveQuestPage({
       return;
     }
 
-    // Demo mode → skip the server call, show synthetic success.
     if (isDemo) {
       setCompletionResult({
         xpEarned,
@@ -293,15 +268,9 @@ export default function ActiveQuestPage({
     }
 
     if (!user?.id) {
-      // Privy authed but our Supabase sync never produced a user row.
-      // The old behaviour was to fake a "complete" screen with zero
-      // persistence — that's the bug where XP "disappears" and the
-      // next quest never unlocks. Surface the real problem instead so
-      // the user can hit the floating SessionResetButton (rendered by
-      // the (app) layout whenever privyAuthenticated && !authenticated)
-      // and recover. Bounce back to the hub so the reset affordance
-      // is visible and the quiz state doesn't mislead them.
-      console.warn("[quest/complete] no user.id — cannot persist, routing to reset");
+      console.warn(
+        "[quest/complete] no user.id — cannot persist, routing to reset",
+      );
       toast({
         variant: "error",
         message:
@@ -310,8 +279,8 @@ export default function ActiveQuestPage({
             : "Couldn't save quest completion.",
         sub:
           lang === "pl"
-            ? "Sesja nie jest zsynchronizowana. Użyj przycisku \"Resetuj sesję\" w prawym dolnym rogu."
-            : "Session isn't synced. Tap \"Reset session\" in the bottom-right corner.",
+            ? 'Sesja nie jest zsynchronizowana. Użyj przycisku "Resetuj sesję" w prawym dolnym rogu.'
+            : 'Session isn\'t synced. Tap "Reset session" in the bottom-right corner.',
       });
       router.replace(`/quest${demoAppend}`);
       return;
@@ -330,10 +299,6 @@ export default function ActiveQuestPage({
         }),
       });
       if (res.status === 409) {
-        // Already completed (replay). failed=false on purpose — the
-        // user earned this quest previously, we just don't award XP
-        // twice. Showing the retry screen here would be misleading
-        // because replaying a third time still gives zero XP.
         setCompletionResult({
           xpEarned: 0,
           newXP: user.total_xp ?? 0,
@@ -358,9 +323,6 @@ export default function ActiveQuestPage({
         failed: false,
       });
       setPhase("complete");
-      // Trigger the sequenced celebration modal. Level-up wins the first slot
-      // if present; otherwise a badge takes it. Any remaining reward shows
-      // after the user dismisses the first modal.
       if (data.levelUp) setCelebrationStep("level-up");
       else if (data.badgeEarned) setCelebrationStep("badge");
       toast({
@@ -373,11 +335,6 @@ export default function ActiveQuestPage({
         variant: "error",
         message: t("toastGenericError", lang),
       });
-      // Network error after a 100% run. Don't flag as `failed` — the
-      // user answered correctly, the persistence just didn't land.
-      // The retry button is on the hub (replay the quest) rather than
-      // here; showing the failure screen would imply they got an
-      // answer wrong.
       setCompletionResult({
         xpEarned,
         newXP: user.total_xp ?? 0,
@@ -387,7 +344,29 @@ export default function ActiveQuestPage({
       });
       setPhase("complete");
     }
-  }, [quest, correctCount, user, isDemo, lang, toast, refetch, router, demoAppend]);
+  }, [
+    quest,
+    correctCount,
+    user,
+    isDemo,
+    lang,
+    toast,
+    refetch,
+    router,
+    demoAppend,
+  ]);
+
+  const goNext = useCallback(() => {
+    if (!quest) return;
+    if (qIndex + 1 < quest.questions.length) {
+      setQIndex((i) => i + 1);
+      setSelected(null);
+      setAiExplanation("");
+      setLocked(false);
+      return;
+    }
+    void finishQuest();
+  }, [qIndex, quest, finishQuest]);
 
   // Full quiz reset. Used by the retry button on the failure screen
   // — the user gets a clean slate (scorecard, question index, AI
@@ -501,14 +480,14 @@ export default function ActiveQuestPage({
                     0,
                     ((QUESTION_TIME_SECONDS - elapsed) /
                       QUESTION_TIME_SECONDS) *
-                      100
+                      100,
                   )}%`,
                   backgroundColor:
                     elapsed > QUESTION_TIME_SECONDS * 0.75
                       ? "#ef4444"
                       : elapsed > QUESTION_TIME_SECONDS * 0.5
-                      ? "var(--gold)"
-                      : "var(--cyan)",
+                        ? "var(--gold)"
+                        : "var(--cyan)",
                 }}
               />
             </div>
@@ -554,8 +533,8 @@ export default function ActiveQuestPage({
                             reveal && isCorrect
                               ? "bg-green text-white"
                               : reveal && isSelected && !isCorrect
-                              ? "bg-red text-white"
-                              : "bg-elevated-themed text-gold-themed"
+                                ? "bg-red text-white"
+                                : "bg-elevated-themed text-gold-themed"
                           }`}
                         >
                           {reveal && isCorrect ? (
@@ -694,19 +673,13 @@ export default function ActiveQuestPage({
           open={celebrationStep === "level-up"}
           lang={lang}
           variant="level-up"
-          newLevel={
-            Math.min(4, (user?.level ?? 2)) as 2 | 3 | 4
-          }
+          newLevel={Math.min(4, user?.level ?? 2) as 2 | 3 | 4}
           levelName={t(
-            levelNameKey(
-              Math.min(3, (user?.level ?? 1)) as 1 | 2 | 3
-            ),
-            lang
+            levelNameKey(Math.min(3, user?.level ?? 1) as 1 | 2 | 3),
+            lang,
           )}
           onClose={() =>
-            setCelebrationStep(
-              completionResult?.badgeEarned ? "badge" : "done"
-            )
+            setCelebrationStep(completionResult?.badgeEarned ? "badge" : "done")
           }
         />
       )}
@@ -828,11 +801,7 @@ function CompletionScreen({
   const NewLevelIcon =
     newLevel === 1 ? Sparkles : newLevel === 2 ? Shield : Crown;
   const levelColor =
-    newLevel === 1
-      ? "#10b981"
-      : newLevel === 2
-      ? "var(--cyan)"
-      : "var(--gold)";
+    newLevel === 1 ? "#10b981" : newLevel === 2 ? "var(--cyan)" : "var(--gold)";
 
   return (
     <motion.div
@@ -850,8 +819,12 @@ function CompletionScreen({
           <p className="text-muted-themed text-xs font-mono uppercase tracking-widest mb-2">
             {t("quizLevelUpTitle", lang)}
           </p>
-          <div className="inline-flex items-center gap-3 bg-card-themed border rounded-2xl px-6 py-4"
-            style={{ borderColor: `color-mix(in srgb, ${levelColor} 40%, transparent)` }}>
+          <div
+            className="inline-flex items-center gap-3 bg-card-themed border rounded-2xl px-6 py-4"
+            style={{
+              borderColor: `color-mix(in srgb, ${levelColor} 40%, transparent)`,
+            }}
+          >
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center"
               style={{
@@ -866,10 +839,8 @@ function CompletionScreen({
               </p>
               <p className="font-heading text-lg font-bold text-themed">
                 {t(
-                  levelNameKey(
-                    Math.min(3, Math.max(1, newLevel)) as 1 | 2 | 3
-                  ),
-                  lang
+                  levelNameKey(Math.min(3, Math.max(1, newLevel)) as 1 | 2 | 3),
+                  lang,
                 )}
               </p>
             </div>
@@ -903,7 +874,8 @@ function CompletionScreen({
               {lang === "pl" ? "Wynik" : "Score"}
             </p>
             <p className="font-heading text-4xl font-bold text-themed">
-              {correct}<span className="text-muted-themed">/{total}</span>
+              {correct}
+              <span className="text-muted-themed">/{total}</span>
             </p>
             <p className="text-xs text-muted-themed mt-1">
               {t("quizCompleteScore", lang, { score: correct, total })}
@@ -927,10 +899,7 @@ function CompletionScreen({
               {t("quizBadgeEarned", lang)}
             </p>
             <p className="font-heading text-base font-bold text-themed">
-              {t(
-                ("badge" + badgeEarned) as TranslationKey,
-                lang
-              )}
+              {badgeEarned ? badgeName(getBadgeById(badgeEarned)!, lang) : ""}
             </p>
           </div>
         </motion.div>

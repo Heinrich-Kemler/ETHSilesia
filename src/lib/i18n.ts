@@ -6,6 +6,7 @@ export const translations = {
   navLeaderboard: { pl: "Ranking", en: "Leaderboard" },
   navCoach: { pl: "AI Coach", en: "AI Coach" },
   navLogin: { pl: "Zaloguj się", en: "Log in" },
+  navSkarbnikGuard: { pl: "Skarbnik Guard", en: "Skarbnik Guard" },
 
   // Hero
   heroHeading: { pl: "Odkryj świat DeFi", en: "Discover the world of DeFi" },
@@ -537,7 +538,10 @@ export function t(
   lang: Lang,
   vars?: Record<string, string | number>
 ): string {
-  const raw = translations[key][lang];
+  const entry = translations[key];
+  if (!entry) return String(key);
+  const raw = entry[lang];
+  if (!raw) return String(key);
   if (!vars) return raw;
   return raw.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
 }

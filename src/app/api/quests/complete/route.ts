@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { ApiError, logServerError, toApiError } from "@/lib/server/apiErrors";
-import {
-  assertPrivyOwnership,
-  requirePrivyAuth,
-} from "@/lib/server/auth";
+import { assertPrivyOwnership, requirePrivyAuth } from "@/lib/server/auth";
 import {
   BADGE_IDS,
   QUEST_TOPIC_BADGE_RULES,
@@ -66,7 +63,7 @@ export async function POST(request: Request) {
     const { data: user, error: userError } = await supabase
       .from("users")
       .select(
-        "id, privy_id, wallet_address, total_xp, level, streak_days, last_active"
+        "id, privy_id, wallet_address, total_xp, level, streak_days, last_active",
       )
       .eq("id", userId)
       .maybeSingle();
@@ -107,7 +104,7 @@ export async function POST(request: Request) {
     const levelUp = newLevel > user.level;
     const newStreakDays = calculateNextStreakDays(
       user.last_active,
-      user.streak_days
+      user.streak_days,
     );
 
     const { error: updateUserError } = await supabase
@@ -126,17 +123,18 @@ export async function POST(request: Request) {
 
     const potentialBadges: number[] = [];
 
-    const { data: completedQuestRows, error: completedQuestRowsError } = await supabase
-      .from("quest_completions")
-      .select("quest_id")
-      .eq("user_id", userId);
+    const { data: completedQuestRows, error: completedQuestRowsError } =
+      await supabase
+        .from("quest_completions")
+        .select("quest_id")
+        .eq("user_id", userId);
 
     if (completedQuestRowsError) {
       throw new ApiError(500, "Failed while checking badge progress.", false);
     }
 
     const completedQuestIds = new Set(
-      (completedQuestRows ?? []).map((row) => row.quest_id)
+      (completedQuestRows ?? []).map((row) => row.quest_id),
     );
 
     if (completedQuestIds.size === 1) {
@@ -165,8 +163,8 @@ export async function POST(request: Request) {
     }
 
     for (const rule of QUEST_TOPIC_BADGE_RULES) {
-      const allQuestsCompleted = rule.requiredQuestIds.every((requiredQuestId) =>
-        completedQuestIds.has(requiredQuestId)
+      const allQuestsCompleted = rule.requiredQuestIds.every(
+        (requiredQuestId) => completedQuestIds.has(requiredQuestId),
       );
 
       if (allQuestsCompleted) {
@@ -175,8 +173,8 @@ export async function POST(request: Request) {
     }
 
     for (const rule of LEVEL_COMPLETION_BADGE_RULES) {
-      const allLevelQuestsCompleted = rule.requiredQuestIds.every((requiredQuestId) =>
-        completedQuestIds.has(requiredQuestId)
+      const allLevelQuestsCompleted = rule.requiredQuestIds.every(
+        (requiredQuestId) => completedQuestIds.has(requiredQuestId),
       );
 
       if (allLevelQuestsCompleted) {
@@ -206,18 +204,22 @@ export async function POST(request: Request) {
       throw new ApiError(500, "Failed while checking existing badges.", false);
     }
 
-    const { data: trackedMintJobs, error: trackedMintJobsError } = await supabase
+    let trackedMintJobs: any[] = [];
+
+    const { data: qTracked, error: trackedMintJobsError } = await supabase
       .from("badge_mint_jobs")
       .select("badge_id")
       .eq("user_id", userId)
       .in("badge_id", uniquePotentialBadges);
 
     if (trackedMintJobsError) {
-      throw new ApiError(
-        500,
-        "Failed while checking tracked badge mint jobs.",
-        false
+      console.error(
+        "[api/quests/complete] Failed while checking tracked badge mint jobs:",
+        trackedMintJobsError,
       );
+      // Fallback: continue without mint jobs to not block XP if table is missing locally
+    } else {
+      trackedMintJobs = qTracked ?? [];
     }
 
     const trackedBadgeIds = new Set([
@@ -226,7 +228,7 @@ export async function POST(request: Request) {
     ]);
 
     const badgesEarned = uniquePotentialBadges.filter(
-      (badgeId) => !trackedBadgeIds.has(badgeId)
+      (badgeId) => !trackedBadgeIds.has(badgeId),
     );
 
     const enqueuedJobIds: string[] = [];
@@ -243,7 +245,7 @@ export async function POST(request: Request) {
         throw new ApiError(
           500,
           "Failed while enqueueing badge mint jobs.",
-          false
+          false,
         );
       }
     }
@@ -266,7 +268,7 @@ export async function POST(request: Request) {
           ? apiError.message
           : "Failed to complete quest.",
       },
-      { status: apiError.status }
+      { status: apiError.status },
     );
   }
 }

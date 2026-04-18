@@ -23,6 +23,7 @@ import {
 import { useLanguage } from "@/lib/useLanguage";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { useDemoMode } from "@/lib/useDemoMode";
+import { usePrivy } from "@privy-io/react-auth";
 import { useToast } from "@/components/ui/Toast";
 import { t } from "@/lib/i18n";
 import { QUESTS, getQuestById, questTitle, xpProgress, levelNameKey } from "@/lib/quests";
@@ -70,6 +71,7 @@ export default function ProfilePage() {
   const { lang } = useLanguage();
   const demo = useDemoMode();
   const toast = useToast();
+  const { exportWallet } = usePrivy();
   const {
     user,
     completedQuests,
@@ -596,6 +598,14 @@ export default function ProfilePage() {
               >
                 <LogOut className="w-4 h-4" />
                 {t("profileDisconnect", lang)}
+              </button>
+              <button
+                onClick={() => exportWallet()}
+                disabled={isDemo || !user?.wallet_address}
+                className="inline-flex items-center gap-2 border border-themed hover:border-cyan-themed text-secondary-themed hover:text-cyan-themed text-sm font-medium px-4 py-2.5 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-3"
+              >
+                <Lock className="w-4 h-4" />
+                Eksportuj Klucz do Metamaska
               </button>
               {isDemo && (
                 <p className="mt-3 text-xs text-muted-themed">
