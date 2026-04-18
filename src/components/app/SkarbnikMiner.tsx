@@ -41,9 +41,17 @@ type Props = {
 };
 
 // Delay between "miner appears at walk-from node" and "miner starts
-// walking to current node". Short enough that the user doesn't think
-// the animation is broken, long enough that the arrival registers.
-const WALK_DWELL_MS = 320;
+// walking to current node". We hold him at the *completed* bubble
+// for ~900ms so the user's eye has time to land on him before he
+// steps off — 320ms was too fast, users were looking up at the XP
+// toast and missed the whole walk. Combined with the slower spring
+// below, the full animation is ~2s which reads as a proper journey
+// rather than a flicker.
+const WALK_DWELL_MS = 900;
+
+// Arrival flash duration at the destination node. Triggers right as
+// the layout spring lands the miner, for a "ta-da" beat.
+const ARRIVAL_FLASH_MS = 900;
 
 export default function SkarbnikMiner({
   currentQuestId,
@@ -65,6 +73,7 @@ export default function SkarbnikMiner({
   // effect re-runs when props land so it still fires after the parent's
   // async useSkarbnikUser() fetch populates `completedQuests`.
   const [walkFromId, setWalkFromId] = useState<string | null>(null);
+  const [arrivalFlashAt, setArrivalFlashAt] = useState<string | null>(null);
   const walkConsumed = useRef(false);
 
   useEffect(() => {
@@ -83,8 +92,29 @@ export default function SkarbnikMiner({
     walkConsumed.current = true;
     setWalkFromId(stored);
     clearLastCompletedQuest();
-    const t = window.setTimeout(() => setWalkFromId(null), WALK_DWELL_MS);
-    return () => window.clearTimeout(t);
+    // Dwell → release → arrival flash. We compute the flash target up
+    // front because `currentQuestId` can change under us if the parent
+    // re-fetches between timers firing.
+    const destination = currentQuestId;
+    const releaseTimer = window.setTimeout(() => {
+      setWalkFromId(null);
+      // Flash fires just after the layout spring completes. Spring
+      // arrival is ~900ms with the tuning below; we add a small
+      // overshoot so the sparkle reads as "landed" rather than
+      // "mid-step".
+      const flashTimer = window.setTimeout(() => {
+        setArrivalFlashAt(destination);
+        const clearTimer = window.setTimeout(
+          () => setArrivalFlashAt(null),
+          ARRIVAL_FLASH_MS
+        );
+        // We don't return this one — it's fire-and-forget, and if the
+        // component unmounts the flash state gets GC'd with it.
+        void clearTimer;
+      }, 900);
+      void flashTimer;
+    }, WALK_DWELL_MS);
+    return () => window.clearTimeout(releaseTimer);
   }, [completedQuests, currentQuestId]);
 
   // The node the mascot + trail tail should sit on right now. While
@@ -229,19 +259,44 @@ export default function SkarbnikMiner({
         </svg>
       )}
 
+      {/* Arrival sparkle — fires once when the miner lands on a new
+          bubble after a quest completion. Pointer-events off so it
+          never eats clicks on the quest node underneath. */}
+      {arrivalFlashAt && points[arrivalFlashAt] && (
+        <motion.div
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.6 }}
+          animate={{ opacity: [0, 1, 0], scale: [0.6, 1.6, 2.2] }}
+          transition={{ duration: ARRIVAL_FLASH_MS / 1000, ease: "easeOut" }}
+          className="absolute pointer-events-none"
+          style={{
+            left: points[arrivalFlashAt].x,
+            top: points[arrivalFlashAt].y,
+            transform: "translate(-50%, -50%)",
+            width: 80,
+            height: 80,
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, var(--gold) 0%, transparent 70%)",
+            filter: "blur(4px)",
+          }}
+        />
+      )}
+
       {minerPoint && (
         <motion.div
           // `layout` makes the miner walk to the new bubble whenever
           // `effectiveCurrentId` changes. We place him slightly above
           // the bubble so he sits beside it, not on top.
           //
-          // Spring tuned for a smoother glide: higher damping kills the
-          // bounce the old `damping: 18` had, and slightly lower
-          // stiffness stretches the arrival so it lands ~700ms later —
-          // long enough that the delayed path-draw (delay: 0.35s) feels
-          // like it's painted behind him, not beside him.
+          // Spring tuned for a *visible journey* rather than a snap:
+          // lower stiffness + slightly more mass stretches the arrival
+          // to ~900ms, which combined with the 900ms dwell gives the
+          // user a full ~2s animation — enough to notice the character
+          // actually walking from the completed node to the next one.
+          // Users were missing the old 700ms glide entirely.
           layout
-          transition={{ type: "spring", damping: 24, stiffness: 120, mass: 0.9 }}
+          transition={{ type: "spring", damping: 22, stiffness: 85, mass: 1.1 }}
           className="absolute"
           style={{
             left: minerPoint.x,

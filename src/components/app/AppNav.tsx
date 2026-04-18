@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogIn, LogOut, Home, Award, User as UserIcon } from "lucide-react";
+import { LogIn, LogOut, Award, User as UserIcon } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import LanternGlyph from "@/components/ui/LanternGlyph";
 import { t } from "@/lib/i18n";
@@ -90,19 +90,13 @@ export default function AppNav({
 
         <div className="flex items-center gap-2">
           {/*
-            Home = "app home" when signed in (the quest hub) and the
-            marketing landing when signed out. Without this split, clicking
-            Home from /profile briefly flashed the unauthenticated hero
-            while the landing page re-ran its auth redirect.
+            Home chip was here and looked orphaned beside the labelled
+            chips (icon-only, square, no text — sat awkwardly next to
+            the Odznaki / Profil pair). The logo on the left already
+            links home, so the chip was pure visual noise. If we ever
+            need to bring it back, use the same icon+label pattern as
+            Odznaki / Profil so the row stays visually balanced.
           */}
-          <Link
-            href={authenticated ? (demo ? "/quest?demo=true" : "/quest") : "/"}
-            title="Home"
-            className="nav-chip nav-chip-icon hidden sm:inline-flex"
-            aria-label="Home"
-          >
-            <Home className="w-4 h-4" />
-          </Link>
           <Link
             href={demo ? "/badges?demo=true" : "/badges"}
             title={t("navBadges", lang)}

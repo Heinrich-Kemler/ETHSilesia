@@ -26,8 +26,14 @@ type Props = {
   unlockedLevel: 1 | 2 | 3 | 4;
   /** User id — stable key for picker + result bucketing. `null` for anon/demo. */
   userId: string | null;
-  /** Called when the user earns the daily XP — parent decides whether to POST. */
-  onEarned?: (xp: number) => void;
+  /**
+   * Called when the user earns the daily XP. The parent performs the
+   * server POST and returns `true` on persistence success (or 409 replay),
+   * `false` on network/server failure. We gate localStorage + the
+   * "done today" UI on this boolean so a failed POST doesn't leave the
+   * user with a toast claiming success but no XP banked server-side.
+   */
+  onEarned?: (xp: number) => Promise<boolean> | void;
 };
 
 export default function DailyChallenge({
@@ -78,7 +84,7 @@ export default function DailyChallenge({
   }, [lang]);
 
   const handleAnswer = useCallback(
-    (idx: number) => {
+    async (idx: number) => {
       if (!selection || submitted) return;
       setSelected(idx);
       setSubmitted(true);
@@ -91,28 +97,60 @@ export default function DailyChallenge({
         status: isCorrect ? "correct" : "incorrect",
         earnedXp: earned,
       };
-      saveDailyResult(userId, saved);
       markActiveDay(userId);
-      setResult(saved);
-      // Fire the overlay regardless of outcome — the effect component
-      // itself differs based on status (confetti vs. coal + embers).
-      // Derive from the local `isCorrect` boolean rather than
-      // `saved.status` so TS keeps the literal-union narrow (the
-      // DailyResult type allows "pending" which we never emit here).
+      // Fire the burst immediately — it's a visual/audio cue tied to
+      // the click, not a persistence signal. Persistence-dependent
+      // state (localStorage "done today", +XP toast) waits for the
+      // server ack below so a failed POST doesn't strand the user
+      // with a "done" UI and no XP.
       setBurst(isCorrect ? "correct" : "incorrect");
 
-      if (isCorrect) {
-        toast({
-          variant: "level-up",
-          message: t("toastDailyCorrect", lang, { xp: DAILY_BONUS_XP }),
-        });
-        onEarned?.(DAILY_BONUS_XP);
-      } else {
+      if (!isCorrect) {
+        // Wrong answer has nothing to persist server-side — no XP to
+        // lose — so write the result immediately and show the feedback
+        // toast. The "no retries today" rule still applies.
+        saveDailyResult(userId, saved);
+        setResult(saved);
         toast({
           variant: "error",
           message: t("toastDailyWrong", lang),
         });
+        return;
       }
+
+      // Correct answer: persist to the server FIRST. Only then do we
+      // save localStorage ("done today") and show the success toast.
+      // If the parent callback returns `false` (or throws), we roll
+      // the UI back to the un-answered state so the user can retry.
+      let persisted = true;
+      try {
+        const result = onEarned?.(DAILY_BONUS_XP);
+        if (result instanceof Promise) {
+          persisted = (await result) !== false;
+        }
+      } catch {
+        persisted = false;
+      }
+
+      if (!persisted) {
+        // Server write failed. Roll back — no localStorage, no "done"
+        // pill, no XP toast. Keep the burst on-screen for a moment so
+        // the UI doesn't feel jerky, then reset.
+        setSubmitted(false);
+        setSelected(null);
+        toast({
+          variant: "error",
+          message: t("toastGenericError", lang),
+        });
+        return;
+      }
+
+      saveDailyResult(userId, saved);
+      setResult(saved);
+      toast({
+        variant: "level-up",
+        message: t("toastDailyCorrect", lang, { xp: DAILY_BONUS_XP }),
+      });
     },
     [selection, submitted, userId, date, lang, toast, onEarned]
   );

@@ -20,13 +20,14 @@ export const runtime = "nodejs";
  * left `users.total_xp` untouched — so the promised XP never
  * appeared in the TopBar, leaderboard, or level calculation.
  *
- * Idempotency: we use an in-memory per-user+date cache so repeated
- * POSTs within the same process can't farm XP. localStorage on the
- * client already blocks double-claims through the UI; this is the
- * belt-and-suspenders server guard. A `daily_completions` table
- * would be the production upgrade — for MVP the cache + rate limit
- * is enough. Process restart resets the cache, which is a known
- * gap documented on the cache map below.
+ * Idempotency: we key an in-memory cache on `userId | SERVER-today`.
+ * The server computes "today" itself (UTC-floor) and ignores any
+ * `dateISO` the client tries to send — otherwise a malicious caller
+ * could POST `{"dateISO":"2099-01-01"}` per unique key and farm
+ * +50 XP per request. The body type still carries `dateISO` for
+ * back-compat with the existing frontend, but the value is
+ * discarded before it reaches the cache key. Process restart
+ * resets the cache, which is a known gap (see below).
  *
  * Auth: same pattern as /api/quests/complete — Privy token + user
  * ownership check + IP rate limit.
@@ -34,9 +35,17 @@ export const runtime = "nodejs";
 
 type DailyCompleteBody = {
   userId?: string;
-  /** YYYY-MM-DD, client-local date of the claim. Used as the idempotency key. */
+  /**
+   * Accepted for backwards-compatibility with the current client but
+   * NOT trusted. The server computes today's date itself.
+   */
   dateISO?: string;
 };
+
+/** Server-authoritative "today" (UTC). Used as the idempotency key. */
+function serverTodayUtcISO(): string {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+}
 
 // Process-local idempotency cache. Map<`${userId}|${dateISO}`, true>.
 // This survives only as long as the Node process — on restart a
@@ -65,18 +74,15 @@ export async function POST(request: Request) {
     const body = (await request.json()) as DailyCompleteBody;
 
     const userId = body.userId?.trim();
-    const dateISO = body.dateISO?.trim();
 
-    if (!userId || !dateISO) {
-      throw new ApiError(400, "userId and dateISO are required.");
+    if (!userId) {
+      throw new ApiError(400, "userId is required.");
     }
 
-    // Shape check — `YYYY-MM-DD`. Rejects trailing time components
-    // or obvious garbage so the cache key space stays bounded.
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateISO)) {
-      throw new ApiError(400, "dateISO must be YYYY-MM-DD.");
-    }
-
+    // Server computes today — never trusts `body.dateISO`. Previously
+    // the client value was the cache key, so posting a different ISO
+    // string every call granted +50 XP ad infinitum.
+    const dateISO = serverTodayUtcISO();
     const cacheKey = `${userId}|${dateISO}`;
     if (dailyClaimCache.has(cacheKey)) {
       throw new ApiError(409, "Daily challenge already claimed today.");

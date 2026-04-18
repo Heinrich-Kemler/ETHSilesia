@@ -135,23 +135,28 @@ export default function QuestHubPage() {
             <StreakCalendar lang={lang} userId={user?.id ?? null} />
 
             {/* Daily Challenge
-                onEarned persists the +50 XP to the server. Demo users
-                and pre-auth viewers get the client-side toast + streak
-                bump only — there's no server-side user row to update.
-                After a successful POST we refetch so the TopBar XP/level
-                reflect the award immediately. All failures are logged
-                instead of toasted because the client-side optimistic UI
-                (localStorage + toast in DailyChallenge itself) already
-                told the user they succeeded — a second error toast here
-                would be confusing. A `daily_completions` table would
-                let us retry on the next page load; see the endpoint
-                doc comment for the MVP tradeoff. */}
+                onEarned persists the +50 XP to the server and returns
+                a boolean so DailyChallenge can gate its localStorage
+                write on actual success. Demo users and pre-auth
+                viewers return `true` because there's no server row
+                to update — their "done today" state lives only in
+                localStorage anyway, and that's fine. After a real
+                successful POST we refetch so the TopBar XP/level
+                reflect the award immediately.
+
+                Returning `false` on transient failure lets the child
+                component reset itself so the user can retry —
+                previously we silently logged the failure while the
+                UI latched into "done today" with no XP banked.
+                A `daily_completions` table would let us retry on
+                the next page load; see the endpoint doc comment
+                for the MVP tradeoff. */}
             <DailyChallenge
               lang={lang}
               unlockedLevel={level}
               userId={user?.id ?? null}
               onEarned={async () => {
-                if (isDemo || !user?.id) return;
+                if (isDemo || !user?.id) return true;
                 try {
                   const res = await fetch("/api/daily/complete", {
                     method: "POST",
@@ -161,20 +166,25 @@ export default function QuestHubPage() {
                       dateISO: todayISO(),
                     }),
                   });
-                  if (!res.ok && res.status !== 409) {
+                  // 409 = already claimed server-side. That's still a
+                  // success from the UI's point of view — the XP is
+                  // banked, just not by us — so we don't force a
+                  // refetch and we do let the "done today" state
+                  // stick.
+                  if (res.status === 409) return true;
+                  if (!res.ok) {
                     console.warn(
                       "[daily] complete failed",
                       res.status,
                       await res.text().catch(() => "")
                     );
-                    return;
+                    return false;
                   }
-                  // 409 means "already claimed" — nothing to refetch,
-                  // the existing XP row is already correct.
-                  if (res.status === 409) return;
                   await refetch();
+                  return true;
                 } catch (err) {
                   console.warn("[daily] complete network error", err);
+                  return false;
                 }
               }}
             />

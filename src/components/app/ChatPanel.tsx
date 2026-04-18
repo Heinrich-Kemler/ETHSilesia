@@ -1,11 +1,60 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, X, Sparkles } from "lucide-react";
 import { t } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
 import LanternGlyph from "@/components/ui/LanternGlyph";
+
+/**
+ * Minimal markdown renderer for Skarbnik's chat replies. Grok returns
+ * `**bold**` / `*italic*` as plain asterisks, and showing those raw
+ * looks broken — the user sees "**Uwaga**" when the model wanted
+ * **Uwaga**. We only handle bold + italic + bare URLs (no headings,
+ * lists, or code) because the system prompt caps responses at 150
+ * words and rarely uses anything else. Pulling in `react-markdown`
+ * for this would be overkill.
+ *
+ * Parsing order matters: bold (`**x**`) is matched before italic
+ * (`*x*`) so the asterisks from the bold marker don't get eaten by
+ * the italic pass.
+ */
+function renderInlineMarkdown(text: string): ReactNode[] {
+  // First split on bold — non-greedy so consecutive **a** **b** don't
+  // merge into one span.
+  const boldParts = text.split(/(\*\*[^*]+?\*\*)/g);
+  const nodes: ReactNode[] = [];
+  boldParts.forEach((chunk, bi) => {
+    if (chunk.startsWith("**") && chunk.endsWith("**") && chunk.length >= 4) {
+      nodes.push(
+        <strong key={`b-${bi}`} className="text-themed font-semibold">
+          {chunk.slice(2, -2)}
+        </strong>
+      );
+      return;
+    }
+    // Italic pass on what's left. We guard against lone asterisks (the
+    // model sometimes writes `*` as a bullet) by requiring at least
+    // one non-space char on each side of the marker.
+    const italicParts = chunk.split(/(\*[^*\s][^*]*?[^*\s]\*|\*[^*\s]\*)/g);
+    italicParts.forEach((piece, ii) => {
+      if (
+        piece.startsWith("*") &&
+        piece.endsWith("*") &&
+        piece.length >= 3 &&
+        !piece.startsWith("**")
+      ) {
+        nodes.push(
+          <em key={`i-${bi}-${ii}`}>{piece.slice(1, -1)}</em>
+        );
+      } else if (piece) {
+        nodes.push(<Fragment key={`t-${bi}-${ii}`}>{piece}</Fragment>);
+      }
+    });
+  });
+  return nodes;
+}
 
 /**
  * Slide-in AI coach panel. Opens from the right edge on all app pages.
@@ -169,8 +218,13 @@ export default function ChatPanel({
                       <Sparkles className="w-3.5 h-3.5 text-gold-themed" />
                     </div>
                     <div className="bg-elevated-themed rounded-xl rounded-tl-sm px-4 py-3 max-w-[85%]">
+                      {/* Assistant replies go through the inline
+                          markdown pass so **bold** renders as bold
+                          instead of leaking raw asterisks. User
+                          messages stay literal — we don't want their
+                          typed text reformatted under them. */}
                       <p className="text-sm text-secondary-themed leading-relaxed whitespace-pre-wrap">
-                        {m.text}
+                        {renderInlineMarkdown(m.text)}
                       </p>
                     </div>
                   </div>
