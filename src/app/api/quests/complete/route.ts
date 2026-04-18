@@ -19,6 +19,7 @@ import { ensureBadgeMintJob } from "@/lib/server/badgeMinting";
 import {
   calculateQuestXp,
   getQuestDefinition,
+  isQuestUnlocked,
   normalizeScore,
 } from "@/lib/server/questCatalog";
 import { assertRateLimit } from "@/lib/server/rateLimit";
@@ -81,6 +82,30 @@ export async function POST(request: Request) {
 
     assertPrivyOwnership(auth, user.privy_id);
 
+    // ── Server-side unlock gate ──────────────────────────────────────────
+    // Previously this route trusted whatever `questId` the client sent,
+    // so a direct POST could farm `l3-boss` as a first action. Pull the
+    // user's existing completions first and run the same prerequisite
+    // check the UI uses before we accept the new one.
+    const { data: priorCompletions, error: priorCompletionsError } =
+      await supabase
+        .from("quest_completions")
+        .select("quest_id")
+        .eq("user_id", userId);
+
+    if (priorCompletionsError) {
+      throw new ApiError(500, "Failed to load quest progress.", false);
+    }
+
+    const priorQuestIds = (priorCompletions ?? []).map((row) => row.quest_id);
+
+    if (!isQuestUnlocked(questId, priorQuestIds)) {
+      throw new ApiError(
+        403,
+        "Quest is locked — complete prerequisites first."
+      );
+    }
+
     const nowIso = new Date().toISOString();
 
     const { error: completionError } = await supabase
@@ -126,18 +151,11 @@ export async function POST(request: Request) {
 
     const potentialBadges: number[] = [];
 
-    const { data: completedQuestRows, error: completedQuestRowsError } = await supabase
-      .from("quest_completions")
-      .select("quest_id")
-      .eq("user_id", userId);
-
-    if (completedQuestRowsError) {
-      throw new ApiError(500, "Failed while checking badge progress.", false);
-    }
-
-    const completedQuestIds = new Set(
-      (completedQuestRows ?? []).map((row) => row.quest_id)
-    );
+    // Reuse the pre-insert list fetched above for the unlock gate; append
+    // the just-inserted questId to get the post-insert view without a
+    // second round-trip. The unique-constraint handling above guarantees
+    // `questId` wasn't already in the set.
+    const completedQuestIds = new Set([...priorQuestIds, questId]);
 
     if (completedQuestIds.size === 1) {
       potentialBadges.push(BADGE_IDS.FIRST_QUEST_COMPLETED);

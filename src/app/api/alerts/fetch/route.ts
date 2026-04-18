@@ -169,10 +169,14 @@ Odpowiedz TYLKO JSON:
 // ---------------------------------------------------------------------------
 
 export async function GET(request: NextRequest) {
-  // Auth: Vercel sends Authorization header for cron, or check CRON_SECRET
+  // Auth: Vercel sends Authorization header for cron.
+  // Fail CLOSED: if CRON_SECRET is unset, every caller is rejected. Previously
+  // `if (cronSecret && ...)` made the endpoint publicly triggerable when the
+  // env var was missing — attackers could force RSS fetches + Grok calls.
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    console.warn("[alerts/fetch] ⛔ Unauthorized request blocked");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

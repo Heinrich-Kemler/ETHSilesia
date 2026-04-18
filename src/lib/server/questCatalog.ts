@@ -1,4 +1,18 @@
-import { QUESTS } from "@/lib/quests";
+import { QUESTS, isQuestUnlocked as isQuestUnlockedRaw } from "@/lib/quests";
+
+/**
+ * Server-side re-export so route handlers can gate quest-completion on the
+ * same prerequisite graph the client UI uses. The client version is
+ * advisory — it hides locked cards from the UI — but a malicious caller
+ * can bypass it by POSTing directly to `/api/quests/complete`, so the
+ * server MUST run the same check before accepting a completion.
+ */
+export function isQuestUnlocked(
+  questId: string,
+  completedQuestIds: readonly string[]
+): boolean {
+  return isQuestUnlockedRaw(questId, completedQuestIds);
+}
 
 export type QuestDefinition = {
   id: string;

@@ -155,8 +155,13 @@ The server route happily inserts a completion for `l3-boss` even if the user has
 **Where:** `/.env.local` L4.
 
 ```
-SUPABASE_SERVICE_KEY=eyJ...PDcUlH5m_7mvxSteiuU6FhrqVZQdH-H902ViP3QnVtY
+SUPABASE_SERVICE_KEY=<REDACTED — real JWT in .env.local, not reproduced here>
 ```
+
+> Note: the illustrative string that previously appeared here was a
+> redacted excerpt (middle elided with `...`), but secret scanners often
+> false-positive on partial JWTs. The example is now fully redacted to
+> keep the doc safe to crawl.
 
 Also exposed in the same file: `PRIVATE_KEY` (a raw ECDSA secret, L10), `XAI_API_KEY` (L5), `SESSION_SIGNING_SECRET` (L12), `INTERNAL_API_KEY` (L13).
 
