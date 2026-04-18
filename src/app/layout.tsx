@@ -39,6 +39,13 @@ export default function RootLayout({
     <html
       lang="pl"
       className={`${inter.variable} ${spaceMono.variable} ${cinzel.variable}`}
+      // The inline theme-bootstrap <script> below writes `data-theme` to
+      // <html> before React hydrates, which produces a server/client
+      // attribute mismatch on this element. That mismatch is intentional
+      // (it's how we avoid the light/dark flash), so we scope React's
+      // hydration warning to this tag only. Children still hydrate
+      // normally. Same pattern next-themes uses.
+      suppressHydrationWarning
     >
       <head>
         {/*
