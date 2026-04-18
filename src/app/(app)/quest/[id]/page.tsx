@@ -21,18 +21,39 @@ import { useDemoMode } from "@/lib/useDemoMode";
 import { t } from "@/lib/i18n";
 import type { TranslationKey } from "@/lib/i18n";
 import {
+  getPreviousQuestId,
   getQuestById,
+  isQuestUnlocked,
   levelNameKey,
   questTitle,
   type Quest,
 } from "@/lib/quests";
 import { markActiveDay } from "@/lib/streak";
 import CelebrationModal from "@/components/app/CelebrationModal";
+import Confetti from "@/components/ui/Confetti";
 import { useToast } from "@/components/ui/Toast";
+import { useRouter } from "next/navigation";
 
 type Phase = "loading" | "quiz" | "complete" | "not-found";
 
-const QUESTION_TIME_SECONDS = 30;
+// Per-question timer. Short, punchy rounds — 10s forces gut-level
+// recognition of DeFi vocab and keeps the quiz feeling more like a
+// gameshow than an exam. Longer values previously let users zone out
+// and the AI explanation already covers the "why" post-hoc.
+const QUESTION_TIME_SECONDS = 10;
+
+// Module-scope constant so the reference is stable across renders.
+// Confetti includes `colors` in its effect deps; passing the prop as
+// an inline literal would regenerate particles on every parent
+// rerender and make the burst visibly restart mid-fall.
+const CONFETTI_COLORS = [
+  "#f59e0b",
+  "#10b981",
+  "#06b6d4",
+  "#a855f7",
+  "#ef4444",
+  "#f9d71c",
+];
 
 export default function ActiveQuestPage({
   params,
@@ -42,10 +63,40 @@ export default function ActiveQuestPage({
   const { id } = use(params);
   const { lang } = useLanguage();
   const demo = useDemoMode();
-  const { user, isDemo, refetch } = useSkarbnikUser();
+  const router = useRouter();
+  const { user, isDemo, refetch, completedQuests, status, ready } =
+    useSkarbnikUser();
   const toast = useToast();
 
   const quest = useMemo<Quest | undefined>(() => getQuestById(id), [id]);
+
+  // Sequential-unlock guard. Direct URL access to /quest/l3-boss from
+  // a Level 1 user used to work because this page never looked at
+  // `completedQuests`. Now we bounce them back to the hub with a
+  // toast — but only once we know the user's real completion set.
+  const gateDecided = isDemo || (ready && status === "authenticated");
+  const questUnlocked = useMemo(() => {
+    if (!quest) return true; // fall through to the not-found branch
+    return isQuestUnlocked(quest.id, completedQuests);
+  }, [quest, completedQuests]);
+  const bouncedRef = useRef(false);
+  useEffect(() => {
+    if (!gateDecided) return;
+    if (!quest) return;
+    if (questUnlocked) return;
+    if (bouncedRef.current) return;
+    bouncedRef.current = true;
+    const prevId = getPreviousQuestId(quest.id);
+    const prev = prevId ? getQuestById(prevId) : null;
+    toast({
+      variant: "info",
+      message: t("questLockedToastTitle", lang),
+      sub: prev
+        ? t("questLockedToastBody", lang, { prev: questTitle(prev, lang) })
+        : t("questCompletePrevious", lang),
+    });
+    router.replace(demo ? "/quest?demo=true" : "/quest");
+  }, [gateDecided, quest, questUnlocked, toast, lang, router, demo]);
 
   const [phase, setPhase] = useState<Phase>("loading");
   const [qIndex, setQIndex] = useState(0);
@@ -55,11 +106,18 @@ export default function ActiveQuestPage({
   const [aiLoading, setAiLoading] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [locked, setLocked] = useState(false);
+  // `failed` distinguishes "completed with <100%" (show retry UI, no
+  // server persistence) from "completed with 100%" or "replay 409" —
+  // both of those still render the normal success screen. It matters
+  // because xpEarned=0 is ambiguous on its own: a 409 replay also
+  // returns zero and we do NOT want that path to invite another
+  // retry (the quest is already in completedQuests server-side).
   const [completionResult, setCompletionResult] = useState<{
     xpEarned: number;
     newXP: number;
     levelUp: boolean;
     badgeEarned: number | null;
+    failed: boolean;
   } | null>(null);
   // Sequenced celebration: show level-up first (if any), then badge (if any).
   const [celebrationStep, setCelebrationStep] = useState<
@@ -68,15 +126,19 @@ export default function ActiveQuestPage({
   const demoAppend = demo ? "?demo=true" : "";
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Phase init
+  // Phase init. We deliberately hold "loading" until the unlock gate
+  // has a confident answer — otherwise a locked user would see the
+  // quiz for a frame before the redirect effect ran.
   useEffect(() => {
     if (!quest) {
       setPhase("not-found");
       return;
     }
+    if (!gateDecided) return;
+    if (!questUnlocked) return;
     setPhase("quiz");
     setElapsed(0);
-  }, [quest]);
+  }, [quest, gateDecided, questUnlocked]);
 
   // Start/stop timer when question changes
   useEffect(() => {
@@ -185,10 +247,33 @@ export default function ActiveQuestPage({
   const finishQuest = useCallback(async () => {
     if (!quest) return;
     const totalQ = quest.questions.length;
-    const xpEarned = Math.round((correctCount * quest.xp) / totalQ);
+    // No partial credit. A single wrong answer blocks XP AND leaves
+    // the quest uncompleted server-side, so the user can replay for
+    // full XP. Previously we did `Math.round((correctCount*xp)/total)`
+    // which handed out 66% XP for 2/3 — that created the "I got some
+    // XP but the next level didn't unlock" confusion because the
+    // server's completion gate still requires `answersTotal === score`.
+    const allCorrect = correctCount === totalQ;
+    const xpEarned = allCorrect ? quest.xp : 0;
 
-    // Mark today active for the streak tracker (idempotent, runs in demo + real paths).
+    // Streak counts engagement, not success, so bump it either way.
     markActiveDay(user?.id ?? null);
+
+    // Partial-score branch: keep the failure entirely client-side.
+    // We skip the /api/quests/complete POST because a) the server
+    // would 400 on score < answersTotal, and b) we want the quest to
+    // stay in its un-completed state so the retry earns full XP.
+    if (!allCorrect) {
+      setCompletionResult({
+        xpEarned: 0,
+        newXP: user?.total_xp ?? 0,
+        levelUp: false,
+        badgeEarned: null,
+        failed: true,
+      });
+      setPhase("complete");
+      return;
+    }
 
     // Demo mode → skip the server call, show synthetic success.
     if (isDemo) {
@@ -197,6 +282,7 @@ export default function ActiveQuestPage({
         newXP: (user?.total_xp ?? 0) + xpEarned,
         levelUp: false,
         badgeEarned: null,
+        failed: false,
       });
       setPhase("complete");
       toast({
@@ -207,14 +293,27 @@ export default function ActiveQuestPage({
     }
 
     if (!user?.id) {
-      // no user row yet — still show the UI but skip persistence
-      setCompletionResult({
-        xpEarned,
-        newXP: xpEarned,
-        levelUp: false,
-        badgeEarned: null,
+      // Privy authed but our Supabase sync never produced a user row.
+      // The old behaviour was to fake a "complete" screen with zero
+      // persistence — that's the bug where XP "disappears" and the
+      // next quest never unlocks. Surface the real problem instead so
+      // the user can hit the floating SessionResetButton (rendered by
+      // the (app) layout whenever privyAuthenticated && !authenticated)
+      // and recover. Bounce back to the hub so the reset affordance
+      // is visible and the quiz state doesn't mislead them.
+      console.warn("[quest/complete] no user.id — cannot persist, routing to reset");
+      toast({
+        variant: "error",
+        message:
+          lang === "pl"
+            ? "Nie udało się zapisać ukończenia questu."
+            : "Couldn't save quest completion.",
+        sub:
+          lang === "pl"
+            ? "Sesja nie jest zsynchronizowana. Użyj przycisku \"Resetuj sesję\" w prawym dolnym rogu."
+            : "Session isn't synced. Tap \"Reset session\" in the bottom-right corner.",
       });
-      setPhase("complete");
+      router.replace(`/quest${demoAppend}`);
       return;
     }
 
@@ -231,12 +330,16 @@ export default function ActiveQuestPage({
         }),
       });
       if (res.status === 409) {
-        // already completed (replay) — show UI anyway
+        // Already completed (replay). failed=false on purpose — the
+        // user earned this quest previously, we just don't award XP
+        // twice. Showing the retry screen here would be misleading
+        // because replaying a third time still gives zero XP.
         setCompletionResult({
           xpEarned: 0,
           newXP: user.total_xp ?? 0,
           levelUp: false,
           badgeEarned: null,
+          failed: false,
         });
         setPhase("complete");
         return;
@@ -252,6 +355,7 @@ export default function ActiveQuestPage({
         newXP: data.newXP,
         levelUp: data.levelUp,
         badgeEarned: data.badgeEarned,
+        failed: false,
       });
       setPhase("complete");
       // Trigger the sequenced celebration modal. Level-up wins the first slot
@@ -269,15 +373,38 @@ export default function ActiveQuestPage({
         variant: "error",
         message: t("toastGenericError", lang),
       });
+      // Network error after a 100% run. Don't flag as `failed` — the
+      // user answered correctly, the persistence just didn't land.
+      // The retry button is on the hub (replay the quest) rather than
+      // here; showing the failure screen would imply they got an
+      // answer wrong.
       setCompletionResult({
         xpEarned,
         newXP: user.total_xp ?? 0,
         levelUp: false,
         badgeEarned: null,
+        failed: false,
       });
       setPhase("complete");
     }
-  }, [quest, correctCount, user, isDemo, lang, toast, refetch]);
+  }, [quest, correctCount, user, isDemo, lang, toast, refetch, router, demoAppend]);
+
+  // Full quiz reset. Used by the retry button on the failure screen
+  // — the user gets a clean slate (scorecard, question index, AI
+  // explanation, timer) without a page navigation, which would drop
+  // the ephemeral gate-decided / mount state we already have.
+  const restartQuiz = useCallback(() => {
+    setQIndex(0);
+    setSelected(null);
+    setCorrectCount(0);
+    setAiExplanation("");
+    setAiLoading(false);
+    setElapsed(0);
+    setLocked(false);
+    setCompletionResult(null);
+    setCelebrationStep("done");
+    setPhase("quiz");
+  }, []);
 
   /* ===============================================================
      RENDER
@@ -539,9 +666,26 @@ export default function ActiveQuestPage({
             badgeEarned={completionResult.badgeEarned}
             newLevel={(user?.level ?? 1) as number}
             demoAppend={demoAppend}
+            failed={completionResult.failed}
+            onRetry={restartQuiz}
           />
         )}
       </div>
+
+      {/*
+        Confetti burst — only when we actually persisted XP (replays
+        return xpEarned=0 from the server, and the silent-no-op branch
+        is gone, so `xpEarned > 0` is now a reliable "we earned
+        something" signal). Fixed + pointer-events-none so it floats
+        over the whole viewport without blocking the back button.
+      */}
+      {phase === "complete" &&
+        completionResult &&
+        completionResult.xpEarned > 0 && (
+          <div className="fixed inset-0 pointer-events-none z-40">
+            <Confetti count={70} colors={CONFETTI_COLORS} />
+          </div>
+        )}
 
       {/* Sequenced celebration overlays. Level-up shows first; if a badge
           was also earned, it shows after the level-up modal is dismissed. */}
@@ -592,6 +736,8 @@ function CompletionScreen({
   badgeEarned,
   newLevel,
   demoAppend,
+  failed,
+  onRetry,
 }: {
   quest: Quest;
   lang: "pl" | "en";
@@ -602,7 +748,14 @@ function CompletionScreen({
   badgeEarned: number | null;
   newLevel: number;
   demoAppend: string;
+  failed: boolean;
+  onRetry: () => void;
 }) {
+  // Hooks must run unconditionally on every render (Rules of Hooks),
+  // so the count-up state/effect live ABOVE the failure early-return.
+  // On the failure path xpEarned=0, so the effect is a harmless 0→0
+  // count that never makes it to the DOM because we return early
+  // below.
   const [count, setCount] = useState(0);
   useEffect(() => {
     const duration = 800;
@@ -616,6 +769,61 @@ function CompletionScreen({
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
   }, [xpEarned]);
+
+  // Failure branch: no XP was persisted, show a retry affordance.
+  // The quest stays uncompleted server-side, so a fresh attempt
+  // earns full XP through the normal completion endpoint.
+  if (failed) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.35 }}
+        className="text-center py-8"
+      >
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-red/10 border border-red/30 mb-6">
+          <X className="w-10 h-10 text-red" />
+        </div>
+
+        <h1 className="font-heading text-3xl sm:text-4xl font-bold text-themed mb-2">
+          {t("quizFailedTitle", lang)}
+        </h1>
+        <p className="text-muted-themed text-sm font-mono uppercase tracking-widest mb-8">
+          {questTitle(quest, lang)}
+        </p>
+
+        <div className="bg-card-themed border border-themed rounded-2xl p-8 mb-8 max-w-md mx-auto shadow-card">
+          <p className="text-muted-themed text-xs font-mono uppercase tracking-widest mb-2">
+            {t("quizPerfectRequired", lang)}
+          </p>
+          <p className="font-heading text-4xl font-bold text-themed">
+            {correct}
+            <span className="text-muted-themed">/{total}</span>
+          </p>
+          <p className="text-sm text-secondary-themed mt-4 leading-relaxed">
+            {t("quizFailedBody", lang)}
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            onClick={onRetry}
+            className="gradient-gold-themed text-white font-heading font-bold px-8 py-4 rounded-xl inline-flex items-center gap-2"
+          >
+            {t("quizTryAgain", lang)}
+            <ChevronRight className="w-5 h-5" />
+          </button>
+          <Link
+            href={`/quest${demoAppend}`}
+            className="text-muted-themed hover:text-themed font-heading font-bold px-6 py-3 rounded-xl inline-flex items-center gap-2"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            {t("quizBackHub", lang)}
+          </Link>
+        </div>
+      </motion.div>
+    );
+  }
 
   const NewLevelIcon =
     newLevel === 1 ? Sparkles : newLevel === 2 ? Shield : Crown;

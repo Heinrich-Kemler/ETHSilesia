@@ -284,8 +284,13 @@ export const QUESTS: Quest[] = [
         correctIndex: 1,
       },
       {
+        // Polish learners don't universally recognise the English
+        // idiom, so the PL version leads with a natural Polish
+        // translation and parenthesises the original (which they'll
+        // still see repeated in crypto Twitter / exchanges). EN
+        // keeps the canonical form unchanged.
         question: pl_en(
-          "'Not your keys, not your coins' oznacza...",
+          "„Nie twoje klucze — nie twoje monety” (ang. 'Not your keys, not your coins') oznacza...",
           "'Not your keys, not your coins' means..."
         ),
         options: [
@@ -1613,6 +1618,42 @@ export function getQuestById(id: string): Quest | undefined {
 
 export function questTitle(q: Quest, lang: Lang): string {
   return lang === "pl" ? q.titlePl : q.titleEn;
+}
+
+/* ==============================================================
+   SEQUENTIAL-UNLOCK HELPERS
+
+   Unlock rule: a quest is playable when *its predecessor* in the
+   flat QUESTS array is complete. The first quest is always open.
+
+   Why not gate by user level? The L1 XP total (350) is below the
+   L2 threshold (500), so level-based locking would trap players
+   after finishing Level 1 — they'd need extra XP from elsewhere
+   to see any L2 quest. Chaining by completion avoids that cliff
+   and matches the Duolingo-style mental model the chapter path
+   already teaches visually.
+   ============================================================== */
+
+/** Returns the id of the quest immediately before `questId`, or null
+ *  if `questId` is the first entry (or unknown). */
+export function getPreviousQuestId(questId: string): string | null {
+  const idx = QUESTS.findIndex((q) => q.id === questId);
+  if (idx <= 0) return null;
+  return QUESTS[idx - 1].id;
+}
+
+/** True iff `questId` is playable given the set of already-completed
+ *  quest ids. The first quest is always unlocked. Unknown ids return
+ *  false so a stray URL can't bypass the gate. */
+export function isQuestUnlocked(
+  questId: string,
+  completedQuests: readonly string[]
+): boolean {
+  const idx = QUESTS.findIndex((q) => q.id === questId);
+  if (idx < 0) return false;
+  if (idx === 0) return true;
+  const prev = QUESTS[idx - 1];
+  return completedQuests.includes(prev.id);
 }
 
 /* ==============================================================
