@@ -9,15 +9,30 @@ import type { Lang } from "@/lib/i18n";
 
 export default function CTASection({ lang }: { lang: Lang }) {
   const router = useRouter();
-  const { status, isDemo, login } = useSkarbnikUser();
+  const { status, isDemo, login, logout, ready, privyAuthenticated } =
+    useSkarbnikUser();
 
-  // Mirrors HeroSection: authenticated/demo → /quest, otherwise → Privy login.
-  const handleStart = () => {
+  // Mirrors HeroSection. See there for why a stuck Privy session needs
+  // a logout before login() — otherwise clicking does nothing.
+  const handleStart = async () => {
+    console.log("[CTASection] CTA clicked", {
+      status,
+      isDemo,
+      ready,
+      privyAuthenticated,
+    });
     if (status === "authenticated" || isDemo) {
       router.push("/quest");
-    } else {
-      login();
+      return;
     }
+    if (privyAuthenticated) {
+      // Stuck Privy session — force reset so login() opens the modal
+      // instead of no-opping on "already logged in". See HeroSection.
+      await logout();
+      login();
+      return;
+    }
+    login();
   };
 
   return (

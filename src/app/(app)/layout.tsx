@@ -38,9 +38,10 @@ export default function AppLayout({
 
   return (
     <>
+      {/* onToggleLang was removed when useLanguage became a PL-only no-op
+          (see src/lib/useLanguage.ts — kept in place for future rehydration). */}
       <AppNav
         lang={lang}
-        onToggleLang={toggleLang}
         theme={theme}
         onToggleTheme={toggleTheme}
         authenticated={!!user}

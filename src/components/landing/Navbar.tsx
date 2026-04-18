@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Menu, X, LogIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { t } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
 import type { Theme } from "@/lib/useTheme";
@@ -25,12 +27,45 @@ export default function Navbar({
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const router = useRouter();
+  const { status, isDemo, login, logout, privyAuthenticated } =
+    useSkarbnikUser();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Same logic as HeroSection. For a stuck Privy session (privy-authed
+  // but sync never completed) we logout first, otherwise `login()` is
+  // a silent no-op because Privy thinks the user is already in.
+  const handleLogin = async () => {
+    console.log("[Navbar] login clicked", {
+      status,
+      isDemo,
+      privyAuthenticated,
+    });
+    if (status === "authenticated" || isDemo) {
+      router.push("/quest");
+      return;
+    }
+    if (privyAuthenticated) {
+      // See HeroSection for the full explanation — in short: if Privy says
+      // authed but we never hit status=authenticated, the click IS the
+      // "reset me" signal. logout() + login() reopens the modal cleanly.
+      await logout();
+      login();
+      return;
+    }
+    login();
+  };
+
+  // Only flip the nav CTA label once we're truly authed. A half-authed
+  // (Privy yes, Supabase stuck) session keeps showing "Log in" — that's
+  // the recovery affordance for the user.
+  const authed = status === "authenticated" || isDemo;
+  const ctaLabel = authed ? t("heroCta", lang) : t("navLogin", lang);
 
   return (
     <nav
@@ -81,9 +116,13 @@ export default function Navbar({
         {/* Right side */}
         <div className="hidden md:flex items-center gap-3">
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <button className="flex items-center gap-2 bg-gold-themed hover:bg-gold-dim-themed text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
+          <button
+            type="button"
+            onClick={handleLogin}
+            className="flex items-center gap-2 bg-gold-themed hover:bg-gold-dim-themed text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors"
+          >
             <LogIn className="w-4 h-4" />
-            {t("navLogin", lang)}
+            {ctaLabel}
           </button>
         </div>
 
@@ -123,9 +162,16 @@ export default function Navbar({
                   {t(link.key, lang)}
                 </a>
               ))}
-              <button className="w-full flex items-center justify-center gap-2 bg-gold-themed text-white text-sm font-semibold px-5 py-2.5 rounded-xl mt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  handleLogin();
+                }}
+                className="w-full flex items-center justify-center gap-2 bg-gold-themed text-white text-sm font-semibold px-5 py-2.5 rounded-xl mt-2"
+              >
                 <LogIn className="w-4 h-4" />
-                {t("navLogin", lang)}
+                {ctaLabel}
               </button>
             </div>
           </motion.div>

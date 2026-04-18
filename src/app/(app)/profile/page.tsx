@@ -16,15 +16,11 @@ import {
   Flame,
   Target,
   Award,
-  Moon,
-  Sun,
-  Globe,
   LogOut,
   ChevronRight,
   Lock,
 } from "lucide-react";
 import { useLanguage } from "@/lib/useLanguage";
-import { useTheme } from "@/lib/useTheme";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { useDemoMode } from "@/lib/useDemoMode";
 import { useToast } from "@/components/ui/Toast";
@@ -36,8 +32,9 @@ import { getCurrentStreak } from "@/lib/streak";
 /* =====================================================================
    Profile page — everything the user sees about themselves after login.
 
-   Composed of seven stacked sections (header, stats, XP, badges preview,
-   quest history, settings, account actions). Data comes from the
+   Composed of six stacked sections (header, stats, XP, badges preview,
+   quest history, account actions). Language + theme toggles live in the
+   shared `AppNav` — no duplicate Settings block here. Data comes from the
    `useSkarbnikUser` hook which already handles demo mode vs. Privy auth.
    ===================================================================== */
 
@@ -70,8 +67,7 @@ function formatDate(iso: string | null | undefined, lang: "pl" | "en"): string {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { lang, toggle: toggleLang } = useLanguage();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { lang } = useLanguage();
   const demo = useDemoMode();
   const toast = useToast();
   const {
@@ -118,8 +114,8 @@ export default function ProfilePage() {
     : (user as { streak_days?: number } | null)?.streak_days ?? 0;
 
   const earnedBadgeIds = useMemo(
-    () => inferEarnedBadgeIds(level, completedCount, effectiveStreak),
-    [level, completedCount, effectiveStreak]
+    () => inferEarnedBadgeIds(level, completedQuests, effectiveStreak),
+    [level, completedQuests, effectiveStreak]
   );
   const earnedBadges = useMemo(
     () => BADGES.filter((b) => earnedBadgeIds.includes(b.id)).slice(0, 4),
@@ -581,109 +577,8 @@ export default function ProfilePage() {
             </motion.section>
 
             {/* ============================================================
-                SECTION 6 — Settings (Language + Theme)
-                ============================================================ */}
-            <motion.section
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="mt-6 bg-card-themed border border-themed rounded-2xl p-5 shadow-card"
-            >
-              <h2 className="font-heading text-base font-semibold text-themed mb-4">
-                {t("profileSettings", lang)}
-              </h2>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                {/* Language */}
-                <div className="flex items-center justify-between gap-3 bg-elevated-themed border border-themed rounded-xl px-4 py-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <Globe className="w-4 h-4 text-muted-themed flex-shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-themed text-sm font-medium">
-                        {t("profileSettingLanguage", lang)}
-                      </p>
-                      <p className="text-muted-themed text-xs">
-                        {lang === "pl" ? "Polski" : "English"}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={toggleLang}
-                    className="relative flex items-center bg-card-themed border border-themed rounded-full p-0.5 w-[88px] h-9 hover:border-gold-themed/20 transition-colors flex-shrink-0"
-                    aria-label={t("profileSettingLanguage", lang)}
-                  >
-                    <motion.div
-                      className="absolute top-0.5 w-[42px] h-8 rounded-full bg-gold-themed/15 border border-gold-themed/30"
-                      animate={{ left: lang === "pl" ? "2px" : "42px" }}
-                      transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                    />
-                    <span
-                      className={`relative z-10 flex-1 text-center text-xs font-bold tracking-wide transition-colors ${
-                        lang === "pl" ? "text-gold-themed" : "text-muted-themed"
-                      }`}
-                    >
-                      PL
-                    </span>
-                    <span
-                      className={`relative z-10 flex-1 text-center text-xs font-bold tracking-wide transition-colors ${
-                        lang === "en" ? "text-gold-themed" : "text-muted-themed"
-                      }`}
-                    >
-                      EN
-                    </span>
-                  </button>
-                </div>
-
-                {/* Theme */}
-                <div className="flex items-center justify-between gap-3 bg-elevated-themed border border-themed rounded-xl px-4 py-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    {theme === "dark" ? (
-                      <Moon className="w-4 h-4 text-muted-themed flex-shrink-0" />
-                    ) : (
-                      <Sun className="w-4 h-4 text-muted-themed flex-shrink-0" />
-                    )}
-                    <div className="min-w-0">
-                      <p className="text-themed text-sm font-medium">
-                        {t("profileSettingTheme", lang)}
-                      </p>
-                      <p className="text-muted-themed text-xs">
-                        {theme === "dark"
-                          ? t("profileThemeDark", lang)
-                          : t("profileThemeLight", lang)}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={toggleTheme}
-                    className="relative flex items-center bg-card-themed border border-themed rounded-full p-0.5 w-[78px] h-9 hover:border-gold-themed/20 transition-colors flex-shrink-0"
-                    aria-label={t("profileSettingTheme", lang)}
-                  >
-                    <motion.div
-                      className="absolute top-0.5 w-[37px] h-8 rounded-full bg-gold-themed/15 border border-gold-themed/30"
-                      animate={{ left: theme === "light" ? "2px" : "37px" }}
-                      transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                    />
-                    <span className="relative z-10 flex-1 flex items-center justify-center">
-                      <Sun
-                        className={`w-3.5 h-3.5 ${
-                          theme === "light" ? "text-gold-themed" : "text-muted-themed"
-                        }`}
-                      />
-                    </span>
-                    <span className="relative z-10 flex-1 flex items-center justify-center">
-                      <Moon
-                        className={`w-3.5 h-3.5 ${
-                          theme === "dark" ? "text-gold-themed" : "text-muted-themed"
-                        }`}
-                      />
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </motion.section>
-
-            {/* ============================================================
-                SECTION 7 — Account actions
+                SECTION 6 — Account actions
+                (Language + theme toggles live in AppNav, not here.)
                 ============================================================ */}
             <motion.section
               initial={{ opacity: 0, y: 8 }}

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { LogIn, LogOut, Home, Award, User as UserIcon } from "lucide-react";
-import LanguageToggle from "@/components/ui/LanguageToggle";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { t } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
@@ -12,10 +11,14 @@ import type { Theme } from "@/lib/useTheme";
  * Nav used on /assess, /quest, /quest/[id], /leaderboard.
  * Simpler than the landing Navbar — no anchor links, has
  * user actions (login / logout / home).
+ *
+ * The UI is Polish-only for this release (no <LanguageToggle>). The
+ * `lang` prop is still threaded in so `t(...)` calls resolve, and so
+ * a future release that re-enables the toggle only has to flip the
+ * hook + add one button back in here.
  */
 export default function AppNav({
   lang,
-  onToggleLang,
   theme,
   onToggleTheme,
   authenticated,
@@ -24,7 +27,6 @@ export default function AppNav({
   demo,
 }: {
   lang: Lang;
-  onToggleLang: () => void;
   theme: Theme;
   onToggleTheme: () => void;
   authenticated: boolean;
@@ -72,8 +74,14 @@ export default function AppNav({
         </Link>
 
         <div className="flex items-center gap-3">
+          {/*
+            Home = "app home" when signed in (the quest hub) and the
+            marketing landing when signed out. Without this split, clicking
+            Home from /profile briefly flashed the unauthenticated hero
+            while the landing page re-ran its auth redirect.
+          */}
           <Link
-            href="/"
+            href={authenticated ? (demo ? "/quest?demo=true" : "/quest") : "/"}
             title="Home"
             className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-lg border border-themed hover:border-gold-themed/30 text-secondary-themed hover:text-themed transition-colors"
           >
@@ -98,7 +106,6 @@ export default function AppNav({
             </Link>
           ) : null}
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <LanguageToggle lang={lang} onToggle={onToggleLang} />
           {authenticated ? (
             <button
               onClick={onLogout}

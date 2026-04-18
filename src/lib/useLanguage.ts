@@ -1,53 +1,36 @@
 "use client";
 
 /**
- * Language hook — backed by localStorage, synchronised across every
- * consumer and tab via useSyncExternalStore. Replaces the older
- * useState + useEffect-read pattern that violated React 19's
- * `set-state-in-effect` rule.
+ * Language hook — Polish-only for the first release.
+ *
+ * The codebase still carries both PL and EN translation strings in
+ * `i18n.ts` (deliberately — a future handover to the bank may re-enable
+ * the toggle), but every consumer of this hook now gets `"pl"` back
+ * regardless of localStorage. `setLang` and `toggle` are kept as no-ops
+ * so downstream call sites that reference them (e.g. `(app)/layout.tsx`)
+ * don't have to change shape.
+ *
+ * To re-enable the toggle later: restore the original body that read /
+ * wrote `localStorage[STORAGE_KEY]` via `useSyncExternalStore` and make
+ * `setLang` / `toggle` call `writeLang` again.
  */
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback } from "react";
 import type { Lang } from "./i18n";
 
-const STORAGE_KEY = "skarbnik-lang";
-
-/** Cross-hook listeners so same-tab writes trigger a re-render too. */
-const listeners = new Set<() => void>();
-
-function subscribe(cb: () => void): () => void {
-  listeners.add(cb);
-  window.addEventListener("storage", cb);
-  return () => {
-    listeners.delete(cb);
-    window.removeEventListener("storage", cb);
-  };
-}
-
-function getSnapshot(): Lang {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored === "en" ? "en" : "pl";
-}
-
-// Server render has no storage — default matches <html lang="pl">.
-function getServerSnapshot(): Lang {
-  return "pl";
-}
-
-function writeLang(lang: Lang): void {
-  localStorage.setItem(STORAGE_KEY, lang);
-  listeners.forEach((cb) => cb());
-}
+const FIXED_LANG: Lang = "pl";
 
 export function useLanguage() {
-  const lang = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const lang: Lang = FIXED_LANG;
 
-  const setLang = useCallback((l: Lang) => {
-    writeLang(l);
+  // Kept for API stability. Both are no-ops — call sites that used to
+  // flip the language still compile, they just don't do anything now.
+  const setLang = useCallback<(l: Lang) => void>(() => {
+    /* no-op — PL only for this release */
   }, []);
 
   const toggle = useCallback(() => {
-    writeLang(getSnapshot() === "pl" ? "en" : "pl");
+    /* no-op — PL only for this release */
   }, []);
 
   return { lang, setLang, toggle };

@@ -19,7 +19,7 @@ import { t } from "@/lib/i18n";
 import { levelNameKey } from "@/lib/quests";
 
 type LeaderRow = {
-  user_id: string;
+  player_id: string;
   username: string | null;
   total_xp: number;
   level: number;
@@ -48,7 +48,7 @@ export default function LeaderboardPage() {
     if (!silent) setLoading(true);
     setRefreshing(true);
     try {
-      const url = user?.id
+      const url = !demo && user?.id
         ? `/api/leaderboard?userId=${encodeURIComponent(user.id)}`
         : "/api/leaderboard";
       const res = await fetch(url, { cache: "no-store" });
@@ -163,7 +163,9 @@ export default function LeaderboardPage() {
               <span>{t("questXP", lang)}</span>
             </div>
             {rows.map((r, i) => {
-              const isMe = r.user_id === (user?.id ?? null);
+              const isMe =
+                data?.currentUser?.player_id != null &&
+                r.player_id === data.currentUser.player_id;
               const levelKey = levelNameKey(Math.min(3, Math.max(1, r.level)) as 1 | 2 | 3);
               const LevelIcon =
                 r.level <= 1 ? Sparkles : r.level === 2 ? Shield : Crown;
@@ -175,7 +177,7 @@ export default function LeaderboardPage() {
                   : "var(--gold)";
               return (
                 <motion.div
-                  key={r.user_id}
+                  key={r.player_id}
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.03 }}
