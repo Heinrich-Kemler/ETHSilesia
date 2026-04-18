@@ -10,9 +10,9 @@ import {
   type ReactNode,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, Trophy, AlertCircle, X } from "lucide-react";
+import { CheckCircle2, Trophy, AlertCircle, Info, X } from "lucide-react";
 
-export type ToastVariant = "success" | "level-up" | "error";
+export type ToastVariant = "success" | "level-up" | "error" | "info";
 export type Toast = {
   id: string;
   variant: ToastVariant;
@@ -36,6 +36,7 @@ const VARIANT_META: Record<
   success: { icon: CheckCircle2, accent: "var(--cyan)" },
   "level-up": { icon: Trophy, accent: "var(--gold)" },
   error: { icon: AlertCircle, accent: "#ef4444" },
+  info: { icon: Info, accent: "var(--cyan)" },
 };
 
 function ToastCard({
