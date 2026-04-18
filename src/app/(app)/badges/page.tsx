@@ -56,8 +56,8 @@ export default function BadgesPage() {
 
   const level = (user?.level ?? 1) as 1 | 2 | 3 | 4;
   const earnedIds = useMemo(
-    () => inferEarnedBadgeIds(level, completedQuests.length, streakDays),
-    [level, completedQuests.length, streakDays]
+    () => inferEarnedBadgeIds(level, completedQuests, streakDays),
+    [level, completedQuests, streakDays]
   );
   const earnedCount = earnedIds.length;
   const totalCount = BADGES.length;
