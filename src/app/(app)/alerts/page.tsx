@@ -1,21 +1,17 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  RefreshCw,
   ExternalLink,
   ChevronDown,
   ChevronUp,
-  ArrowLeft,
-  LogIn,
   Globe,
   Coins,
   Layers,
   Landmark,
 } from "lucide-react";
-import ChatWidget from "@/components/ui/ChatWidget";
+import ChatPanel, { ChatFab } from "@/components/app/ChatPanel";
 import { useLanguage } from "@/lib/useLanguage";
 
 type ScamAlert = {
@@ -60,9 +56,13 @@ export default function AlertsPage() {
   const { lang } = useLanguage();
   const [alerts, setAlerts] = useState<ScamAlert[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [, setRefreshing] = useState(false);
   const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
   const [category, setCategory] = useState<CategoryFilter>("all");
+  // Local state for the shared ChatFab/ChatPanel combo used on every
+  // other (app) page so the AI coach shortcut looks and behaves the
+  // same here as on /quest, /leaderboard, /badges, /profile.
+  const [chatOpen, setChatOpen] = useState(false);
 
   const loadAlerts = useCallback(
     async (silent = false) => {
@@ -121,7 +121,8 @@ export default function AlertsPage() {
 
   return (
     <main className="min-h-screen bg-themed flex flex-col">
-      {/* Minimalna belka nawigacyjna usunięta - strona przeniesiona pod (app) z głównym AppNav */}
+      {/* AppNav is rendered by the (app) route-group layout so every
+          page on the authenticated surface shares the same chrome. */}
 
       <div className="max-w-3xl mx-auto px-6 pt-24 pb-32 flex-1 w-full">
         <motion.div
@@ -374,7 +375,8 @@ export default function AlertsPage() {
           </div>
         )}
       </div>
-      <ChatWidget lang={lang} />
+      <ChatFab lang={lang} onClick={() => setChatOpen(true)} />
+      <ChatPanel lang={lang} open={chatOpen} onClose={() => setChatOpen(false)} />
     </main>
   );
 }

@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Flame,
-  Trophy,
   User as UserIcon,
   Sparkles,
   Shield,
@@ -28,18 +26,6 @@ import {
   xpProgress,
 } from "@/lib/quests";
 
-type LeaderRow = {
-  player_id: string;
-  username: string | null;
-  total_xp: number;
-  level: number;
-};
-
-type LeaderResponse = {
-  topUsers?: LeaderRow[];
-  currentUser?: LeaderRow | null;
-};
-
 export default function QuestHubPage() {
   const router = useRouter();
   const { lang } = useLanguage();
@@ -54,8 +40,6 @@ export default function QuestHubPage() {
     refetch,
   } = useSkarbnikUser();
   const [chatOpen, setChatOpen] = useState(false);
-  const [top3, setTop3] = useState<LeaderRow[]>([]);
-  const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null);
 
   // Auth redirect — kick unauthenticated users back to landing (demo users pass through).
   useEffect(() => {
@@ -66,42 +50,12 @@ export default function QuestHubPage() {
     }
   }, [ready, status, demo, router]);
 
-  // Leaderboard top-3 preview. If the API fails (e.g. the Supabase
-  // `leaderboard` view hasn't been migrated to include `player_id`
-  // yet — see supabase/migrations/20260418134500_*.sql), we still
-  // fall back to a one-row preview of the current user so the
-  // section doesn't look broken. All failures are logged so the
-  // root cause is visible in devtools instead of silently swallowed.
-  useEffect(() => {
-    let cancelled = false;
-    async function loadBoard() {
-      try {
-        const url = !demo && user?.id
-          ? `/api/leaderboard?userId=${encodeURIComponent(user.id)}`
-          : "/api/leaderboard";
-        const res = await fetch(url, { cache: "no-store", credentials: "include" });
-        if (!res.ok) {
-          console.warn(
-            "[leaderboard] fetch failed",
-            res.status,
-            await res.text().catch(() => "")
-          );
-          return;
-        }
-        const data = (await res.json()) as LeaderResponse;
-        if (!cancelled) {
-          setTop3((data.topUsers ?? []).slice(0, 3));
-          setCurrentPlayerId(data.currentUser?.player_id ?? null);
-        }
-      } catch (err) {
-        console.warn("[leaderboard] network error", err);
-      }
-    }
-    void loadBoard();
-    return () => {
-      cancelled = true;
-    };
-  }, [demo, user?.id]);
+  // The leaderboard preview that used to live at the bottom of this
+  // page was removed — ranking now has its own dedicated surface at
+  // /leaderboard, reachable from the AppNav "Ranking" chip. Keeping
+  // the preview here duplicated the fetch + forced every quest-hub
+  // visit to hit /api/leaderboard even when the user wasn't looking
+  // at a scoreboard.
 
   const loading = !user && (status === "idle" || status === "loading");
 
@@ -219,48 +173,6 @@ export default function QuestHubPage() {
               />
             </div>
 
-            {/* Leaderboard preview */}
-            <div className="mt-14">
-              <div className="flex items-end justify-between mb-4">
-                <div>
-                  <p
-                    className="mono-label"
-                    style={{ color: "var(--gold)", marginBottom: 6 }}
-                  >
-                    Ranking
-                  </p>
-                  <h2
-                    className="display-heading text-themed"
-                    style={{ fontSize: "1.5rem" }}
-                  >
-                    {t("leaderboardPreview", lang)}
-                  </h2>
-                </div>
-                <Link
-                  href={demo ? "/leaderboard?demo=true" : "/leaderboard"}
-                  className="mono-label"
-                  style={{ color: "var(--gold)" }}
-                >
-                  {t("seeFullLeaderboard", lang)} →
-                </Link>
-              </div>
-              <LeaderboardPreview
-                rows={top3}
-                currentUserPlayerId={currentPlayerId}
-                lang={lang}
-                fallbackUser={
-                  user
-                    ? {
-                        username:
-                          (user as { username?: string | null }).username ??
-                          null,
-                        total_xp: totalXp,
-                        level,
-                      }
-                    : null
-                }
-              />
-            </div>
           </>
         )}
       </div>
@@ -398,92 +310,5 @@ function TopBar({
         </div>
       </div>
     </motion.div>
-  );
-}
-
-function LeaderboardPreview({
-  rows,
-  currentUserPlayerId,
-  lang,
-  fallbackUser,
-}: {
-  rows: LeaderRow[];
-  currentUserPlayerId: string | null;
-  lang: "pl" | "en";
-  fallbackUser:
-    | { username: string | null; total_xp: number; level: number }
-    | null;
-}) {
-  // If the server returned no rows but we have an authenticated user
-  // with any XP, synthesise a single "you're #1" row so the card is
-  // never stuck on the bare empty state (which currently fires when
-  // the Supabase leaderboard view is missing its `player_id` column
-  // — see supabase/migrations/20260418134500_*.sql). The synthetic
-  // row uses a sentinel player_id so the "YOU" badge still matches.
-  let effectiveRows = rows;
-  let effectivePlayerId = currentUserPlayerId;
-  if (effectiveRows.length === 0 && fallbackUser && fallbackUser.total_xp > 0) {
-    const syntheticId = "__me__";
-    effectiveRows = [
-      {
-        player_id: syntheticId,
-        username: fallbackUser.username ?? (lang === "pl" ? "Ty" : "You"),
-        total_xp: fallbackUser.total_xp,
-        level: fallbackUser.level,
-      },
-    ];
-    effectivePlayerId = syntheticId;
-  }
-
-  if (effectiveRows.length === 0) {
-    return (
-      <div className="bg-card-themed border border-themed rounded-2xl p-8 text-center text-muted-themed text-sm">
-        {t("leaderboardEmpty", lang)}
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-card-themed border border-themed rounded-2xl overflow-hidden shadow-card">
-      <div className="grid grid-cols-[auto_1fr_auto] gap-4 px-5 py-3 border-b border-themed text-[10px] uppercase tracking-widest font-mono text-muted-themed">
-        <span>{t("rank", lang)}</span>
-        <span>{t("player", lang)}</span>
-        <span>{t("questXP", lang)}</span>
-      </div>
-      {effectiveRows.map((r, i) => {
-        const isMe = r.player_id === effectivePlayerId;
-        return (
-          <div
-            key={r.player_id}
-            className={`grid grid-cols-[auto_1fr_auto] gap-4 px-5 py-4 items-center ${
-              i < effectiveRows.length - 1 ? "border-b border-themed" : ""
-            } ${isMe ? "bg-gold-themed/5" : ""}`}
-          >
-            <div className="flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-elevated-themed flex items-center justify-center font-mono text-xs font-bold text-themed">
-                {i + 1}
-              </span>
-              {i === 0 && <Trophy className="w-3.5 h-3.5 text-gold-themed" />}
-            </div>
-            <div>
-              <p className="text-themed text-sm font-semibold">
-                {r.username ?? "—"}
-                {isMe && (
-                  <span className="ml-2 text-xs bg-gold-themed/10 text-gold-themed border border-gold-themed/20 px-1.5 py-0.5 rounded font-mono uppercase tracking-wider">
-                    {t("leaderboardYou", lang)}
-                  </span>
-                )}
-              </p>
-              <p className="text-muted-themed text-xs font-mono mt-0.5">
-                {t("questLevel", lang)} {r.level}
-              </p>
-            </div>
-            <span className="font-mono text-sm font-bold text-gold-themed">
-              {r.total_xp.toLocaleString()}
-            </span>
-          </div>
-        );
-      })}
-    </div>
   );
 }

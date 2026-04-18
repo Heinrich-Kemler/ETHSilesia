@@ -370,6 +370,7 @@ export const translations = {
 
   // Badges showcase + nav
   navBadges: { pl: "Odznaki", en: "Badges" },
+  navAlerts: { pl: "Alerty", en: "Alerts" },
   badgesKicker: {
     pl: "Kolekcja NFT",
     en: "NFT collection",

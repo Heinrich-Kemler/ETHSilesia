@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { LogIn, LogOut, Award, User as UserIcon } from "lucide-react";
+import {
+  LogIn,
+  LogOut,
+  Award,
+  User as UserIcon,
+  Trophy,
+  ShieldAlert,
+} from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import LanternGlyph from "@/components/ui/LanternGlyph";
 import { t } from "@/lib/i18n";
@@ -9,7 +16,8 @@ import type { Lang } from "@/lib/i18n";
 import type { Theme } from "@/lib/useTheme";
 
 /**
- * Nav used on /assess, /quest, /quest/[id], /leaderboard.
+ * Nav used on every `(app)` page — /quest, /assess, /quest/[id],
+ * /leaderboard, /alerts, /badges, /profile.
  *
  * Redesigned against the Claude Designer v1 handoff:
  *  - Cinzel gold wordmark (no gradient logo tile) + small
@@ -19,6 +27,12 @@ import type { Theme } from "@/lib/useTheme";
  *  - Primary CTA uses the new .btn-primary utility (gold fill,
  *    Space Mono caps) so the same hierarchy shows up on every
  *    login button in the product.
+ *
+ * Chip order is content-first, then identity:
+ *    Odznaki → Ranking → Alerty → Profil → Theme → (Log in/out)
+ * Ranking and Alerty sit in the "content" group because both pages
+ * are public (see (app)/layout.tsx), while Profil only renders when
+ * the user is authenticated.
  *
  * The UI is Polish-only for this release (no <LanguageToggle>). The
  * `lang` prop is still threaded in so `t(...)` calls resolve, and so
@@ -105,6 +119,24 @@ export default function AppNav({
             <Award className="w-4 h-4" />
             <span className="hidden md:inline">{t("navBadges", lang)}</span>
           </Link>
+          <Link
+            href={demo ? "/leaderboard?demo=true" : "/leaderboard"}
+            title={t("navLeaderboard", lang)}
+            className="nav-chip hidden sm:inline-flex"
+          >
+            <Trophy className="w-4 h-4" />
+            <span className="hidden md:inline">
+              {t("navLeaderboard", lang)}
+            </span>
+          </Link>
+          <Link
+            href={demo ? "/alerts?demo=true" : "/alerts"}
+            title={t("navAlerts", lang)}
+            className="nav-chip hidden sm:inline-flex"
+          >
+            <ShieldAlert className="w-4 h-4" />
+            <span className="hidden md:inline">{t("navAlerts", lang)}</span>
+          </Link>
           {authenticated ? (
             <Link
               href={demo ? "/profile?demo=true" : "/profile"}
@@ -134,9 +166,20 @@ export default function AppNav({
         </div>
       </div>
 
-      {/* Scoped styles — nav-chip is only used here. */}
-      <style jsx>{`
-        .nav-chip {
+      {/*
+        Global styles — `<style jsx>` (scoped) only attaches the
+        styled-jsx hash class to native JSX elements, not to React
+        components. Our `<Link>` chips would render an `<a>` without
+        the scope hash, so the scoped `.nav-chip` rule never matched
+        and the anchors lost their border / mono font / uppercase
+        tracking (Wyloguj worked only because it's a raw `<button>`).
+        `global` makes the rule match any `.nav-chip` under the nav
+        regardless of origin. Selectors are scoped to `nav .nav-chip`
+        so the class can't leak into anywhere else if it ever gets
+        copy-pasted.
+      */}
+      <style jsx global>{`
+        nav .nav-chip {
           display: inline-flex;
           align-items: center;
           gap: 0.5rem;
@@ -156,12 +199,13 @@ export default function AppNav({
             color 160ms,
             background-color 160ms;
           cursor: pointer;
+          text-decoration: none;
         }
-        .nav-chip:hover {
+        nav .nav-chip:hover {
           color: var(--gold);
           border-color: var(--border-gold);
         }
-        .nav-chip-icon {
+        nav .nav-chip-icon {
           padding: 0;
           width: 36px;
           justify-content: center;
