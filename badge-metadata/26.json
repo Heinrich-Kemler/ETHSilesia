@@ -1,0 +1,24 @@
+{
+  "name": "Quest: Proba Skarbnika",
+  "description": "Quest completion badge for boss battle trial.",
+  "external_url": "https://skarbnik.app/badges/26",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 26
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l3-boss"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

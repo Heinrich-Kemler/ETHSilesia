@@ -1,0 +1,24 @@
+{
+  "name": "Quest: RWA",
+  "description": "Quest completion badge for real world assets.",
+  "external_url": "https://skarbnik.app/badges/23",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 23
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l3-rwa"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

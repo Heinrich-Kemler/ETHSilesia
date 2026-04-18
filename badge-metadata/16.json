@@ -1,0 +1,24 @@
+{
+  "name": "Quest: Gas Fee",
+  "description": "Quest completion badge for gas fee mechanics.",
+  "external_url": "https://skarbnik.app/badges/16",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 16
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l1-gas"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

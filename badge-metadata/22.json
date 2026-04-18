@@ -1,0 +1,24 @@
+{
+  "name": "Quest: Impermanent Loss",
+  "description": "Quest completion badge for impermanent loss.",
+  "external_url": "https://skarbnik.app/badges/22",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 22
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l3-il"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

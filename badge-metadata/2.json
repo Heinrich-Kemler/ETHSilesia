@@ -2,7 +2,7 @@
   "name": "Srebrny Skarbnik",
   "description": "Awarded for reaching level 2.",
   "external_url": "https://skarbnik.app/badges/2",
-  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/2.png",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
   "attributes": [
     { "trait_type": "Badge ID", "value": 2 },
     { "trait_type": "Tier", "value": "Silver" },

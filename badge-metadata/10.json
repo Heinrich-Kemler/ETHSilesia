@@ -1,0 +1,11 @@
+{
+  "name": "Smart Kontrakty",
+  "description": "Awarded for completing the smart contract mastery quest path.",
+  "external_url": "https://skarbnik.app/badges/10",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    { "trait_type": "Badge ID", "value": 10 },
+    { "trait_type": "Tier", "value": "Path" },
+    { "trait_type": "Trigger", "value": "Smart contracts quest completed" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "Quest: Portfel",
+  "description": "Quest completion badge for wallet fundamentals.",
+  "external_url": "https://skarbnik.app/badges/13",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 13
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l1-wallet"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

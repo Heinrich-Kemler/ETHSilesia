@@ -29,6 +29,9 @@ const BADGE_CONTRACT_ABI = [
   "function mintBadge(address to, uint256 badgeId) external",
   "function hasBadge(address user, uint256 badgeId) view returns (bool)",
 ] as const;
+const TRANSFER_SINGLE_EVENT_ABI = [
+  "event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value)",
+] as const;
 
 function requireEnv(name: string): string {
   const value = process.env[name]?.trim();
@@ -80,6 +83,67 @@ function getBadgeContractWithSigner() {
   );
 
   return { contract, contractAddress };
+}
+
+function getBadgeProvider() {
+  const rpcUrl =
+    process.env.BASE_SEPOLIA_RPC?.trim() || "https://sepolia.base.org";
+  return new ethers.JsonRpcProvider(rpcUrl);
+}
+
+export async function verifyBadgeMintTransaction(params: {
+  txHash: string;
+  expectedWalletAddress: string;
+  expectedBadgeId: number;
+}): Promise<{
+  isValid: boolean;
+  blockNumber: number | null;
+}> {
+  const { txHash, expectedWalletAddress, expectedBadgeId } = params;
+  const provider = getBadgeProvider();
+  const contractAddress = resolveBadgeContractAddress().toLowerCase();
+  const interfaceDecoder = new ethers.Interface(TRANSFER_SINGLE_EVENT_ABI);
+  const expectedWallet = expectedWalletAddress.toLowerCase();
+
+  const receipt = await provider.getTransactionReceipt(txHash);
+  if (!receipt || receipt.status !== 1) {
+    return {
+      isValid: false,
+      blockNumber: receipt?.blockNumber ?? null,
+    };
+  }
+
+  const hasMatchingMintLog = receipt.logs.some((log) => {
+    if (log.address.toLowerCase() !== contractAddress) {
+      return false;
+    }
+
+    try {
+      const parsedLog = interfaceDecoder.parseLog(log);
+      if (parsedLog?.name !== "TransferSingle") {
+        return false;
+      }
+
+      const from = (parsedLog.args.from as string).toLowerCase();
+      const to = (parsedLog.args.to as string).toLowerCase();
+      const id = Number(parsedLog.args.id);
+      const value = Number(parsedLog.args.value);
+
+      return (
+        from === ethers.ZeroAddress &&
+        to === expectedWallet &&
+        id === expectedBadgeId &&
+        value >= 1
+      );
+    } catch {
+      return false;
+    }
+  });
+
+  return {
+    isValid: hasMatchingMintLog,
+    blockNumber: receipt.blockNumber ?? null,
+  };
 }
 
 export async function ensureBadgeMintJob(

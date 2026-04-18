@@ -1,0 +1,12 @@
+{
+  "name": "Mistrz Poziomu 2",
+  "description": "Awarded for completing all level 2 quests.",
+  "external_url": "https://skarbnik.app/badges/28",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/level2.jpg",
+  "attributes": [
+    { "trait_type": "Badge ID", "value": 28 },
+    { "trait_type": "Tier", "value": "Level" },
+    { "trait_type": "Level", "value": 2 },
+    { "trait_type": "Trigger", "value": "All level 2 quests completed" }
+  ]
+}

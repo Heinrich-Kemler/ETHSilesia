@@ -1,11 +1,27 @@
 import { NextResponse } from "next/server";
+import { ApiError, logServerError, toApiError } from "@/lib/server/apiErrors";
+import {
+  assertPrivyOwnership,
+  requirePrivyAuth,
+} from "@/lib/server/auth";
 import {
   BADGE_IDS,
+  QUEST_TOPIC_BADGE_RULES,
   calculateLevelFromXp,
   calculateNextStreakDays,
   isBossBattleQuest,
 } from "@/lib/server/gameLogic";
+import {
+  LEVEL_COMPLETION_BADGE_RULES,
+  getQuestCompletionBadgeId,
+} from "@/lib/badgeMappings";
 import { ensureBadgeMintJob } from "@/lib/server/badgeMinting";
+import {
+  calculateQuestXp,
+  getQuestDefinition,
+  normalizeScore,
+} from "@/lib/server/questCatalog";
+import { assertRateLimit } from "@/lib/server/rateLimit";
 import { getSupabaseAdminClient } from "@/lib/server/supabaseAdmin";
 
 export const runtime = "nodejs";
@@ -13,53 +29,57 @@ export const runtime = "nodejs";
 type CompleteQuestBody = {
   userId?: string;
   questId?: string;
-  xpEarned?: number;
   score?: number;
-  answersTotal?: number;
 };
-
-function parsePositiveInt(value: number | undefined, fallback = 0): number {
-  if (typeof value !== "number" || Number.isNaN(value)) {
-    return fallback;
-  }
-  return Math.max(0, Math.floor(value));
-}
 
 export async function POST(request: Request) {
   try {
+    assertRateLimit(request, {
+      key: "quests-complete",
+      maxRequests: 90,
+      windowMs: 60 * 1000,
+    });
+
+    const auth = await requirePrivyAuth(request);
     const body = (await request.json()) as CompleteQuestBody;
 
     const userId = body.userId?.trim();
     const questId = body.questId?.trim();
-    const xpEarned = parsePositiveInt(body.xpEarned);
-    const score = parsePositiveInt(body.score);
-    const answersTotal = parsePositiveInt(body.answersTotal, score);
 
     if (!userId || !questId) {
-      return NextResponse.json(
-        { error: "userId and questId are required." },
-        { status: 400 }
-      );
+      throw new ApiError(400, "userId and questId are required.");
     }
+
+    const quest = getQuestDefinition(questId);
+    if (!quest) {
+      throw new ApiError(400, "Unknown questId.");
+    }
+
+    // XP is computed on the server from trusted quest metadata.
+    // Client-provided XP is intentionally ignored to prevent score tampering.
+    const score = normalizeScore(body.score, quest.questionCount);
+    const answersTotal = quest.questionCount;
+    const xpEarned = calculateQuestXp(quest, score);
 
     const supabase = getSupabaseAdminClient();
 
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("id, wallet_address, total_xp, level, streak_days, last_active")
+      .select(
+        "id, privy_id, wallet_address, total_xp, level, streak_days, last_active"
+      )
       .eq("id", userId)
       .maybeSingle();
 
     if (userError) {
-      return NextResponse.json(
-        { error: "Failed to load user.", details: userError.message },
-        { status: 500 }
-      );
+      throw new ApiError(500, "Failed to load user.", false);
     }
 
     if (!user) {
-      return NextResponse.json({ error: "User not found." }, { status: 404 });
+      throw new ApiError(404, "User not found.");
     }
+
+    assertPrivyOwnership(auth, user.privy_id);
 
     const nowIso = new Date().toISOString();
 
@@ -76,19 +96,10 @@ export async function POST(request: Request) {
 
     if (completionError) {
       if (completionError.code === "23505") {
-        return NextResponse.json(
-          { error: "Quest already completed by this user." },
-          { status: 409 }
-        );
+        throw new ApiError(409, "Quest already completed by this user.");
       }
 
-      return NextResponse.json(
-        {
-          error: "Failed to save quest completion.",
-          details: completionError.message,
-        },
-        { status: 500 }
-      );
+      throw new ApiError(500, "Failed to save quest completion.", false);
     }
 
     const newXP = user.total_xp + xpEarned;
@@ -110,30 +121,25 @@ export async function POST(request: Request) {
       .eq("id", userId);
 
     if (updateUserError) {
-      return NextResponse.json(
-        { error: "Failed to update user XP.", details: updateUserError.message },
-        { status: 500 }
-      );
+      throw new ApiError(500, "Failed to update user XP.", false);
     }
 
     const potentialBadges: number[] = [];
 
-    const { count: completionCount, error: completionCountError } = await supabase
+    const { data: completedQuestRows, error: completedQuestRowsError } = await supabase
       .from("quest_completions")
-      .select("id", { count: "exact", head: true })
+      .select("quest_id")
       .eq("user_id", userId);
 
-    if (completionCountError) {
-      return NextResponse.json(
-        {
-          error: "Failed while checking badge progress.",
-          details: completionCountError.message,
-        },
-        { status: 500 }
-      );
+    if (completedQuestRowsError) {
+      throw new ApiError(500, "Failed while checking badge progress.", false);
     }
 
-    if (completionCount === 1) {
+    const completedQuestIds = new Set(
+      (completedQuestRows ?? []).map((row) => row.quest_id)
+    );
+
+    if (completedQuestIds.size === 1) {
       potentialBadges.push(BADGE_IDS.FIRST_QUEST_COMPLETED);
     }
 
@@ -151,6 +157,31 @@ export async function POST(request: Request) {
 
     if (newStreakDays >= 7) {
       potentialBadges.push(BADGE_IDS.TREASURE_GUARDIAN);
+    }
+
+    const questCompletionBadgeId = getQuestCompletionBadgeId(questId);
+    if (questCompletionBadgeId) {
+      potentialBadges.push(questCompletionBadgeId);
+    }
+
+    for (const rule of QUEST_TOPIC_BADGE_RULES) {
+      const allQuestsCompleted = rule.requiredQuestIds.every((requiredQuestId) =>
+        completedQuestIds.has(requiredQuestId)
+      );
+
+      if (allQuestsCompleted) {
+        potentialBadges.push(rule.badgeId);
+      }
+    }
+
+    for (const rule of LEVEL_COMPLETION_BADGE_RULES) {
+      const allLevelQuestsCompleted = rule.requiredQuestIds.every((requiredQuestId) =>
+        completedQuestIds.has(requiredQuestId)
+      );
+
+      if (allLevelQuestsCompleted) {
+        potentialBadges.push(rule.badgeId);
+      }
     }
 
     const uniquePotentialBadges = [...new Set(potentialBadges)];
@@ -172,13 +203,7 @@ export async function POST(request: Request) {
       .in("badge_id", uniquePotentialBadges);
 
     if (existingBadgesError) {
-      return NextResponse.json(
-        {
-          error: "Failed while checking existing badges.",
-          details: existingBadgesError.message,
-        },
-        { status: 500 }
-      );
+      throw new ApiError(500, "Failed while checking existing badges.", false);
     }
 
     const { data: trackedMintJobs, error: trackedMintJobsError } = await supabase
@@ -188,12 +213,10 @@ export async function POST(request: Request) {
       .in("badge_id", uniquePotentialBadges);
 
     if (trackedMintJobsError) {
-      return NextResponse.json(
-        {
-          error: "Failed while checking tracked badge mint jobs.",
-          details: trackedMintJobsError.message,
-        },
-        { status: 500 }
+      throw new ApiError(
+        500,
+        "Failed while checking tracked badge mint jobs.",
+        false
       );
     }
 
@@ -216,14 +239,11 @@ export async function POST(request: Request) {
           badgeId,
         });
         enqueuedJobIds.push(job.id);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
-        return NextResponse.json(
-          {
-            error: "Failed while enqueueing badge mint jobs.",
-            details: message,
-          },
-          { status: 500 }
+      } catch {
+        throw new ApiError(
+          500,
+          "Failed while enqueueing badge mint jobs.",
+          false
         );
       }
     }
@@ -236,10 +256,17 @@ export async function POST(request: Request) {
       mintJobsEnqueued: enqueuedJobIds.length,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const apiError = toApiError(error, "Failed to complete quest.");
+    if (apiError.status >= 500) {
+      logServerError("api/quests/complete", error);
+    }
     return NextResponse.json(
-      { error: "Failed to complete quest.", details: message },
-      { status: 500 }
+      {
+        error: apiError.exposeMessage
+          ? apiError.message
+          : "Failed to complete quest.",
+      },
+      { status: apiError.status }
     );
   }
 }
