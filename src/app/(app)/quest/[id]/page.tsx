@@ -28,8 +28,8 @@ import {
   questTitle,
   type Quest,
 } from "@/lib/quests";
-import { getBadgeById, badgeName } from "@/lib/badgeRegistry";
 import { markActiveDay } from "@/lib/streak";
+import { rememberLastCompletedQuest } from "@/lib/questWalk";
 import CelebrationModal from "@/components/app/CelebrationModal";
 import Confetti from "@/components/ui/Confetti";
 import { useToast } from "@/components/ui/Toast";
@@ -102,7 +102,19 @@ export default function ActiveQuestPage({
   const [phase, setPhase] = useState<Phase>("loading");
   const [qIndex, setQIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
+  // `correctCount` drives the on-screen scoreboard AND the
+  // all-correct check in `finishQuest`. We mirror it into a ref so
+  // `finishQuest` reads the *current* value at call time rather than
+  // whatever was captured in its useCallback closure. Without the
+  // ref, answering the last question correctly races with the user
+  // clicking "Finish": `goNext` (deps on qIndex only) held a stale
+  // `finishQuest` that saw `correctCount = total - 1`, so a perfect
+  // run got flagged as failed and no XP was persisted. The
+  // scoreboard shows 6/6 (live state) while the logic sees 5/6
+  // (stale closure). Ref is the narrow fix; goNext stays stable
+  // and we avoid cascading the useCallback dep graph.
   const [correctCount, setCorrectCount] = useState(0);
+  const correctCountRef = useRef(0);
   const [aiExplanation, setAiExplanation] = useState<string>("");
   const [aiLoading, setAiLoading] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -183,7 +195,12 @@ export default function ActiveQuestPage({
       setSelected(idx);
       const q = quest.questions[qIndex];
       const isCorrect = idx === q.correctIndex;
-      if (isCorrect) setCorrectCount((c) => c + 1);
+      if (isCorrect) {
+        // Bump both — state for the UI, ref for finishQuest's
+        // stale-closure-proof read. See the ref declaration above.
+        correctCountRef.current += 1;
+        setCorrectCount((c) => c + 1);
+      }
 
       // Fetch AI explanation (skip if demo + no OPENAI_API_KEY, but let the
       // API respond — if it 500s we fall back to a static line).
@@ -198,8 +215,8 @@ export default function ActiveQuestPage({
               idx >= 0
                 ? q.options[idx][lang]
                 : lang === "pl"
-                  ? "(brak odpowiedzi)"
-                  : "(no answer)",
+                ? "(brak odpowiedzi)"
+                : "(no answer)",
             correctAnswer: q.options[q.correctIndex][lang],
             language: lang,
           }),
@@ -214,31 +231,63 @@ export default function ActiveQuestPage({
                 ? "Czas minął. Poprawna odpowiedź jest zaznaczona na zielono."
                 : "Time's up. The correct answer is highlighted in green."
               : lang === "pl"
-                ? "Nie udało się pobrać wyjaśnienia, ale poprawna odpowiedź jest zaznaczona na zielono."
-                : "Couldn't fetch an explanation, but the correct answer is highlighted in green.",
+              ? "Nie udało się pobrać wyjaśnienia, ale poprawna odpowiedź jest zaznaczona na zielono."
+              : "Couldn't fetch an explanation, but the correct answer is highlighted in green."
           );
         }
       } catch {
         setAiExplanation(
           lang === "pl"
             ? "Brak połączenia z AI. Poprawna odpowiedź jest zaznaczona na zielono."
-            : "AI connection failed. The correct answer is highlighted in green.",
+            : "AI connection failed. The correct answer is highlighted in green."
         );
       } finally {
         setAiLoading(false);
       }
     },
-    [quest, qIndex, lang, locked],
+    [quest, qIndex, lang, locked]
   );
+
+  const goNext = useCallback(() => {
+    if (!quest) return;
+    if (qIndex + 1 < quest.questions.length) {
+      setQIndex((i) => i + 1);
+      setSelected(null);
+      setAiExplanation("");
+      setLocked(false);
+      return;
+    }
+    // all done — complete
+    void finishQuest();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qIndex, quest]);
 
   const finishQuest = useCallback(async () => {
     if (!quest) return;
     const totalQ = quest.questions.length;
-    const allCorrect = correctCount === totalQ;
+    // No partial credit. A single wrong answer blocks XP AND leaves
+    // the quest uncompleted server-side, so the user can replay for
+    // full XP. Previously we did `Math.round((correctCount*xp)/total)`
+    // which handed out 66% XP for 2/3 — that created the "I got some
+    // XP but the next level didn't unlock" confusion because the
+    // server's completion gate still requires `answersTotal === score`.
+    //
+    // We read from the ref, not the state closure: `goNext` (which
+    // invokes this callback) has stale deps and was capturing a
+    // `finishQuest` from before the final setCorrectCount committed.
+    // The ref is mutated synchronously in `handleAnswer`, so it's
+    // always ahead of the closure.
+    const finalCorrect = correctCountRef.current;
+    const allCorrect = finalCorrect === totalQ;
     const xpEarned = allCorrect ? quest.xp : 0;
 
+    // Streak counts engagement, not success, so bump it either way.
     markActiveDay(user?.id ?? null);
 
+    // Partial-score branch: keep the failure entirely client-side.
+    // We skip the /api/quests/complete POST because a) the server
+    // would 400 on score < answersTotal, and b) we want the quest to
+    // stay in its un-completed state so the retry earns full XP.
     if (!allCorrect) {
       setCompletionResult({
         xpEarned: 0,
@@ -251,6 +300,7 @@ export default function ActiveQuestPage({
       return;
     }
 
+    // Demo mode → skip the server call, show synthetic success.
     if (isDemo) {
       setCompletionResult({
         xpEarned,
@@ -260,6 +310,12 @@ export default function ActiveQuestPage({
         failed: false,
       });
       setPhase("complete");
+      // Seed the walk-from marker so the mascot animates from this
+      // bubble to the next on the hub. See SkarbnikMiner for the
+      // consumption side. Demo completedQuests is static, so the
+      // marker usually won't fire — but writing unconditionally keeps
+      // the code paths symmetric and costs nothing.
+      rememberLastCompletedQuest(quest.id);
       toast({
         variant: "success",
         message: t("toastQuestCompleted", lang, { xp: xpEarned }),
@@ -268,9 +324,15 @@ export default function ActiveQuestPage({
     }
 
     if (!user?.id) {
-      console.warn(
-        "[quest/complete] no user.id — cannot persist, routing to reset",
-      );
+      // Privy authed but our Supabase sync never produced a user row.
+      // The old behaviour was to fake a "complete" screen with zero
+      // persistence — that's the bug where XP "disappears" and the
+      // next quest never unlocks. Surface the real problem instead so
+      // the user can hit the floating SessionResetButton (rendered by
+      // the (app) layout whenever privyAuthenticated && !authenticated)
+      // and recover. Bounce back to the hub so the reset affordance
+      // is visible and the quiz state doesn't mislead them.
+      console.warn("[quest/complete] no user.id — cannot persist, routing to reset");
       toast({
         variant: "error",
         message:
@@ -279,8 +341,8 @@ export default function ActiveQuestPage({
             : "Couldn't save quest completion.",
         sub:
           lang === "pl"
-            ? 'Sesja nie jest zsynchronizowana. Użyj przycisku "Resetuj sesję" w prawym dolnym rogu.'
-            : 'Session isn\'t synced. Tap "Reset session" in the bottom-right corner.',
+            ? "Sesja nie jest zsynchronizowana. Użyj przycisku \"Resetuj sesję\" w prawym dolnym rogu."
+            : "Session isn't synced. Tap \"Reset session\" in the bottom-right corner.",
       });
       router.replace(`/quest${demoAppend}`);
       return;
@@ -294,11 +356,18 @@ export default function ActiveQuestPage({
           userId: user.id,
           questId: quest.id,
           xpEarned,
-          score: correctCount,
+          // Send the ref value — matches what `allCorrect` tested
+          // against, so the server's `score === answersTotal` gate
+          // can't disagree with our client-side decision.
+          score: finalCorrect,
           answersTotal: totalQ,
         }),
       });
       if (res.status === 409) {
+        // Already completed (replay). failed=false on purpose — the
+        // user earned this quest previously, we just don't award XP
+        // twice. Showing the retry screen here would be misleading
+        // because replaying a third time still gives zero XP.
         setCompletionResult({
           xpEarned: 0,
           newXP: user.total_xp ?? 0,
@@ -323,6 +392,14 @@ export default function ActiveQuestPage({
         failed: false,
       });
       setPhase("complete");
+      // Seed the walk-from marker BEFORE refetch so SkarbnikMiner on
+      // the hub knows which node the mascot should step off from when
+      // the user heads back. The marker is consumed exactly once, then
+      // cleared — see the effect in SkarbnikMiner.tsx for specifics.
+      rememberLastCompletedQuest(quest.id);
+      // Trigger the sequenced celebration modal. Level-up wins the first slot
+      // if present; otherwise a badge takes it. Any remaining reward shows
+      // after the user dismisses the first modal.
       if (data.levelUp) setCelebrationStep("level-up");
       else if (data.badgeEarned) setCelebrationStep("badge");
       toast({
@@ -335,6 +412,11 @@ export default function ActiveQuestPage({
         variant: "error",
         message: t("toastGenericError", lang),
       });
+      // Network error after a 100% run. Don't flag as `failed` — the
+      // user answered correctly, the persistence just didn't land.
+      // The retry button is on the hub (replay the quest) rather than
+      // here; showing the failure screen would imply they got an
+      // answer wrong.
       setCompletionResult({
         xpEarned,
         newXP: user.total_xp ?? 0,
@@ -344,29 +426,7 @@ export default function ActiveQuestPage({
       });
       setPhase("complete");
     }
-  }, [
-    quest,
-    correctCount,
-    user,
-    isDemo,
-    lang,
-    toast,
-    refetch,
-    router,
-    demoAppend,
-  ]);
-
-  const goNext = useCallback(() => {
-    if (!quest) return;
-    if (qIndex + 1 < quest.questions.length) {
-      setQIndex((i) => i + 1);
-      setSelected(null);
-      setAiExplanation("");
-      setLocked(false);
-      return;
-    }
-    void finishQuest();
-  }, [qIndex, quest, finishQuest]);
+  }, [quest, correctCount, user, isDemo, lang, toast, refetch, router, demoAppend]);
 
   // Full quiz reset. Used by the retry button on the failure screen
   // — the user gets a clean slate (scorecard, question index, AI
@@ -376,6 +436,11 @@ export default function ActiveQuestPage({
     setQIndex(0);
     setSelected(null);
     setCorrectCount(0);
+    // Mirror to the ref — without this, a retry after a perfect run
+    // would start with correctCountRef.current already = totalQ and
+    // finishQuest would think every subsequent wrong run was still
+    // perfect.
+    correctCountRef.current = 0;
     setAiExplanation("");
     setAiLoading(false);
     setElapsed(0);
@@ -480,14 +545,14 @@ export default function ActiveQuestPage({
                     0,
                     ((QUESTION_TIME_SECONDS - elapsed) /
                       QUESTION_TIME_SECONDS) *
-                      100,
+                      100
                   )}%`,
                   backgroundColor:
                     elapsed > QUESTION_TIME_SECONDS * 0.75
                       ? "#ef4444"
                       : elapsed > QUESTION_TIME_SECONDS * 0.5
-                        ? "var(--gold)"
-                        : "var(--cyan)",
+                      ? "var(--gold)"
+                      : "var(--cyan)",
                 }}
               />
             </div>
@@ -533,8 +598,8 @@ export default function ActiveQuestPage({
                             reveal && isCorrect
                               ? "bg-green text-white"
                               : reveal && isSelected && !isCorrect
-                                ? "bg-red text-white"
-                                : "bg-elevated-themed text-gold-themed"
+                              ? "bg-red text-white"
+                              : "bg-elevated-themed text-gold-themed"
                           }`}
                         >
                           {reveal && isCorrect ? (
@@ -673,13 +738,19 @@ export default function ActiveQuestPage({
           open={celebrationStep === "level-up"}
           lang={lang}
           variant="level-up"
-          newLevel={Math.min(4, user?.level ?? 2) as 2 | 3 | 4}
+          newLevel={
+            Math.min(4, (user?.level ?? 2)) as 2 | 3 | 4
+          }
           levelName={t(
-            levelNameKey(Math.min(3, user?.level ?? 1) as 1 | 2 | 3),
-            lang,
+            levelNameKey(
+              Math.min(3, (user?.level ?? 1)) as 1 | 2 | 3
+            ),
+            lang
           )}
           onClose={() =>
-            setCelebrationStep(completionResult?.badgeEarned ? "badge" : "done")
+            setCelebrationStep(
+              completionResult?.badgeEarned ? "badge" : "done"
+            )
           }
         />
       )}
@@ -801,7 +872,11 @@ function CompletionScreen({
   const NewLevelIcon =
     newLevel === 1 ? Sparkles : newLevel === 2 ? Shield : Crown;
   const levelColor =
-    newLevel === 1 ? "#10b981" : newLevel === 2 ? "var(--cyan)" : "var(--gold)";
+    newLevel === 1
+      ? "#10b981"
+      : newLevel === 2
+      ? "var(--cyan)"
+      : "var(--gold)";
 
   return (
     <motion.div
@@ -819,12 +894,8 @@ function CompletionScreen({
           <p className="text-muted-themed text-xs font-mono uppercase tracking-widest mb-2">
             {t("quizLevelUpTitle", lang)}
           </p>
-          <div
-            className="inline-flex items-center gap-3 bg-card-themed border rounded-2xl px-6 py-4"
-            style={{
-              borderColor: `color-mix(in srgb, ${levelColor} 40%, transparent)`,
-            }}
-          >
+          <div className="inline-flex items-center gap-3 bg-card-themed border rounded-2xl px-6 py-4"
+            style={{ borderColor: `color-mix(in srgb, ${levelColor} 40%, transparent)` }}>
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center"
               style={{
@@ -839,8 +910,10 @@ function CompletionScreen({
               </p>
               <p className="font-heading text-lg font-bold text-themed">
                 {t(
-                  levelNameKey(Math.min(3, Math.max(1, newLevel)) as 1 | 2 | 3),
-                  lang,
+                  levelNameKey(
+                    Math.min(3, Math.max(1, newLevel)) as 1 | 2 | 3
+                  ),
+                  lang
                 )}
               </p>
             </div>
@@ -874,8 +947,7 @@ function CompletionScreen({
               {lang === "pl" ? "Wynik" : "Score"}
             </p>
             <p className="font-heading text-4xl font-bold text-themed">
-              {correct}
-              <span className="text-muted-themed">/{total}</span>
+              {correct}<span className="text-muted-themed">/{total}</span>
             </p>
             <p className="text-xs text-muted-themed mt-1">
               {t("quizCompleteScore", lang, { score: correct, total })}
@@ -899,7 +971,10 @@ function CompletionScreen({
               {t("quizBadgeEarned", lang)}
             </p>
             <p className="font-heading text-base font-bold text-themed">
-              {badgeEarned ? badgeName(getBadgeById(badgeEarned)!, lang) : ""}
+              {t(
+                ("badge" + badgeEarned) as TranslationKey,
+                lang
+              )}
             </p>
           </div>
         </motion.div>

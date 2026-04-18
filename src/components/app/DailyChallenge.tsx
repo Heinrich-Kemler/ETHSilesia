@@ -17,6 +17,8 @@ import {
 } from "@/lib/dailyChallenge";
 import { markActiveDay } from "@/lib/streak";
 import { useToast } from "@/components/ui/Toast";
+import Confetti from "@/components/ui/Confetti";
+import CoalBurst from "@/components/ui/CoalBurst";
 
 type Props = {
   lang: Lang;
@@ -40,6 +42,20 @@ export default function DailyChallenge({
   const [selected, setSelected] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [countdown, setCountdown] = useState<string>("");
+  /**
+   * Transient celebration / failure burst. Set inside `handleAnswer`
+   * (never during hydration) so reopening the page after yesterday's
+   * result doesn't replay the effect. AnimatePresence unmounts the
+   * overlay once `burst` is cleared by the timer below.
+   */
+  const [burst, setBurst] = useState<"correct" | "incorrect" | null>(null);
+
+  useEffect(() => {
+    if (!burst) return;
+    // Match the longest particle duration (~2.6s for coal) + a small buffer.
+    const id = setTimeout(() => setBurst(null), 2800);
+    return () => clearTimeout(id);
+  }, [burst]);
 
   // Pick today's question deterministically
   const selection = useMemo(
@@ -78,6 +94,12 @@ export default function DailyChallenge({
       saveDailyResult(userId, saved);
       markActiveDay(userId);
       setResult(saved);
+      // Fire the overlay regardless of outcome — the effect component
+      // itself differs based on status (confetti vs. coal + embers).
+      // Derive from the local `isCorrect` boolean rather than
+      // `saved.status` so TS keeps the literal-union narrow (the
+      // DailyResult type allows "pending" which we never emit here).
+      setBurst(isCorrect ? "correct" : "incorrect");
 
       if (isCorrect) {
         toast({
@@ -108,6 +130,40 @@ export default function DailyChallenge({
   void resolvedSelected; // suppress unused for now
 
   return (
+    <>
+      {/* Full-viewport celebration / coal burst. Fixed + high z so it
+          lays over every card, but pointer-events are off so the user
+          can keep clicking the reveal panel underneath. AnimatePresence
+          lets the inner particle components keep animating cleanly
+          during unmount when the timer clears `burst`. */}
+      <AnimatePresence>
+        {burst && (
+          <motion.div
+            key={`burst-${burst}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 pointer-events-none z-[60]"
+          >
+            {burst === "correct" ? (
+              <Confetti
+                count={60}
+                colors={[
+                  "#C9A84C", // gold (dark-mode hero hue — pops on both themes)
+                  "#38BDF8", // cyan
+                  "#E0414B", // PKO accent red
+                  "#F59E0B", // amber
+                  "#10B981", // emerald
+                  "#F9D71C", // bright gold sparkle
+                ]}
+              />
+            ) : (
+              <CoalBurst />
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -274,5 +330,6 @@ export default function DailyChallenge({
         )}
       </AnimatePresence>
     </motion.div>
+    </>
   );
 }

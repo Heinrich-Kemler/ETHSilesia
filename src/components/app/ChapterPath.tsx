@@ -411,17 +411,30 @@ function CompletionFlag({ questId }: { questId: string }) {
         <rect x="4" y="3" width="2" height="25" rx="1" fill="#6b4423" />
         {/* Brass finial on top */}
         <circle cx="5" cy="3" r="1.6" fill="#d9a441" />
-        {/* Pennant with fishtail cut-out, waves in "wind" */}
-        <motion.path
-          d="M 6 4 L 21 6 L 18 10 L 21 14 L 6 12 Z"
-          fill={`url(#${gradId})`}
-          stroke="#0f172a"
-          strokeOpacity="0.25"
-          strokeWidth="0.6"
+        {/* Pennant with fishtail cut-out, waves in "wind". The wrapper
+            <motion.g> carries the skew so both the main pennant AND
+            the PKO-red band below share the same wind animation. */}
+        <motion.g
           style={{ originX: "5px", originY: "8px", transformBox: "fill-box" }}
           animate={{ skewY: [-3, 4, -3] }}
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-        />
+        >
+          <path
+            d="M 6 4 L 21 6 L 18 10 L 21 14 L 6 12 Z"
+            fill={`url(#${gradId})`}
+            stroke="#0f172a"
+            strokeOpacity="0.25"
+            strokeWidth="0.6"
+          />
+          {/* Polish-flag / PKO red accent strip — a thin ribbon at the
+              pennant foot so the gold gradient gets a national flourish
+              without overwhelming it. Subtle at ~2px high. */}
+          <path
+            d="M 6 11 L 20 12.8 L 18.7 13.5 L 6 12.5 Z"
+            fill="var(--accent-red)"
+            opacity="0.9"
+          />
+        </motion.g>
         {/* Subtle highlight */}
         <ellipse cx="11" cy="7" rx="2.5" ry="0.8" fill="#fff" opacity="0.35" />
       </svg>

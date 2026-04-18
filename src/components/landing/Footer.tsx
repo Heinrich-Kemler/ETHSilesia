@@ -24,7 +24,7 @@ export default function Footer({ lang }: { lang: Lang }) {
                   <rect x="40" y="44" width="40" height="36" rx="3" fill="white" opacity="0.8" />
                   <path
                     d="M60 50 C56 56, 52 62, 55 68 C56 70, 58 71, 60 72 C62 71, 64 70, 65 68 C68 62, 64 56, 60 50Z"
-                    fill="#C9A84C"
+                    fill="var(--flame)"
                   />
                 </svg>
               </div>

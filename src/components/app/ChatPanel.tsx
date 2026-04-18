@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, X, Sparkles } from "lucide-react";
 import { t } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
+import LanternGlyph from "@/components/ui/LanternGlyph";
 
 /**
  * Slide-in AI coach panel. Opens from the right edge on all app pages.
@@ -275,45 +276,16 @@ export function ChatFab({ onClick, lang }: { onClick: () => void; lang: Lang }) 
       className="fixed bottom-6 right-6 z-[80] w-14 h-14 rounded-full gradient-gold-cyan-themed p-[3px] shadow-[0_10px_28px_-6px_rgba(0,0,0,0.35)]"
     >
       {/* Inner card-coloured disc — the "face" of the coin. Solid
-          fill guarantees the logo reads on both themes. */}
-      <div className="relative w-full h-full rounded-full bg-card-themed flex items-center justify-center text-gold-themed">
-        {/* Skarbnik chest — chunkier strokes + wider rectangles than
-            the AppNav version so the silhouette survives at 30px.
-            The inner "gem" uses the accent (--cyan) for a clean
-            two-tone brand hit (cyan in default theme, green in PKO). */}
-        <svg
-          width="30"
-          height="30"
-          viewBox="0 0 120 120"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            d="M40 40 C40 20, 80 20, 80 40"
-            stroke="currentColor"
-            strokeWidth="10"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <rect
-            x="32"
-            y="38"
-            width="56"
-            height="12"
-            rx="3"
-            fill="currentColor"
-          />
-          <rect
-            x="34"
-            y="50"
-            width="52"
-            height="42"
-            rx="4"
-            fill="currentColor"
-            opacity="0.9"
-          />
-          <circle cx="60" cy="70" r="7" fill="var(--cyan)" />
-        </svg>
+          fill guarantees the logo reads on both themes.
+
+          Uses LanternGlyph (same mark as the navbar + footer) instead
+          of the old "treasure chest" silhouette, which read as a
+          padlock at 30px and collided with the actual Lock iconography
+          we use for locked quest nodes. Sharing the lantern across
+          every mark makes the brand feel unified and stops the user
+          thinking "why is my AI coach a locked chest?". */}
+      <div className="relative w-full h-full rounded-full bg-card-themed flex items-center justify-center">
+        <LanternGlyph size={30} />
       </div>
       {/* Online pip — sits on the gradient rim, cut out by a ring
           the same colour as the inner face so the dot reads as a

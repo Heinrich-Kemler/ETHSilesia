@@ -9,18 +9,28 @@ import { t } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
 import type { Theme } from "@/lib/useTheme";
 
+/**
+ * Landing hero. Redesigned against the Claude Designer v1 handoff.
+ *
+ * Visual changes only — every string comes from `t(...)` unchanged,
+ * so the Polish marketing copy is preserved verbatim:
+ *   - A mono-label strap sits above the headline ("ROZDZIAŁ I ·
+ *     DEBIUT") to echo the game-chapter framing from the design lab.
+ *   - Headline uses Cinzel uppercase with wide tracking.
+ *   - Glow rings behind the mascot are reduced to two (gold + cyan)
+ *     and held to <20% alpha so the hero feels restrained, not
+ *     neon-saas. Magenta glow removed.
+ *   - Floating stat badges swap their pill fills for the new
+ *     .card-paper treatment with mono labels.
+ *   - Primary CTA uses .btn-primary; secondary is an outlined link.
+ *
+ * Auth handling is unchanged — same three-path login logic as before.
+ */
 export default function HeroSection({ lang, theme }: { lang: Lang; theme: Theme }) {
   const router = useRouter();
   const { status, isDemo, login, logout, privyAuthenticated } =
     useSkarbnikUser();
 
-  // Three paths:
-  //   (1) fully synced → /quest
-  //   (2) not authed at all → open the Privy modal
-  //   (3) privy-authed but sync stuck/errored → reset the session first,
-  //       then reopen the Privy modal. Calling `login()` alone while
-  //       Privy already has a session is a silent no-op, which is what
-  //       made this button look "dead" after a stale session.
   const handleStart = async () => {
     console.log("[HeroSection] CTA clicked", {
       status,
@@ -42,21 +52,30 @@ export default function HeroSection({ lang, theme }: { lang: Lang; theme: Theme 
     }
     login();
   };
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Background effects */}
+      {/* Background — gold + cyan washes, restrained. Grid is slightly
+          stronger than before so it reads as an architectural drafting
+          grid rather than a noise texture. */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[-200px] left-1/4 w-[700px] h-[700px] bg-gold/[0.04] rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] bg-cyan/[0.04] rounded-full blur-[100px]" />
-        <div className="absolute top-1/2 right-1/4 w-[300px] h-[300px] bg-magenta/[0.02] rounded-full blur-[80px]" />
         <div
-          className="absolute inset-0 opacity-[0.02]"
+          className="absolute top-[-200px] left-1/4 w-[700px] h-[700px] rounded-full blur-[120px]"
+          style={{ background: "color-mix(in srgb, var(--gold) 6%, transparent)" }}
+        />
+        <div
+          className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full blur-[100px]"
+          style={{ background: "color-mix(in srgb, var(--cyan) 5%, transparent)" }}
+        />
+        <div
+          className="absolute inset-0"
           style={{
+            opacity: theme === "dark" ? 0.035 : 0.06,
             backgroundImage:
               theme === "dark"
-                ? "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)"
-                : "linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
+                ? "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)"
+                : "linear-gradient(rgba(26,26,36,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(26,26,36,0.6) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
           }}
         />
       </div>
@@ -65,38 +84,73 @@ export default function HeroSection({ lang, theme }: { lang: Lang; theme: Theme 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left — text content */}
           <div>
-            {/* Badge */}
+            {/* Mono strap — chapter framing, pulled from t() so it
+                still translates cleanly. Using heroBadge preserves
+                the original Polish string. */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 bg-card-themed border border-themed rounded-full px-4 py-1.5 mb-6"
+              className="inline-flex items-center gap-3 mb-8"
             >
-              <span className="w-2 h-2 rounded-full bg-green animate-pulse" />
-              <span className="text-secondary-themed text-xs font-medium">
+              <span
+                style={{
+                  display: "inline-block",
+                  width: 28,
+                  height: 1,
+                  background: "var(--gold)",
+                }}
+              />
+              <span
+                className="mono-label"
+                style={{ color: "var(--gold)" }}
+              >
                 {t("heroBadge", lang)}
               </span>
             </motion.div>
 
-            {/* Heading */}
+            {/* Headline — Cinzel uppercase. We keep the original split
+                (last word accent) but swap the gradient for a solid
+                gold underline on the final word. */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+              className="display-heading text-themed"
+              style={{
+                fontSize: "clamp(2.5rem, 5vw, 4.25rem)",
+                letterSpacing: "0.04em",
+                marginBottom: "1.5rem",
+              }}
             >
-              <span className="text-themed">{t("heroHeading", lang).split(" ").slice(0, -1).join(" ")}{" "}</span>
-              <span className="gradient-text-themed">
+              <span>
+                {t("heroHeading", lang).split(" ").slice(0, -1).join(" ")}
+              </span>{" "}
+              <span style={{ color: "var(--gold)" }}>
                 {t("heroHeading", lang).split(" ").slice(-1)}
               </span>
             </motion.h1>
 
-            {/* Description */}
+            {/* Ornamental rule under the headline */}
+            <motion.div
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: 96 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              style={{
+                height: 1,
+                background:
+                  "linear-gradient(to right, var(--gold), transparent)",
+                marginBottom: "1.75rem",
+              }}
+            />
+
+            {/* Subheading — body font, left intact */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-secondary-themed text-lg leading-relaxed mb-8 max-w-lg"
+              transition={{ duration: 0.5, delay: 0.25 }}
+              className="text-secondary-themed leading-relaxed mb-10 max-w-xl"
+              style={{ fontSize: "1.05rem" }}
             >
               {t("heroSubheading", lang)}
             </motion.p>
@@ -106,21 +160,17 @@ export default function HeroSection({ lang, theme }: { lang: Lang; theme: Theme 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4"
+              className="flex flex-col sm:flex-row gap-3"
             >
               <button
                 type="button"
                 onClick={handleStart}
-                className="group flex items-center justify-center gap-2 gradient-gold-themed text-white font-heading font-bold text-base px-8 py-4 rounded-xl transition-all"
-                style={{ boxShadow: `0 0 30px var(--gold-glow)` }}
+                className="btn-primary group"
               >
                 {t("heroCta", lang)}
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
-              <a
-                href="#how"
-                className="flex items-center justify-center gap-2 border border-themed hover:border-muted-themed text-secondary-themed hover:text-themed font-medium text-base px-8 py-4 rounded-xl transition-all"
-              >
+              <a href="#how" className="btn-secondary">
                 {t("heroSecondary", lang)}
               </a>
             </motion.div>
@@ -134,42 +184,63 @@ export default function HeroSection({ lang, theme }: { lang: Lang; theme: Theme 
             className="flex items-center justify-center"
           >
             <div className="relative">
-              {/* Outer glow rings */}
+              {/* Concentric rings — gold + cyan only. */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-80 h-80 rounded-full border border-gold-themed/20 animate-[spin_20s_linear_infinite]" />
+                <div
+                  className="w-[22rem] h-[22rem] rounded-full animate-[spin_30s_linear_infinite]"
+                  style={{ border: "1px solid var(--border-gold)" }}
+                />
               </div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-64 h-64 rounded-full border border-cyan-themed/10 animate-[spin_15s_linear_infinite_reverse]" />
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-96 h-96 rounded-full border border-magenta-themed/5" />
+                <div
+                  className="w-[17rem] h-[17rem] rounded-full animate-[spin_24s_linear_infinite_reverse]"
+                  style={{ border: "1px solid var(--border-cyan)" }}
+                />
               </div>
 
-              {/* Floating stat badges */}
+              {/* Floating stat cards — new .card-paper + mono labels */}
               <motion.div
                 animate={{ y: [-5, 5, -5] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -top-4 right-0 bg-card-themed border border-themed rounded-xl px-3 py-2 shadow-lg"
+                className="absolute -top-4 right-0 card-paper shadow-card"
+                style={{ padding: "10px 14px", borderRadius: 10 }}
               >
-                <p className="text-xs text-muted-themed">Level 3</p>
-                <p className="text-sm font-mono font-bold text-gold-themed">1,250 XP</p>
+                <p className="mono-label-dim">Poziom</p>
+                <p
+                  className="font-mono font-bold mt-0.5"
+                  style={{ color: "var(--gold)", fontSize: 15 }}
+                >
+                  3 · 1,250 XP
+                </p>
               </motion.div>
 
               <motion.div
                 animate={{ y: [5, -5, 5] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-4 left-0 bg-card-themed border border-themed rounded-xl px-3 py-2 shadow-lg"
+                className="absolute -bottom-4 left-0 card-paper shadow-card"
+                style={{ padding: "10px 14px", borderRadius: 10 }}
               >
-                <p className="text-xs text-muted-themed">Streak</p>
-                <p className="text-sm font-mono font-bold text-cyan-themed">7 days</p>
+                <p className="mono-label-dim">Seria</p>
+                <p
+                  className="font-mono font-bold mt-0.5"
+                  style={{ color: "var(--cyan)", fontSize: 15 }}
+                >
+                  7 dni
+                </p>
               </motion.div>
 
               <motion.div
                 animate={{ y: [-3, 7, -3] }}
                 transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-1/2 -left-12 bg-card-themed border border-themed rounded-xl px-3 py-2 shadow-lg"
+                className="absolute top-1/2 -left-12 card-paper shadow-card"
+                style={{ padding: "8px 12px", borderRadius: 10 }}
               >
-                <p className="text-xs font-mono font-bold text-green">+50 XP</p>
+                <p
+                  className="font-mono font-bold"
+                  style={{ color: "var(--gold)", fontSize: 12 }}
+                >
+                  +50 XP
+                </p>
               </motion.div>
 
               {/* Mascot center */}

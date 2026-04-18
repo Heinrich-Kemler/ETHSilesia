@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -16,11 +16,17 @@ import ChatPanel, { ChatFab } from "@/components/app/ChatPanel";
 import ChapterPath from "@/components/app/ChapterPath";
 import DailyChallenge from "@/components/app/DailyChallenge";
 import StreakCalendar from "@/components/app/StreakCalendar";
+import WalkingSkarbnik from "@/components/app/WalkingSkarbnik";
 import { useLanguage } from "@/lib/useLanguage";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { useDemoMode } from "@/lib/useDemoMode";
+import { useTheme } from "@/lib/useTheme";
+import { todayISO } from "@/lib/dailyChallenge";
 import { t } from "@/lib/i18n";
-import { levelNameKey, xpProgress } from "@/lib/quests";
+import {
+  levelNameKey,
+  xpProgress,
+} from "@/lib/quests";
 
 type LeaderRow = {
   player_id: string;
@@ -38,8 +44,15 @@ export default function QuestHubPage() {
   const router = useRouter();
   const { lang } = useLanguage();
   const demo = useDemoMode();
-  const { user, completedQuests, status, isDemo, ready, refetch } =
-    useSkarbnikUser();
+  const { theme } = useTheme();
+  const {
+    user,
+    completedQuests,
+    status,
+    isDemo,
+    ready,
+    refetch,
+  } = useSkarbnikUser();
   const [chatOpen, setChatOpen] = useState(false);
   const [top3, setTop3] = useState<LeaderRow[]>([]);
   const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null);
@@ -63,19 +76,15 @@ export default function QuestHubPage() {
     let cancelled = false;
     async function loadBoard() {
       try {
-        const url =
-          !demo && user?.id
-            ? `/api/leaderboard?userId=${encodeURIComponent(user.id)}`
-            : "/api/leaderboard";
-        const res = await fetch(url, {
-          cache: "no-store",
-          credentials: "include",
-        });
+        const url = !demo && user?.id
+          ? `/api/leaderboard?userId=${encodeURIComponent(user.id)}`
+          : "/api/leaderboard";
+        const res = await fetch(url, { cache: "no-store", credentials: "include" });
         if (!res.ok) {
           console.warn(
             "[leaderboard] fetch failed",
             res.status,
-            await res.text().catch(() => ""),
+            await res.text().catch(() => "")
           );
           return;
         }
@@ -93,23 +102,6 @@ export default function QuestHubPage() {
       cancelled = true;
     };
   }, [demo, user?.id]);
-
-  const handleDailyEarned = useCallback(
-    async (earnedXp: number) => {
-      if (isDemo || !user?.id) return;
-      try {
-        await fetch("/api/quests/daily", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: user.id, xpEarned: earnedXp }),
-        });
-        await refetch();
-      } catch (err) {
-        console.warn("[daily] failed to persist xp", err);
-      }
-    },
-    [isDemo, user?.id, refetch],
-  );
 
   const loading = !user && (status === "idle" || status === "loading");
 
@@ -135,31 +127,76 @@ export default function QuestHubPage() {
               xpInto={xp.into}
               xpNeeded={xp.needed}
               xpPercent={xp.percent}
-              streak={
-                (user as { streak_days?: number } | null)?.streak_days ?? 0
-              }
+              streak={(user as { streak_days?: number } | null)?.streak_days ?? 0}
               isDemo={isDemo}
             />
 
             {/* Streak calendar — 7-day activity strip */}
             <StreakCalendar lang={lang} userId={user?.id ?? null} />
 
-            {/* Daily Challenge */}
+            {/* Daily Challenge
+                onEarned persists the +50 XP to the server. Demo users
+                and pre-auth viewers get the client-side toast + streak
+                bump only — there's no server-side user row to update.
+                After a successful POST we refetch so the TopBar XP/level
+                reflect the award immediately. All failures are logged
+                instead of toasted because the client-side optimistic UI
+                (localStorage + toast in DailyChallenge itself) already
+                told the user they succeeded — a second error toast here
+                would be confusing. A `daily_completions` table would
+                let us retry on the next page load; see the endpoint
+                doc comment for the MVP tradeoff. */}
             <DailyChallenge
               lang={lang}
               unlockedLevel={level}
               userId={user?.id ?? null}
-              onEarned={handleDailyEarned}
+              onEarned={async () => {
+                if (isDemo || !user?.id) return;
+                try {
+                  const res = await fetch("/api/daily/complete", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      userId: user.id,
+                      dateISO: todayISO(),
+                    }),
+                  });
+                  if (!res.ok && res.status !== 409) {
+                    console.warn(
+                      "[daily] complete failed",
+                      res.status,
+                      await res.text().catch(() => "")
+                    );
+                    return;
+                  }
+                  // 409 means "already claimed" — nothing to refetch,
+                  // the existing XP row is already correct.
+                  if (res.status === 409) return;
+                  await refetch();
+                } catch (err) {
+                  console.warn("[daily] complete network error", err);
+                }
+              }}
             />
 
             {/* Quest grid — show current-level quests, with higher levels locked */}
             <div className="mt-10">
               <div className="flex items-end justify-between mb-6">
                 <div>
-                  <h2 className="font-heading text-2xl font-bold text-themed">
+                  <p
+                    className="mono-label"
+                    style={{ color: "var(--gold)", marginBottom: 6 }}
+                  >
+                    {/* Mono strap — section framing */}
+                    Ścieżka
+                  </p>
+                  <h2
+                    className="display-heading text-themed"
+                    style={{ fontSize: "1.75rem" }}
+                  >
                     {t("questHubTitle", lang)}
                   </h2>
-                  <p className="text-muted-themed text-sm">
+                  <p className="text-muted-themed text-sm mt-1">
                     {t("questHubSubtitle", lang)}
                   </p>
                 </div>
@@ -176,13 +213,23 @@ export default function QuestHubPage() {
             <div className="mt-14">
               <div className="flex items-end justify-between mb-4">
                 <div>
-                  <h2 className="font-heading text-xl font-bold text-themed">
+                  <p
+                    className="mono-label"
+                    style={{ color: "var(--gold)", marginBottom: 6 }}
+                  >
+                    Ranking
+                  </p>
+                  <h2
+                    className="display-heading text-themed"
+                    style={{ fontSize: "1.5rem" }}
+                  >
                     {t("leaderboardPreview", lang)}
                   </h2>
                 </div>
                 <Link
                   href={demo ? "/leaderboard?demo=true" : "/leaderboard"}
-                  className="text-cyan-themed hover:underline text-sm font-medium"
+                  className="mono-label"
+                  style={{ color: "var(--gold)" }}
                 >
                   {t("seeFullLeaderboard", lang)} →
                 </Link>
@@ -215,6 +262,11 @@ export default function QuestHubPage() {
         open={chatOpen}
         onClose={() => setChatOpen(false)}
       />
+
+      {/* Ambient mascot — strolls across the bottom of the page
+          as a low-volume reminder of the Skarbnik persona. Click
+          to dismiss (per-session only). */}
+      <WalkingSkarbnik theme={theme} />
     </main>
   );
 }
@@ -245,17 +297,22 @@ function TopBar({
   isDemo: boolean;
 }) {
   const levelKey = levelNameKey(level === 4 ? 3 : level);
-  const LevelIcon = level === 1 ? Sparkles : level === 2 ? Shield : Crown;
+  const LevelIcon =
+    level === 1 ? Sparkles : level === 2 ? Shield : Crown;
   const levelColor =
-    level === 1 ? "#10b981" : level === 2 ? "var(--cyan)" : "var(--gold)";
+    level === 1
+      ? "#10b981"
+      : level === 2
+      ? "var(--cyan)"
+      : "var(--gold)";
 
   const displayName =
     user?.username?.trim() ||
     (isDemo
       ? "Demo Skarbnik"
       : user?.wallet_address
-        ? `${user.wallet_address.slice(0, 6)}...${user.wallet_address.slice(-4)}`
-        : "—");
+      ? `${user.wallet_address.slice(0, 6)}...${user.wallet_address.slice(-4)}`
+      : "—");
 
   return (
     <motion.div
@@ -291,7 +348,9 @@ function TopBar({
         {/* XP bar */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between text-xs text-muted-themed mb-2 font-mono">
-            <span>{totalXp.toLocaleString()} XP</span>
+            <span>
+              {totalXp.toLocaleString()} XP
+            </span>
             <span>
               {level === 4
                 ? lang === "pl"
@@ -341,11 +400,9 @@ function LeaderboardPreview({
   rows: LeaderRow[];
   currentUserPlayerId: string | null;
   lang: "pl" | "en";
-  fallbackUser: {
-    username: string | null;
-    total_xp: number;
-    level: number;
-  } | null;
+  fallbackUser:
+    | { username: string | null; total_xp: number; level: number }
+    | null;
 }) {
   // If the server returned no rows but we have an authenticated user
   // with any XP, synthesise a single "you're #1" row so the card is
