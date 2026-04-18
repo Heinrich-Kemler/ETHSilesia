@@ -11,17 +11,36 @@ import type { Theme } from "@/lib/useTheme";
 
 export default function HeroSection({ lang, theme }: { lang: Lang; theme: Theme }) {
   const router = useRouter();
-  const { status, isDemo, login } = useSkarbnikUser();
+  const { status, isDemo, login, logout, privyAuthenticated } =
+    useSkarbnikUser();
 
-  // Authenticated → jump into the quest hub.
-  // Not authenticated → open the Privy login modal. Demo users count as
-  // authenticated so the CTA still works with `?demo=true`.
-  const handleStart = () => {
+  // Three paths:
+  //   (1) fully synced → /quest
+  //   (2) not authed at all → open the Privy modal
+  //   (3) privy-authed but sync stuck/errored → reset the session first,
+  //       then reopen the Privy modal. Calling `login()` alone while
+  //       Privy already has a session is a silent no-op, which is what
+  //       made this button look "dead" after a stale session.
+  const handleStart = async () => {
+    console.log("[HeroSection] CTA clicked", {
+      status,
+      isDemo,
+      privyAuthenticated,
+    });
     if (status === "authenticated" || isDemo) {
       router.push("/quest");
-    } else {
-      login();
+      return;
     }
+    if (privyAuthenticated) {
+      // Privy says "already logged in" but we haven't reached status=authenticated.
+      // Either sync is stuck or this is a stale session from a previous run. The
+      // user clicking Login is the signal to reset — force a logout so the next
+      // login() actually opens the modal instead of no-opping silently.
+      await logout();
+      login();
+      return;
+    }
+    login();
   };
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
