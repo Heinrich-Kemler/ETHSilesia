@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/alerts/fetch?source=cointelegraph",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 7 * * *"
     },
     {
       "path": "/api/cron/send-newsletter",
