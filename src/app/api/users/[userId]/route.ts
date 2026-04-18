@@ -1,4 +1,10 @@
 import { NextResponse } from "next/server";
+import { ApiError, logServerError, toApiError } from "@/lib/server/apiErrors";
+import {
+  assertPrivyOwnership,
+  requirePrivyAuth,
+} from "@/lib/server/auth";
+import { assertRateLimit } from "@/lib/server/rateLimit";
 import { getSupabaseAdminClient } from "@/lib/server/supabaseAdmin";
 
 export const runtime = "nodejs";
@@ -11,17 +17,21 @@ export const runtime = "nodejs";
  * userId is the Supabase UUID (not the Privy DID).
  */
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ userId: string }> }
 ) {
   try {
+    assertRateLimit(request, {
+      key: "users-get",
+      maxRequests: 120,
+      windowMs: 60 * 1000,
+    });
+
+    const auth = await requirePrivyAuth(request);
     const { userId } = await context.params;
     const id = userId?.trim();
     if (!id) {
-      return NextResponse.json(
-        { error: "userId is required." },
-        { status: 400 }
-      );
+      throw new ApiError(400, "userId is required.");
     }
 
     const supabase = getSupabaseAdminClient();
@@ -35,14 +45,13 @@ export async function GET(
       .maybeSingle();
 
     if (userError) {
-      return NextResponse.json(
-        { error: "Failed to load user.", details: userError.message },
-        { status: 500 }
-      );
+      throw new ApiError(500, "Failed to load user.", false);
     }
     if (!user) {
-      return NextResponse.json({ error: "User not found." }, { status: 404 });
+      throw new ApiError(404, "User not found.");
     }
+
+    assertPrivyOwnership(auth, user.privy_id);
 
     const { data: completions, error: completionsError } = await supabase
       .from("quest_completions")
@@ -51,13 +60,7 @@ export async function GET(
       .order("completed_at", { ascending: false });
 
     if (completionsError) {
-      return NextResponse.json(
-        {
-          error: "Failed to load completed quests.",
-          details: completionsError.message,
-        },
-        { status: 500 }
-      );
+      throw new ApiError(500, "Failed to load completed quests.", false);
     }
 
     const rows = completions ?? [];
@@ -72,10 +75,15 @@ export async function GET(
 
     return NextResponse.json({ user, completedQuests, questCompletions });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const apiError = toApiError(error, "Failed to load user.");
+    if (apiError.status >= 500) {
+      logServerError("api/users/[userId]#GET", error);
+    }
     return NextResponse.json(
-      { error: "Failed to load user.", details: message },
-      { status: 500 }
+      {
+        error: apiError.exposeMessage ? apiError.message : "Failed to load user.",
+      },
+      { status: apiError.status }
     );
   }
 }
@@ -92,58 +100,62 @@ export async function PATCH(
   context: { params: Promise<{ userId: string }> }
 ) {
   try {
+    assertRateLimit(request, {
+      key: "users-patch",
+      maxRequests: 60,
+      windowMs: 60 * 1000,
+    });
+
+    const auth = await requirePrivyAuth(request);
     const { userId } = await context.params;
     const id = userId?.trim();
     if (!id) {
-      return NextResponse.json(
-        { error: "userId is required." },
-        { status: 400 }
-      );
+      throw new ApiError(400, "userId is required.");
     }
 
     const body = (await request.json().catch(() => null)) as
       | { username?: unknown }
       | null;
     if (!body || typeof body !== "object") {
-      return NextResponse.json(
-        { error: "Invalid JSON body." },
-        { status: 400 }
-      );
+      throw new ApiError(400, "Invalid JSON body.");
     }
 
     const updates: { username?: string } = {};
 
     if (body.username !== undefined) {
       if (typeof body.username !== "string") {
-        return NextResponse.json(
-          { error: "username must be a string." },
-          { status: 400 }
-        );
+        throw new ApiError(400, "username must be a string.");
       }
       const trimmed = body.username.trim();
       if (trimmed.length === 0) {
-        return NextResponse.json(
-          { error: "username cannot be empty." },
-          { status: 400 }
-        );
+        throw new ApiError(400, "username cannot be empty.");
       }
       if (trimmed.length > 40) {
-        return NextResponse.json(
-          { error: "username too long (max 40 characters)." },
-          { status: 400 }
-        );
+        throw new ApiError(400, "username too long (max 40 characters).");
       }
       updates.username = trimmed;
     }
 
     if (Object.keys(updates).length === 0) {
-      return NextResponse.json(
-        { error: "No mutable fields supplied." },
-        { status: 400 }
-      );
+      throw new ApiError(400, "No mutable fields supplied.");
     }
 
     const supabase = getSupabaseAdminClient();
+    const { data: ownershipUser, error: ownershipError } = await supabase
+      .from("users")
+      .select("privy_id")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (ownershipError) {
+      throw new ApiError(500, "Failed to verify user ownership.", false);
+    }
+    if (!ownershipUser) {
+      throw new ApiError(404, "User not found.");
+    }
+
+    assertPrivyOwnership(auth, ownershipUser.privy_id);
+
     const { data: user, error } = await supabase
       .from("users")
       .update(updates)
@@ -154,21 +166,25 @@ export async function PATCH(
       .maybeSingle();
 
     if (error) {
-      return NextResponse.json(
-        { error: "Failed to update user.", details: error.message },
-        { status: 500 }
-      );
+      throw new ApiError(500, "Failed to update user.", false);
     }
     if (!user) {
-      return NextResponse.json({ error: "User not found." }, { status: 404 });
+      throw new ApiError(404, "User not found.");
     }
 
     return NextResponse.json({ user });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const apiError = toApiError(error, "Failed to update user.");
+    if (apiError.status >= 500) {
+      logServerError("api/users/[userId]#PATCH", error);
+    }
     return NextResponse.json(
-      { error: "Failed to update user.", details: message },
-      { status: 500 }
+      {
+        error: apiError.exposeMessage
+          ? apiError.message
+          : "Failed to update user.",
+      },
+      { status: apiError.status }
     );
   }
 }

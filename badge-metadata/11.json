@@ -1,0 +1,11 @@
+{
+  "name": "Strażnik Bezpieczeństwa",
+  "description": "Awarded for completing the safety and risk quest path.",
+  "external_url": "https://skarbnik.app/badges/11",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    { "trait_type": "Badge ID", "value": 11 },
+    { "trait_type": "Tier", "value": "Path" },
+    { "trait_type": "Trigger", "value": "Risk + rug pull + boss trial quests" }
+  ]
+}

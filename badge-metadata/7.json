@@ -1,0 +1,11 @@
+{
+  "name": "Stablecoiny i Tokeny",
+  "description": "Awarded for completing the stablecoins and tokens quest path.",
+  "external_url": "https://skarbnik.app/badges/7",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    { "trait_type": "Badge ID", "value": 7 },
+    { "trait_type": "Tier", "value": "Path" },
+    { "trait_type": "Trigger", "value": "USDC + gas fee quests" }
+  ]
+}

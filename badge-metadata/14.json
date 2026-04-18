@@ -1,0 +1,24 @@
+{
+  "name": "Quest: USDC",
+  "description": "Quest completion badge for stablecoins and USDC.",
+  "external_url": "https://skarbnik.app/badges/14",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 14
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l1-usdc"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

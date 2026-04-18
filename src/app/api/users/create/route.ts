@@ -1,4 +1,12 @@
 import { NextResponse } from "next/server";
+import { ethers } from "ethers";
+import { ApiError, logServerError, toApiError } from "@/lib/server/apiErrors";
+import {
+  assertPrivyOwnership,
+  requirePrivyAuth,
+  setSkarbnikSessionCookie,
+} from "@/lib/server/auth";
+import { assertRateLimit } from "@/lib/server/rateLimit";
 import { getSupabaseAdminClient } from "@/lib/server/supabaseAdmin";
 
 export const runtime = "nodejs";
@@ -7,9 +15,6 @@ type CreateUserBody = {
   privyId?: string;
   walletAddress?: string;
   email?: string;
-  /** Optional: set starting level/XP from an assessment (new users only). */
-  level?: number;
-  initialXP?: number;
   language?: "pl" | "en";
 };
 
@@ -27,6 +32,13 @@ function generateUsername(walletAddress: string, email?: string): string {
 
 export async function POST(request: Request) {
   try {
+    assertRateLimit(request, {
+      key: "users-create",
+      maxRequests: 40,
+      windowMs: 10 * 60 * 1000,
+    });
+
+    const auth = await requirePrivyAuth(request);
     const body = (await request.json()) as CreateUserBody;
 
     const privyId = body.privyId?.trim();
@@ -34,12 +46,16 @@ export async function POST(request: Request) {
     const email = body.email?.trim();
 
     if (!privyId || !walletAddress) {
-      return NextResponse.json(
-        { error: "privyId and walletAddress are required." },
-        { status: 400 }
-      );
+      throw new ApiError(400, "privyId and walletAddress are required.");
     }
 
+    assertPrivyOwnership(auth, privyId);
+
+    if (!ethers.isAddress(walletAddress)) {
+      throw new ApiError(400, "walletAddress must be a valid EVM address.");
+    }
+
+    const normalizedWalletAddress = walletAddress.toLowerCase();
     const supabase = getSupabaseAdminClient();
 
     // Look up existing user — if they exist we preserve their progress
@@ -52,19 +68,22 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (lookupError) {
-      return NextResponse.json(
-        { error: "Failed to look up user.", details: lookupError.message },
-        { status: 500 }
-      );
+      throw new ApiError(500, "Failed to look up user.", false);
     }
 
     const nowIso = new Date().toISOString();
 
     if (existing) {
       // Existing user: just bump last_active (and language if provided).
-      const updatePayload: Record<string, unknown> = { last_active: nowIso };
+      const updatePayload: Record<string, unknown> = {
+        last_active: nowIso,
+        wallet_address: normalizedWalletAddress,
+      };
       if (body.language === "pl" || body.language === "en") {
         updatePayload.language = body.language;
+      }
+      if (email) {
+        updatePayload.google_email = email;
       }
       const { data: updated, error: updateError } = await supabase
         .from("users")
@@ -74,31 +93,24 @@ export async function POST(request: Request) {
         .single();
 
       if (updateError) {
-        return NextResponse.json(
-          { error: "Failed to refresh user.", details: updateError.message },
-          { status: 500 }
-        );
+        throw new ApiError(500, "Failed to refresh user.", false);
       }
-      return NextResponse.json({ user: updated, created: false });
+      // Issue/refresh our signed session cookie after verified Privy auth.
+      const response = NextResponse.json({ user: updated, created: false });
+      setSkarbnikSessionCookie(response, auth.privyId);
+      return response;
     }
 
-    const lvl =
-      typeof body.level === "number" && body.level >= 1 && body.level <= 4
-        ? Math.floor(body.level)
-        : 1;
-    const xp =
-      typeof body.initialXP === "number" && body.initialXP >= 0
-        ? Math.floor(body.initialXP)
-        : 0;
     const lang = body.language === "en" ? "en" : "pl";
 
     const payload = {
       privy_id: privyId,
-      wallet_address: walletAddress.toLowerCase(),
+      wallet_address: normalizedWalletAddress,
       google_email: email || null,
       username: generateUsername(walletAddress, email),
-      level: lvl,
-      total_xp: xp,
+      // Never trust client-provided progression state during signup.
+      level: 1,
+      total_xp: 0,
       language: lang,
       last_active: nowIso,
     };
@@ -110,18 +122,23 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
-      return NextResponse.json(
-        { error: "Failed to create user.", details: error.message },
-        { status: 500 }
-      );
+      throw new ApiError(500, "Failed to create user.", false);
     }
 
-    return NextResponse.json({ user: data, created: true });
+    // Issue/refresh our signed session cookie after verified Privy auth.
+    const response = NextResponse.json({ user: data, created: true });
+    setSkarbnikSessionCookie(response, auth.privyId);
+    return response;
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const apiError = toApiError(error, "Failed to create user.");
+    if (apiError.status >= 500) {
+      logServerError("api/users/create", error);
+    }
     return NextResponse.json(
-      { error: "Failed to create user.", details: message },
-      { status: 500 }
+      {
+        error: apiError.exposeMessage ? apiError.message : "Failed to create user.",
+      },
+      { status: apiError.status }
     );
   }
 }

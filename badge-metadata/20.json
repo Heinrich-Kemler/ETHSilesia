@@ -1,0 +1,24 @@
+{
+  "name": "Quest: Plynnosc",
+  "description": "Quest completion badge for liquidity pools.",
+  "external_url": "https://skarbnik.app/badges/20",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 20
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l2-liquidity"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

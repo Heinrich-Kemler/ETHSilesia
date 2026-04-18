@@ -1,0 +1,12 @@
+{
+  "name": "Mistrz Poziomu 1",
+  "description": "Awarded for completing all level 1 quests.",
+  "external_url": "https://skarbnik.app/badges/27",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/level1.jpg",
+  "attributes": [
+    { "trait_type": "Badge ID", "value": 27 },
+    { "trait_type": "Tier", "value": "Level" },
+    { "trait_type": "Level", "value": 1 },
+    { "trait_type": "Trigger", "value": "All level 1 quests completed" }
+  ]
+}

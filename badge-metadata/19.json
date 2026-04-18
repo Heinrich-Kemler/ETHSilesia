@@ -1,0 +1,24 @@
+{
+  "name": "Quest: Yield",
+  "description": "Quest completion badge for yield fundamentals.",
+  "external_url": "https://skarbnik.app/badges/19",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 19
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l2-yield"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

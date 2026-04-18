@@ -1,0 +1,24 @@
+{
+  "name": "Quest: Blockchain",
+  "description": "Quest completion badge for blockchain basics.",
+  "external_url": "https://skarbnik.app/badges/12",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 12
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l1-blockchain"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

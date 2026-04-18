@@ -1,0 +1,24 @@
+{
+  "name": "Quest: DEX vs CEX",
+  "description": "Quest completion badge for exchange concepts.",
+  "external_url": "https://skarbnik.app/badges/18",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 18
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l2-dex"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

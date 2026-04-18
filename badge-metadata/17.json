@@ -1,0 +1,24 @@
+{
+  "name": "Quest: DeFi",
+  "description": "Quest completion badge for DeFi foundations.",
+  "external_url": "https://skarbnik.app/badges/17",
+  "image": "ipfs://QmSkarbnikBadgeImagePlaceholder/generic-badge.jpg",
+  "attributes": [
+    {
+      "trait_type": "Badge ID",
+      "value": 17
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Quest"
+    },
+    {
+      "trait_type": "Quest ID",
+      "value": "l2-defi"
+    },
+    {
+      "trait_type": "Trigger",
+      "value": "Quest completed"
+    }
+  ]
+}

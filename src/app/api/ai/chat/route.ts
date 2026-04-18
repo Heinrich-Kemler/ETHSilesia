@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI, TaskType } from "@google/generative-ai";
+import { ApiError, logServerError, toApiError } from "@/lib/server/apiErrors";
+import {
+  assertPrivyOwnership,
+  requirePrivyAuth,
+} from "@/lib/server/auth";
+import { assertRateLimit } from "@/lib/server/rateLimit";
 import { getSupabaseAdminClient } from "@/lib/server/supabaseAdmin";
 
 // Odblokuj długie przetwarzanie jeśli Grok będzie zamulał
@@ -29,9 +35,19 @@ function cannedChatResponse(language: "pl" | "en"): string {
 
 export async function POST(request: Request) {
   try {
+    assertRateLimit(request, {
+      key: "ai-chat",
+      maxRequests: 20,
+      windowMs: 60 * 1000,
+    });
+
     const body = (await request.json()) as ChatBody;
     const userQuery = body.message?.trim();
-    const sessionId = body.sessionId || "anonymous-session";
+    const rawSessionId = body.sessionId?.trim();
+    const validatedSessionId =
+      rawSessionId && /^[A-Za-z0-9:_-]{1,120}$/.test(rawSessionId)
+        ? rawSessionId
+        : null;
     const userLang = body.language === "en" ? "English" : "Polish";
     const language: "pl" | "en" = body.language === "en" ? "en" : "pl";
 
@@ -43,12 +59,20 @@ export async function POST(request: Request) {
     });
 
     if (!userQuery) {
-      console.warn("[chat] [1] No message — returning 400");
-      return NextResponse.json(
-        { error: "message is required." },
-        { status: 400 },
-      );
+      throw new ApiError(400, "message is required.");
     }
+
+    let authenticatedPrivyId: string | null = null;
+    if (body.userId) {
+      const auth = await requirePrivyAuth(request);
+      assertPrivyOwnership(auth, body.userId);
+      authenticatedPrivyId = auth.privyId;
+    }
+
+    const sessionId =
+      authenticatedPrivyId && validatedSessionId
+        ? validatedSessionId
+        : "anonymous-session";
 
     // --- AI disabled path (default) ------------------------------------
     // Keeps the frontend UX seamless without calling Grok/Gemini.
@@ -68,12 +92,11 @@ export async function POST(request: Request) {
     let userTotalXp = 0;
     let userStreak = 0;
 
-    if (body.userId) {
-      console.log("[chat] [2] Looking up user by privy_id:", body.userId);
-      const { data: userRecord, error: userErr } = await supabase
+    if (authenticatedPrivyId) {
+      const { data: userRecord } = await supabase
         .from("users")
-        .select("id, level, username, total_xp, streak_days")
-        .eq("privy_id", body.userId)
+        .select("id, level")
+        .eq("privy_id", authenticatedPrivyId)
         .single();
 
       if (userErr)
@@ -275,11 +298,17 @@ Zasady:
     console.log("[chat] [7] Returning response, length:", responseText.length);
     return NextResponse.json({ response: responseText });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("Chat route error:", message);
+    const apiError = toApiError(error, "AI chat request failed.");
+    if (apiError.status >= 500) {
+      logServerError("api/ai/chat", error);
+    }
     return NextResponse.json(
-      { error: "AI chat request failed.", details: message },
-      { status: 500 },
+      {
+        error: apiError.exposeMessage
+          ? apiError.message
+          : "AI chat request failed.",
+      },
+      { status: apiError.status },
     );
   }
 }
