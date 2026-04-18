@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -20,10 +20,7 @@ import { useLanguage } from "@/lib/useLanguage";
 import { useSkarbnikUser } from "@/lib/useSkarbnikUser";
 import { useDemoMode } from "@/lib/useDemoMode";
 import { t } from "@/lib/i18n";
-import {
-  levelNameKey,
-  xpProgress,
-} from "@/lib/quests";
+import { levelNameKey, xpProgress } from "@/lib/quests";
 
 type LeaderRow = {
   player_id: string;
@@ -41,13 +38,8 @@ export default function QuestHubPage() {
   const router = useRouter();
   const { lang } = useLanguage();
   const demo = useDemoMode();
-  const {
-    user,
-    completedQuests,
-    status,
-    isDemo,
-    ready,
-  } = useSkarbnikUser();
+  const { user, completedQuests, status, isDemo, ready, refetch } =
+    useSkarbnikUser();
   const [chatOpen, setChatOpen] = useState(false);
   const [top3, setTop3] = useState<LeaderRow[]>([]);
   const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null);
@@ -71,15 +63,19 @@ export default function QuestHubPage() {
     let cancelled = false;
     async function loadBoard() {
       try {
-        const url = !demo && user?.id
-          ? `/api/leaderboard?userId=${encodeURIComponent(user.id)}`
-          : "/api/leaderboard";
-        const res = await fetch(url, { cache: "no-store", credentials: "include" });
+        const url =
+          !demo && user?.id
+            ? `/api/leaderboard?userId=${encodeURIComponent(user.id)}`
+            : "/api/leaderboard";
+        const res = await fetch(url, {
+          cache: "no-store",
+          credentials: "include",
+        });
         if (!res.ok) {
           console.warn(
             "[leaderboard] fetch failed",
             res.status,
-            await res.text().catch(() => "")
+            await res.text().catch(() => ""),
           );
           return;
         }
@@ -97,6 +93,23 @@ export default function QuestHubPage() {
       cancelled = true;
     };
   }, [demo, user?.id]);
+
+  const handleDailyEarned = useCallback(
+    async (earnedXp: number) => {
+      if (isDemo || !user?.id) return;
+      try {
+        await fetch("/api/quests/daily", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: user.id, xpEarned: earnedXp }),
+        });
+        await refetch();
+      } catch (err) {
+        console.warn("[daily] failed to persist xp", err);
+      }
+    },
+    [isDemo, user?.id, refetch],
+  );
 
   const loading = !user && (status === "idle" || status === "loading");
 
@@ -122,7 +135,9 @@ export default function QuestHubPage() {
               xpInto={xp.into}
               xpNeeded={xp.needed}
               xpPercent={xp.percent}
-              streak={(user as { streak_days?: number } | null)?.streak_days ?? 0}
+              streak={
+                (user as { streak_days?: number } | null)?.streak_days ?? 0
+              }
               isDemo={isDemo}
             />
 
@@ -134,6 +149,7 @@ export default function QuestHubPage() {
               lang={lang}
               unlockedLevel={level}
               userId={user?.id ?? null}
+              onEarned={handleDailyEarned}
             />
 
             {/* Quest grid — show current-level quests, with higher levels locked */}
@@ -229,22 +245,17 @@ function TopBar({
   isDemo: boolean;
 }) {
   const levelKey = levelNameKey(level === 4 ? 3 : level);
-  const LevelIcon =
-    level === 1 ? Sparkles : level === 2 ? Shield : Crown;
+  const LevelIcon = level === 1 ? Sparkles : level === 2 ? Shield : Crown;
   const levelColor =
-    level === 1
-      ? "#10b981"
-      : level === 2
-      ? "var(--cyan)"
-      : "var(--gold)";
+    level === 1 ? "#10b981" : level === 2 ? "var(--cyan)" : "var(--gold)";
 
   const displayName =
     user?.username?.trim() ||
     (isDemo
       ? "Demo Skarbnik"
       : user?.wallet_address
-      ? `${user.wallet_address.slice(0, 6)}...${user.wallet_address.slice(-4)}`
-      : "—");
+        ? `${user.wallet_address.slice(0, 6)}...${user.wallet_address.slice(-4)}`
+        : "—");
 
   return (
     <motion.div
@@ -280,9 +291,7 @@ function TopBar({
         {/* XP bar */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between text-xs text-muted-themed mb-2 font-mono">
-            <span>
-              {totalXp.toLocaleString()} XP
-            </span>
+            <span>{totalXp.toLocaleString()} XP</span>
             <span>
               {level === 4
                 ? lang === "pl"
@@ -332,9 +341,11 @@ function LeaderboardPreview({
   rows: LeaderRow[];
   currentUserPlayerId: string | null;
   lang: "pl" | "en";
-  fallbackUser:
-    | { username: string | null; total_xp: number; level: number }
-    | null;
+  fallbackUser: {
+    username: string | null;
+    total_xp: number;
+    level: number;
+  } | null;
 }) {
   // If the server returned no rows but we have an authenticated user
   // with any XP, synthesise a single "you're #1" row so the card is

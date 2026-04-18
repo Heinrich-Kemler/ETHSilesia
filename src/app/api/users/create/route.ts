@@ -119,9 +119,24 @@ export async function POST(request: Request) {
       .from("users")
       .insert(payload)
       .select("*")
-      .single();
+      .maybeSingle();
 
     if (error) {
+      // Obsługa Race-Condition: Jeśli 4 requesty uderzą z frontu naraz, pierwszy tworzy usera, 
+      // a reszta dostaje błąd unikalności (23505). Zwracamy wtedy sukces pobierając istniejący już wpis.
+      if (error.code === '23505') {
+        const { data: latestExisting } = await supabase
+          .from("users")
+          .select("*")
+          .eq("privy_id", privyId)
+          .single();
+          
+        if (latestExisting) {
+          const response = NextResponse.json({ user: latestExisting, created: false });
+          setSkarbnikSessionCookie(response, auth.privyId);
+          return response;
+        }
+      }
       throw new ApiError(500, "Failed to create user.", false);
     }
 

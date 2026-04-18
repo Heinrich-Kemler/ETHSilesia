@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogIn, LogOut, Home, Award, User as UserIcon } from "lucide-react";
+import { LogIn, LogOut, Home, Award, User as UserIcon, ShieldAlert } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { t } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
@@ -94,6 +94,14 @@ export default function AppNav({
           >
             <Award className="w-4 h-4" />
             <span className="hidden md:inline">{t("navBadges", lang)}</span>
+          </Link>
+          <Link
+            href={demo ? "/alerts?demo=true" : "/alerts"}
+            title={t("navSkarbnikGuard", lang)}
+            className="hidden sm:inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-themed hover:border-gold-themed/30 text-secondary-themed hover:text-themed transition-colors text-sm font-medium"
+          >
+            <ShieldAlert className="w-4 h-4 text-red-400" />
+            <span className="hidden md:inline text-red-500 font-bold">{t("navSkarbnikGuard", lang)}</span>
           </Link>
           {authenticated ? (
             <Link

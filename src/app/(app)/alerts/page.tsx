@@ -121,27 +121,9 @@ export default function AlertsPage() {
 
   return (
     <main className="min-h-screen bg-themed flex flex-col">
-      {/* Minimalna belka nawigacyjna */}
-      <div className="sticky top-0 z-40 bg-themed/80 backdrop-blur-xl border-b border-themed">
-        <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-secondary-themed hover:text-themed text-sm transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            {lang === "pl" ? "Powrót na stronę główną" : "Back to home"}
-          </Link>
-          <Link
-            href="/assess"
-            className="inline-flex items-center gap-2 bg-gold-themed hover:bg-gold-dim-themed text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
-          >
-            <LogIn className="w-3.5 h-3.5" />
-            {lang === "pl" ? "Zaloguj się" : "Sign in"}
-          </Link>
-        </div>
-      </div>
+      {/* Minimalna belka nawigacyjna usunięta - strona przeniesiona pod (app) z głównym AppNav */}
 
-      <div className="max-w-3xl mx-auto px-6 pt-8 pb-32 flex-1 w-full">
+      <div className="max-w-3xl mx-auto px-6 pt-24 pb-32 flex-1 w-full">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -157,16 +139,6 @@ export default function AlertsPage() {
                 : "Current scams and attacks in DeFi and banking. Skarbnik watches."}
             </p>
           </div>
-          <button
-            onClick={() => loadAlerts(true)}
-            disabled={refreshing}
-            className="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-themed hover:border-gold-themed/30 text-muted-themed hover:text-themed transition-colors disabled:opacity-50"
-            aria-label="Refresh"
-          >
-            <RefreshCw
-              className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
-            />
-          </button>
         </motion.div>
 
         {/* Category tabs */}
