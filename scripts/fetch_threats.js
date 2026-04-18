@@ -79,7 +79,7 @@ Odpowiedz TYLKO czystym JSON-em, bez markdown. JSON musi być bez problemu czyta
       Authorization: `Bearer ${XAI_API_KEY}`,
     },
     body: JSON.stringify({
-      model: "grok-4-1-fast-non-reasoning",
+      model: "grok-4-1-fast-reasoning",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 800,
       temperature: 0.3,

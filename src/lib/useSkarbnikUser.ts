@@ -34,7 +34,12 @@ export type QuestCompletion = {
   completed_at: string;
 };
 
-type Status = "idle" | "loading" | "authenticated" | "unauthenticated" | "error";
+type Status =
+  | "idle"
+  | "loading"
+  | "authenticated"
+  | "unauthenticated"
+  | "error";
 
 type HookResult = {
   status: Status;
@@ -73,7 +78,9 @@ export function useSkarbnikUser(): HookResult {
   const privy = useSafePrivy();
   const [user, setUser] = useState<SkarbnikUser | null>(null);
   const [completedQuests, setCompletedQuests] = useState<string[]>([]);
-  const [questCompletions, setQuestCompletions] = useState<QuestCompletion[]>([]);
+  const [questCompletions, setQuestCompletions] = useState<QuestCompletion[]>(
+    [],
+  );
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const syncedPrivyId = useRef<string | null>(null);
@@ -130,9 +137,7 @@ export function useSkarbnikUser(): HookResult {
           privyId: privyUser.id,
           walletAddress: wallet,
           email:
-            privyUser.email?.address ??
-            privyUser.google?.email ??
-            undefined,
+            privyUser.email?.address ?? privyUser.google?.email ?? undefined,
         }),
       });
       if (!res.ok) throw new Error(`POST /api/users/create → ${res.status}`);

@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/sync-scams",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/alerts/fetch?source=cointelegraph",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/send-newsletter",
+      "schedule": "0 19 * * *"
+    }
+  ]
+}

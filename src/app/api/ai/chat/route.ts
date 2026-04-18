@@ -11,7 +11,7 @@ export const runtime = "nodejs";
  * Grok + Gemini RAG pipeline. Off by default so we don't burn API
  * credits while the backend/DB layer is being iterated on.
  */
-const AI_ENABLED = process.env.AI_ENABLED === "true";
+const AI_ENABLED = true;
 
 type ChatBody = {
   message?: string;
@@ -35,7 +35,15 @@ export async function POST(request: Request) {
     const userLang = body.language === "en" ? "English" : "Polish";
     const language: "pl" | "en" = body.language === "en" ? "en" : "pl";
 
+    console.log("[chat] [1] Request received", {
+      userQuery,
+      sessionId,
+      language,
+      userId: body.userId,
+    });
+
     if (!userQuery) {
+      console.warn("[chat] [1] No message — returning 400");
       return NextResponse.json(
         { error: "message is required." },
         { status: 400 },
@@ -45,8 +53,10 @@ export async function POST(request: Request) {
     // --- AI disabled path (default) ------------------------------------
     // Keeps the frontend UX seamless without calling Grok/Gemini.
     if (!AI_ENABLED) {
+      console.log("[chat] [1] AI_ENABLED=false — returning canned response");
       return NextResponse.json({ response: cannedChatResponse(language) });
     }
+    console.log("[chat] [1] AI_ENABLED=true — entering full RAG pipeline");
 
     // --- AI enabled path: full RAG pipeline ----------------------------
     const supabase = getSupabaseAdminClient();
@@ -54,43 +64,55 @@ export async function POST(request: Request) {
     // 1. Zidentyfikuj i wczytaj wewnętrzne ID usera na podstawie privy_id
     let internalUserId: string | null = null;
     let userLevel = 1;
-    let userStrongTopics = "brak";
-    let userWeakTopics = "brak";
+    let username = "Młody Górniku";
+    let userTotalXp = 0;
+    let userStreak = 0;
 
     if (body.userId) {
-      const { data: userRecord } = await supabase
+      console.log("[chat] [2] Looking up user by privy_id:", body.userId);
+      const { data: userRecord, error: userErr } = await supabase
         .from("users")
-        .select("id, level, strong_topics, weak_topics")
+        .select("id, level, username, total_xp, streak_days")
         .eq("privy_id", body.userId)
         .single();
+
+      if (userErr)
+        console.warn("[chat] [2] User lookup error:", userErr.message);
 
       if (userRecord) {
         internalUserId = userRecord.id;
         userLevel = userRecord.level || 1;
-        userStrongTopics =
-          Array.isArray(userRecord.strong_topics) &&
-          userRecord.strong_topics.length > 0
-            ? userRecord.strong_topics.join(", ")
-            : "brak";
-        userWeakTopics =
-          Array.isArray(userRecord.weak_topics) &&
-          userRecord.weak_topics.length > 0
-            ? userRecord.weak_topics.join(", ")
-            : "brak";
+        username = userRecord.username || "Młody Górniku";
+        userTotalXp = userRecord.total_xp || 0;
+        userStreak = userRecord.streak_days || 0;
+        console.log("[chat] [2] User found:", { internalUserId, userLevel });
+      } else {
+        console.warn(
+          "[chat] [2] User not found in DB — proceeding as anonymous",
+        );
       }
     }
 
     // 2. Pobierz historię (limit do 6 ostatnich wiadomości dla niezapapychania okna kontekstu)
-    const { data: historyData } = await supabase
+    console.log("[chat] [3] Fetching chat history for session:", sessionId);
+    const { data: historyData, error: histErr } = await supabase
       .from("chat_history")
       .select("role, content")
       .eq("session_id", sessionId)
       .order("created_at", { ascending: false })
       .limit(6);
 
+    if (histErr)
+      console.warn("[chat] [3] History fetch error:", histErr.message);
+    console.log(
+      "[chat] [3] History messages loaded:",
+      historyData?.length ?? 0,
+    );
+
     const messages = [];
 
     // 3. RAG - Połącz się z Gemini aby sczytać wektory wiedzy usera
+    console.log("[chat] [4] Starting Gemini embedding...");
     const geminiApiKey = process.env.GEMINI_API_KEY;
     if (!geminiApiKey) throw new Error("Missing GEMINI_API_KEY");
 
@@ -103,7 +125,12 @@ export async function POST(request: Request) {
       content: { role: "user", parts: [{ text: userQuery }] },
       taskType: TaskType.RETRIEVAL_QUERY,
     });
+    console.log(
+      "[chat] [4] Gemini embedding done, vector length:",
+      embedRes.embedding.values.length,
+    );
 
+    console.log("[chat] [5] Running match_documents RPC...");
     const { data: documents, error: rpcError } = await supabase.rpc(
       "match_documents",
       {
@@ -114,8 +141,9 @@ export async function POST(request: Request) {
     );
 
     if (rpcError) {
-      console.error("RAG Error:", rpcError.message);
+      console.error("[chat] [5] RAG RPC error:", rpcError.message);
     }
+    console.log("[chat] [5] RAG docs retrieved:", documents?.length ?? 0);
 
     // Przepisanie kontekstu
     const context = (documents || [])
@@ -134,41 +162,18 @@ export async function POST(request: Request) {
       )
       .join("\n\n");
 
-    // 4a. Pobierz aktywne alerty bezpieczeństwa
-    const { data: activeAlerts } = await supabase
-      .from("scam_alerts")
-      .select("title_pl, summary_pl, severity, threat_type")
-      .eq("active", true)
-      .order("detected_at", { ascending: false })
-      .limit(5);
-
-    const alertsContext = (activeAlerts || [])
-      .map(
-        (a: {
-          title_pl: string;
-          summary_pl: string;
-          severity: string;
-          threat_type: string;
-        }) => `- [${a.severity.toUpperCase()}] ${a.title_pl}: ${a.summary_pl}`,
-      )
-      .join("\n");
-
     // 4b. Stworzenie System Promptu
     const systemInstruction = `Jesteś Skarbnikiem — mądrym i wyedukowanym przewodnikiem, który pomaga ludziom bezpiecznie poruszać się w świecie DeFi i Web3. Zostałeś nazwany na cześć legendarnego śląskiego ducha kopalni, który strzeże skarbów.
 
-Profil użytkownika:
-- Poziom: ${userLevel} (1=totalny nowicjusz, 2=ciekawski, 3=doświadczony)
+Oto kogo dzisiaj chronisz (profil Górnika):
+- Imię/Pseudonim: ${username} (zwracaj się do niego po imieniu w cieplejszych momentach)
+- Poziom górnika: ${userLevel} (1=totalny nowicjusz na przodku, 2=ciekawski czeladnik, 3=doświadczony sztygar)
+- Punkty Doświadczenia (XP): ${userTotalXp} XP (możesz go pochwalić za pracowitość jeśli pyta o wiedzę)
+- Dni na Szychcie (Streak): ${userStreak} Dni logowań (doceniaj systematyczność)
 - Język: polski
-- Słabe tematy: ${userWeakTopics}
-- Silne tematy: ${userStrongTopics}
 
 Powiązana wiedza z naszej bazy danych:
 ${context}
-
-Aktywne zagrożenia bezpieczeństwa w tym tygodniu:
-${alertsContext || "Brak nowych zagrożeń."}
-
-Jeśli użytkownik pyta o temat powiązany z powyższymi zagrożeniami, odnieś się do nich konkretnie i wyraźnie pokaż ostrzeżenie bezpieczeństwa.
 
 Zasady:
 - Zawsze odpowiadaj w języku polskim.
@@ -195,8 +200,20 @@ Zasady:
     messages.push({ role: "user", content: userQuery });
 
     // 6. Odpytanie Groka przez Fetch REST API
+    console.log(
+      "[chat] [6] Calling Grok API, messages count:",
+      messages.length,
+    );
     const xaiApiKey = process.env.XAI_API_KEY;
     if (!xaiApiKey) throw new Error("Missing XAI_API_KEY");
+
+    const grokPayload = {
+      model: "grok-4-1-fast-non-reasoning",
+      messages: messages,
+      max_tokens: 300,
+      temperature: 0.5,
+    };
+    console.log("[chat] [6] Grok payload model:", grokPayload.model);
 
     const grokRes = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
@@ -204,24 +221,34 @@ Zasady:
         "Content-Type": "application/json",
         Authorization: `Bearer ${xaiApiKey}`,
       },
-      body: JSON.stringify({
-        model: "grok-4-1-fast-non-reasoning", // Taki model miałeś ustawiony w tescie
-        messages: messages,
-        max_tokens: 300,
-        temperature: 0.5,
-      }),
+      body: JSON.stringify(grokPayload),
     });
+
+    console.log("[chat] [6] Grok HTTP status:", grokRes.status);
 
     if (!grokRes.ok) {
       const errorText = await grokRes.text();
-      console.error("Grok Error Response:", errorText);
-      throw new Error(`Grok API returned status ${grokRes.status}`);
+      console.error("[chat] [6] Grok error body:", errorText);
+      throw new Error(
+        `Grok API returned status ${grokRes.status}: ${errorText}`,
+      );
     }
 
     const chatCompletion = await grokRes.json();
+    console.log(
+      "[chat] [6] Grok raw response:",
+      JSON.stringify(chatCompletion).slice(0, 400),
+    );
     const responseText = chatCompletion.choices?.[0]?.message?.content;
 
     if (!responseText) {
+      console.warn(
+        "[chat] [6] responseText is empty — falling back to canned response",
+      );
+      console.warn(
+        "[chat] [6] Full Grok completion object:",
+        JSON.stringify(chatCompletion),
+      );
       // Fall back to canned — keeps UX seamless.
       return NextResponse.json({ response: cannedChatResponse(language) });
     }
@@ -245,6 +272,7 @@ Zasady:
     }
 
     // Odpowiedź dla ChatWidget.tsx
+    console.log("[chat] [7] Returning response, length:", responseText.length);
     return NextResponse.json({ response: responseText });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
