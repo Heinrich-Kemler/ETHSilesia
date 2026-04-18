@@ -5,25 +5,33 @@
  *
  * Behaviour:
  *   - Finds every `[data-quest-node]` bubble rendered by <ChapterPath>.
- *   - Draws a glowing polyline through the *completed* nodes + the
- *     current (first-unfinished) node — so the path of progress is
- *     literally drawn as the player progresses.
+ *   - Renders one `<motion.path>` per segment between consecutive nodes
+ *     on the trail (completed → completed → current). Stable `key`s
+ *     mean segments that were already drawn DON'T re-animate on every
+ *     render — only a brand-new segment (the one just revealed because
+ *     the user finished a quest) does its pathLength 0→1 draw-in.
  *   - Positions the miner sprite at the current node and keeps him
  *     bouncing with a subtle bob + pickaxe swing while he "waits".
- *   - When a new quest completes, React re-renders with the new
- *     `currentQuestId`; Framer's `layout` prop animates the miner
- *     walking to the next bubble.
+ *   - When the hub mounts after a fresh quest completion, a tiny
+ *     localStorage handshake (see `@/lib/questWalk`) tells us which
+ *     node to *start from* so the user can visibly see the miner step
+ *     off that bubble and walk to the next one, with the new trail
+ *     segment drawing itself behind him.
  *
  * Positioning strategy:
  *   We measure bubbles relative to the parent `.chapter-path` box via
  *   `getBoundingClientRect`. A ResizeObserver re-measures when the
  *   column resizes (mobile rotation, zoom, side nav opens, etc.) so
- *   the polyline stays glued to the bubbles.
+ *   the segments stay glued to the bubbles.
  */
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { QUESTS } from "@/lib/quests";
+import {
+  clearLastCompletedQuest,
+  peekLastCompletedQuest,
+} from "@/lib/questWalk";
 
 type Point = { x: number; y: number };
 
@@ -32,6 +40,11 @@ type Props = {
   completedQuests: string[];
 };
 
+// Delay between "miner appears at walk-from node" and "miner starts
+// walking to current node". Short enough that the user doesn't think
+// the animation is broken, long enough that the arrival registers.
+const WALK_DWELL_MS = 320;
+
 export default function SkarbnikMiner({
   currentQuestId,
   completedQuests,
@@ -39,6 +52,44 @@ export default function SkarbnikMiner({
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [dims, setDims] = useState<{ w: number; h: number }>({ w: 0, h: 0 });
   const [points, setPoints] = useState<Record<string, Point>>({});
+
+  // --- Walk-from handshake -------------------------------------------------
+  //
+  // If the user just completed a quest, they land on `/quest` with that
+  // id stored in localStorage. We read it here and hold the mascot at
+  // that node for `WALK_DWELL_MS`, then release it → React swaps in the
+  // true `currentQuestId`, framer's `layout` spring takes over, the
+  // mascot visibly walks, and the new trail segment draws behind him.
+  //
+  // We use a ref flag so we only ever consume the marker once. The
+  // effect re-runs when props land so it still fires after the parent's
+  // async useSkarbnikUser() fetch populates `completedQuests`.
+  const [walkFromId, setWalkFromId] = useState<string | null>(null);
+  const walkConsumed = useRef(false);
+
+  useEffect(() => {
+    if (walkConsumed.current) return;
+    const stored = peekLastCompletedQuest();
+    if (!stored) return;
+    // Only trigger if the stored id is actually a completed quest AND
+    // isn't already where the miner would stand. Otherwise clean up the
+    // stale marker and move on.
+    if (!completedQuests.includes(stored)) return;
+    if (stored === currentQuestId) {
+      clearLastCompletedQuest();
+      walkConsumed.current = true;
+      return;
+    }
+    walkConsumed.current = true;
+    setWalkFromId(stored);
+    clearLastCompletedQuest();
+    const t = window.setTimeout(() => setWalkFromId(null), WALK_DWELL_MS);
+    return () => window.clearTimeout(t);
+  }, [completedQuests, currentQuestId]);
+
+  // The node the mascot + trail tail should sit on right now. While
+  // `walkFromId` is active, everything past it is effectively hidden.
+  const effectiveCurrentId = walkFromId ?? currentQuestId;
 
   // Recompute node centers. Runs on mount, on every completedQuests
   // change, and whenever the parent resizes.
@@ -85,27 +136,38 @@ export default function SkarbnikMiner({
       ro.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [completedQuests.length, currentQuestId]);
+  }, [completedQuests.length, currentQuestId, walkFromId]);
 
-  // Build the polyline: every completed node in QUESTS order + the
-  // current node at the tail. If we don't have the current point yet
-  // (first layout pass), skip to avoid a jagged half-draw.
+  // Build the trail IDs: completed quests in QUESTS order, truncated at
+  // effectiveCurrentId so we don't draw past the mascot's current
+  // position. Always include effectiveCurrentId as the tail.
   const trailIds: string[] = [];
   for (const q of QUESTS) {
-    if (completedQuests.includes(q.id)) trailIds.push(q.id);
+    if (completedQuests.includes(q.id) || q.id === effectiveCurrentId) {
+      trailIds.push(q.id);
+      if (q.id === effectiveCurrentId) break;
+    }
   }
-  if (!trailIds.includes(currentQuestId)) trailIds.push(currentQuestId);
+  if (!trailIds.includes(effectiveCurrentId)) {
+    // Shouldn't happen, but guard against upstream bugs that would
+    // otherwise leave the trail dangling short of the mascot.
+    trailIds.push(effectiveCurrentId);
+  }
 
-  const trailPoints = trailIds
-    .map((id) => points[id])
-    .filter((p): p is Point => !!p);
+  // Turn the id list into a pair list of consecutive segments. Each gets
+  // a stable key so Framer preserves its draw state across re-renders.
+  const segments: Array<{ key: string; from: Point; to: Point }> = [];
+  for (let i = 0; i < trailIds.length - 1; i++) {
+    const fromId = trailIds[i];
+    const toId = trailIds[i + 1];
+    const from = points[fromId];
+    const to = points[toId];
+    if (from && to) {
+      segments.push({ key: `${fromId}->${toId}`, from, to });
+    }
+  }
 
-  const minerPoint = points[currentQuestId] ?? null;
-
-  // SVG path string — a smooth curve feels more like "walking" than
-  // straight line segments, which also hides any sub-pixel jitter in
-  // the DOM measurements.
-  const pathD = buildSmoothPath(trailPoints);
+  const minerPoint = points[effectiveCurrentId] ?? null;
 
   return (
     <div
@@ -130,54 +192,48 @@ export default function SkarbnikMiner({
               <feGaussianBlur stdDeviation="3" />
             </filter>
           </defs>
-          {pathD && (
-            <>
-              {/*
-                `key` is tied to the trail length so the path remounts
-                (and pathLength re-animates 0→1) every time a new node
-                is appended — without it, framer keeps pathLength at 1
-                forever after the first mount and the drawing effect
-                only ever fires once. `delay` lets the miner take his
-                first step before the line catches up, matching the
-                "only the person moves, line is drawn after" spec.
-              */}
-              <motion.path
-                key={`glow-${trailIds.length}`}
-                d={pathD}
-                stroke="url(#trailGradient)"
-                strokeWidth={6}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-                opacity={0.35}
-                filter="url(#trailGlow)"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.85, ease: "easeOut", delay: 0.35 }}
-              />
-              {/* Solid trail */}
-              <motion.path
-                key={`trail-${trailIds.length}`}
-                d={pathD}
-                stroke="url(#trailGradient)"
-                strokeWidth={3}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.9, ease: "easeOut", delay: 0.35 }}
-              />
-            </>
-          )}
+
+          {segments.map((seg) => {
+            const d = buildCurve(seg.from, seg.to);
+            return (
+              <g key={seg.key}>
+                {/* Outer glow */}
+                <motion.path
+                  d={d}
+                  stroke="url(#trailGradient)"
+                  strokeWidth={6}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                  opacity={0.3}
+                  filter="url(#trailGlow)"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.85, ease: "easeOut", delay: 0.35 }}
+                />
+                {/* Solid trail */}
+                <motion.path
+                  d={d}
+                  stroke="url(#trailGradient)"
+                  strokeWidth={3}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.9, ease: "easeOut", delay: 0.35 }}
+                />
+              </g>
+            );
+          })}
         </svg>
       )}
 
       {minerPoint && (
         <motion.div
           // `layout` makes the miner walk to the new bubble whenever
-          // `currentQuestId` changes. We place him slightly above and
-          // to the side so he sits beside the bubble, not on top of it.
+          // `effectiveCurrentId` changes. We place him slightly above
+          // the bubble so he sits beside it, not on top.
           //
           // Spring tuned for a smoother glide: higher damping kills the
           // bounce the old `damping: 18` had, and slightly lower
@@ -201,28 +257,21 @@ export default function SkarbnikMiner({
 }
 
 /* --------------------------------------------------------------- */
-/* Smooth-path helper: Catmull-Rom-ish cubic bezier between points. */
+/* Single-segment cubic — gives each step a gentle S-curve so even   */
+/* straight vertical segments read like a "walking" arc, which hides */
+/* sub-pixel jitter from the DOM measurements.                       */
 /* --------------------------------------------------------------- */
-function buildSmoothPath(points: Point[]): string {
-  if (points.length === 0) return "";
-  if (points.length === 1) {
-    const p = points[0];
-    return `M ${p.x} ${p.y}`;
-  }
-  let d = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 0; i < points.length - 1; i++) {
-    const p0 = points[i - 1] ?? points[i];
-    const p1 = points[i];
-    const p2 = points[i + 1];
-    const p3 = points[i + 2] ?? p2;
-    // Tension 0.2 gives a gentle S-curve without overshooting.
-    const cp1x = p1.x + (p2.x - p0.x) / 6;
-    const cp1y = p1.y + (p2.y - p0.y) / 6;
-    const cp2x = p2.x - (p3.x - p1.x) / 6;
-    const cp2y = p2.y - (p3.y - p1.y) / 6;
-    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
-  }
-  return d;
+function buildCurve(from: Point, to: Point): string {
+  // Control points at 1/3 and 2/3 of the vertical distance, with a
+  // bit of horizontal nudging proportional to the delta — enough to
+  // bend but not enough to overshoot the bubbles on the next row.
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const cp1x = from.x + dx * 0.25;
+  const cp1y = from.y + dy * 0.5;
+  const cp2x = to.x - dx * 0.25;
+  const cp2y = to.y - dy * 0.5;
+  return `M ${from.x} ${from.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${to.x} ${to.y}`;
 }
 
 /* --------------------------------------------------------------- */
@@ -253,8 +302,11 @@ function MinerSprite() {
       >
         <defs>
           <linearGradient id="hatGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#F5CE47" />
-            <stop offset="100%" stopColor="#C9A84C" />
+            {/* Helmet is warm metal — reads from --flame so it stays
+                amber on light mode where --gold is PKO navy. A navy
+                helmet would ruin the miner silhouette. */}
+            <stop offset="0%" stopColor="var(--flame-soft)" />
+            <stop offset="100%" stopColor="var(--flame)" />
           </linearGradient>
           <linearGradient id="shirtGrad" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#2a3553" />
@@ -265,8 +317,11 @@ function MinerSprite() {
             <stop offset="100%" stopColor="#FFF8E1" stopOpacity="0" />
           </linearGradient>
           <radialGradient id="lampFace" cx="50%" cy="50%" r="50%">
+            {/* Lamp face: pale-hot core on every theme; outer ring
+                reads --flame (warm amber in both themes). The lamp is
+                literally firelight, so it can't go navy in light mode. */}
             <stop offset="0%" stopColor="#FFF8E1" />
-            <stop offset="80%" stopColor="#C9A84C" />
+            <stop offset="80%" stopColor="var(--flame)" />
           </radialGradient>
         </defs>
 
@@ -295,13 +350,16 @@ function MinerSprite() {
           height="28"
           rx="5"
           fill="url(#shirtGrad)"
-          stroke="#38BDF8"
+          stroke="var(--cyan)"
           strokeOpacity="0.25"
           strokeWidth="0.8"
         />
         {/* Shirt stripe — the tricolour nod to Silesian miners */}
-        <rect x="17" y="42" width="30" height="2.5" fill="#38BDF8" opacity="0.35" />
-        <rect x="17" y="46" width="30" height="2" fill="#C9A84C" opacity="0.35" />
+        <rect x="17" y="42" width="30" height="2.5" fill="var(--cyan)" opacity="0.35" />
+        {/* Second stripe uses --flame so the Silesian tricolour still
+            contrasts with the cyan; --gold is navy in light mode and
+            would visually merge with the first stripe. */}
+        <rect x="17" y="46" width="30" height="2" fill="var(--flame)" opacity="0.35" />
 
         {/* Arms */}
         <rect x="10" y="36" width="8" height="18" rx="2.5" fill="#1f2438" />
@@ -365,7 +423,12 @@ function MinerSprite() {
           d="M 20 20 Q 22 10 32 10 Q 42 10 44 20 Z"
           fill="url(#hatGrad)"
         />
-        <rect x="19" y="19" width="26" height="3" rx="1" fill="#9a7d30" />
+        {/* Hat band — split Polish-flag white/red. Subtle nod to the
+            national palette + PKO brand accent without being a literal
+            flag plastered on the hat. Kept inside the brim so it reads
+            as a riveted band at a glance. */}
+        <rect x="19" y="19" width="26" height="1.5" fill="#F7F1E1" />
+        <rect x="19" y="20.5" width="26" height="1.5" fill="var(--accent-red)" />
         {/* Head-lamp */}
         <circle cx="24" cy="18" r="3" fill="url(#lampFace)" />
         <motion.circle

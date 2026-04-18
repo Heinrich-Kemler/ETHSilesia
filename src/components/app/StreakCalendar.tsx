@@ -120,11 +120,20 @@ function DayBubble({ cell, index }: { cell: DayCell; index: number }) {
       <div
         className={`relative w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center border-2 ${
           active
-            ? "bg-gold-themed border-gold-themed shadow-[0_2px_8px_-2px_rgba(217,162,32,0.45)]"
+            ? "bg-gold-themed border-gold-themed"
             : isToday
             ? "bg-elevated-themed border-gold-themed"
             : "bg-elevated-themed border-themed"
         }`}
+        // Drop-shadow uses --gold-glow so it tracks whichever copper
+        // shade the theme resolves to — the prior hard-coded
+        // rgba(217,162,32,0.45) pinned the halo to the dark-mode
+        // mustard gold and bled into the cream background.
+        style={
+          active
+            ? { boxShadow: "0 2px 8px -2px var(--gold-glow)" }
+            : undefined
+        }
         aria-label={cell.dateISO}
       >
         {/* Date number is ALWAYS rendered — hiding it (like we used to)
