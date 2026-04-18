@@ -231,6 +231,18 @@ export const translations = {
     pl: "Odblokuj na poziomie {level}",
     en: "Unlocks at level {level}",
   },
+  questCompletePrevious: {
+    pl: "Ukończ poprzedni quest, aby odblokować",
+    en: "Finish the previous quest to unlock",
+  },
+  questLockedToastTitle: {
+    pl: "Quest zablokowany",
+    en: "Quest locked",
+  },
+  questLockedToastBody: {
+    pl: "Najpierw ukończ: {prev}",
+    en: "Finish this first: {prev}",
+  },
   leaderboardPreview: { pl: "Top 3 graczy", en: "Top 3 players" },
   seeFullLeaderboard: { pl: "Zobacz pełny ranking", en: "See full leaderboard" },
   rank: { pl: "Pozycja", en: "Rank" },
@@ -252,6 +264,27 @@ export const translations = {
   quizLevelUpNew: { pl: "Jesteś teraz", en: "You are now" },
   quizBadgeEarned: { pl: "Zdobyto odznakę", en: "Badge earned" },
   quizBackHub: { pl: "Powrót do questów", en: "Back to Quest Hub" },
+  // Retry flow — when the user didn't get every question right. We
+  // deliberately don't mark the quest complete in this branch so the
+  // user can replay for full XP. "Replay for XP after finishing" is
+  // the explicit UX rule: no partial credit, no silent lockout.
+  quizFailedTitle: { pl: "Prawie! Jeszcze raz", en: "Close! Try again" },
+  quizFailedBody: {
+    pl: "Musisz odpowiedzieć poprawnie na wszystkie pytania, aby zdobyć XP. Przejrzyj wyjaśnienia i spróbuj ponownie.",
+    en: "You need every answer correct to earn XP. Review the explanations and give it another go.",
+  },
+  quizTryAgain: { pl: "Spróbuj ponownie", en: "Try again" },
+  quizPerfectRequired: {
+    pl: "Wymagane 100% poprawnych",
+    en: "100% correct required",
+  },
+  // Trail banner — shown after the final quest to let users know the
+  // content library is still growing and they're not stuck at the end.
+  trailEnd: { pl: "Koniec szlaku", en: "End of trail" },
+  trailEndHint: {
+    pl: "Wkrótce więcej questów",
+    en: "More quests coming soon",
+  },
   badge1: { pl: "Początkujący Skarbnik", en: "First Steps" },
   badge2: { pl: "Srebrny Skarbnik", en: "Silver Skarbnik" },
   badge3: { pl: "Złoty Skarbnik", en: "Gold Skarbnik" },

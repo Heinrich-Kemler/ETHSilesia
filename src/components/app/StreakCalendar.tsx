@@ -104,6 +104,11 @@ export default function StreakCalendar({ lang, userId, days = 7 }: Props) {
 
 function DayBubble({ cell, index }: { cell: DayCell; index: number }) {
   const { label, active, isToday } = cell;
+  // Parse the local YYYY-MM-DD directly to avoid the `new Date("YYYY-MM-DD")`
+  // UTC-midnight pitfall (where a user in a behind-UTC timezone could see
+  // the previous day's number). `cell.dateISO` is produced from local
+  // `Date.getDate()` calls already, so we just slice the day component.
+  const dayNum = Number(cell.dateISO.slice(8, 10));
 
   return (
     <motion.div
@@ -115,29 +120,40 @@ function DayBubble({ cell, index }: { cell: DayCell; index: number }) {
       <div
         className={`relative w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center border-2 ${
           active
-            ? "bg-gold-themed/90 border-gold-themed"
+            ? "bg-gold-themed border-gold-themed shadow-[0_2px_8px_-2px_rgba(217,162,32,0.45)]"
             : isToday
-            ? "bg-elevated-themed border-gold-themed/50"
+            ? "bg-elevated-themed border-gold-themed"
             : "bg-elevated-themed border-themed"
         }`}
         aria-label={cell.dateISO}
       >
-        {active ? (
-          <Check className="w-4 h-4 text-white" strokeWidth={3} />
-        ) : (
-          <span
-            className={`text-[10px] font-mono ${
-              isToday ? "text-gold-themed" : "text-muted-themed/60"
-            }`}
-          >
-            {new Date(cell.dateISO).getDate()}
+        {/* Date number is ALWAYS rendered — hiding it (like we used to)
+            made today's empty-bubble look broken when the user hadn't
+            completed a quest yet. Active days get a gold-filled chip
+            with white numerals + a tiny check corner-mark; today (not
+            yet active) uses a gold ring + gold numerals; idle days are
+            muted. */}
+        <span
+          className={`text-[10px] font-mono font-semibold leading-none ${
+            active
+              ? "text-white"
+              : isToday
+              ? "text-gold-themed"
+              : "text-muted-themed"
+          }`}
+        >
+          {dayNum}
+        </span>
+        {active && (
+          <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-green border border-card-themed flex items-center justify-center">
+            <Check className="w-2 h-2 text-white" strokeWidth={4} />
           </span>
         )}
         {isToday && !active && (
           <motion.span
             animate={{ scale: [1, 1.25, 1], opacity: [0.6, 0.2, 0.6] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="absolute inset-0 rounded-full border-2 border-gold-themed"
+            className="absolute inset-0 rounded-full border-2 border-gold-themed pointer-events-none"
           />
         )}
       </div>

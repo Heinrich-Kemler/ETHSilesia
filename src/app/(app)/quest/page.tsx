@@ -26,10 +26,15 @@ import {
 } from "@/lib/quests";
 
 type LeaderRow = {
-  user_id: string;
+  player_id: string;
   username: string | null;
   total_xp: number;
   level: number;
+};
+
+type LeaderResponse = {
+  topUsers?: LeaderRow[];
+  currentUser?: LeaderRow | null;
 };
 
 export default function QuestHubPage() {
@@ -45,6 +50,7 @@ export default function QuestHubPage() {
   } = useSkarbnikUser();
   const [chatOpen, setChatOpen] = useState(false);
   const [top3, setTop3] = useState<LeaderRow[]>([]);
+  const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null);
 
   // Auth redirect — kick unauthenticated users back to landing (demo users pass through).
   useEffect(() => {
@@ -55,24 +61,42 @@ export default function QuestHubPage() {
     }
   }, [ready, status, demo, router]);
 
-  // Leaderboard top-3 preview
+  // Leaderboard top-3 preview. If the API fails (e.g. the Supabase
+  // `leaderboard` view hasn't been migrated to include `player_id`
+  // yet — see supabase/migrations/20260418134500_*.sql), we still
+  // fall back to a one-row preview of the current user so the
+  // section doesn't look broken. All failures are logged so the
+  // root cause is visible in devtools instead of silently swallowed.
   useEffect(() => {
     let cancelled = false;
     async function loadBoard() {
       try {
-        const res = await fetch("/api/leaderboard");
-        if (!res.ok) return;
-        const data = (await res.json()) as { topUsers: LeaderRow[] };
-        if (!cancelled) setTop3((data.topUsers ?? []).slice(0, 3));
-      } catch {
-        /* soft-fail — leaderboard is optional */
+        const url = !demo && user?.id
+          ? `/api/leaderboard?userId=${encodeURIComponent(user.id)}`
+          : "/api/leaderboard";
+        const res = await fetch(url, { cache: "no-store", credentials: "include" });
+        if (!res.ok) {
+          console.warn(
+            "[leaderboard] fetch failed",
+            res.status,
+            await res.text().catch(() => "")
+          );
+          return;
+        }
+        const data = (await res.json()) as LeaderResponse;
+        if (!cancelled) {
+          setTop3((data.topUsers ?? []).slice(0, 3));
+          setCurrentPlayerId(data.currentUser?.player_id ?? null);
+        }
+      } catch (err) {
+        console.warn("[leaderboard] network error", err);
       }
     }
     void loadBoard();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [demo, user?.id]);
 
   const loading = !user && (status === "idle" || status === "loading");
 
@@ -149,8 +173,19 @@ export default function QuestHubPage() {
               </div>
               <LeaderboardPreview
                 rows={top3}
-                currentUserId={user?.id ?? null}
+                currentUserPlayerId={currentPlayerId}
                 lang={lang}
+                fallbackUser={
+                  user
+                    ? {
+                        username:
+                          (user as { username?: string | null }).username ??
+                          null,
+                        total_xp: totalXp,
+                        level,
+                      }
+                    : null
+                }
               />
             </div>
           </>
@@ -290,14 +325,39 @@ function TopBar({
 
 function LeaderboardPreview({
   rows,
-  currentUserId,
+  currentUserPlayerId,
   lang,
+  fallbackUser,
 }: {
   rows: LeaderRow[];
-  currentUserId: string | null;
+  currentUserPlayerId: string | null;
   lang: "pl" | "en";
+  fallbackUser:
+    | { username: string | null; total_xp: number; level: number }
+    | null;
 }) {
-  if (rows.length === 0) {
+  // If the server returned no rows but we have an authenticated user
+  // with any XP, synthesise a single "you're #1" row so the card is
+  // never stuck on the bare empty state (which currently fires when
+  // the Supabase leaderboard view is missing its `player_id` column
+  // — see supabase/migrations/20260418134500_*.sql). The synthetic
+  // row uses a sentinel player_id so the "YOU" badge still matches.
+  let effectiveRows = rows;
+  let effectivePlayerId = currentUserPlayerId;
+  if (effectiveRows.length === 0 && fallbackUser && fallbackUser.total_xp > 0) {
+    const syntheticId = "__me__";
+    effectiveRows = [
+      {
+        player_id: syntheticId,
+        username: fallbackUser.username ?? (lang === "pl" ? "Ty" : "You"),
+        total_xp: fallbackUser.total_xp,
+        level: fallbackUser.level,
+      },
+    ];
+    effectivePlayerId = syntheticId;
+  }
+
+  if (effectiveRows.length === 0) {
     return (
       <div className="bg-card-themed border border-themed rounded-2xl p-8 text-center text-muted-themed text-sm">
         {t("leaderboardEmpty", lang)}
@@ -312,13 +372,13 @@ function LeaderboardPreview({
         <span>{t("player", lang)}</span>
         <span>{t("questXP", lang)}</span>
       </div>
-      {rows.map((r, i) => {
-        const isMe = r.user_id === currentUserId;
+      {effectiveRows.map((r, i) => {
+        const isMe = r.player_id === effectivePlayerId;
         return (
           <div
-            key={r.user_id}
+            key={r.player_id}
             className={`grid grid-cols-[auto_1fr_auto] gap-4 px-5 py-4 items-center ${
-              i < rows.length - 1 ? "border-b border-themed" : ""
+              i < effectiveRows.length - 1 ? "border-b border-themed" : ""
             } ${isMe ? "bg-gold-themed/5" : ""}`}
           >
             <div className="flex items-center gap-2">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Check,
@@ -11,18 +12,36 @@ import {
   Crown,
   Star,
 } from "lucide-react";
-import { QUESTS, questTitle, levelNameKey, type Quest } from "@/lib/quests";
+import {
+  QUESTS,
+  questTitle,
+  levelNameKey,
+  type Quest,
+} from "@/lib/quests";
 import { t, type Lang } from "@/lib/i18n";
+import { useToast } from "@/components/ui/Toast";
+import SkarbnikMiner from "./SkarbnikMiner";
 
 /**
  * Duolingo-style vertical chapter path. Replaces the flat quest grid
  * with a zig-zagging trail: Level 1 → Level 2 → Level 3. Each quest is
  * a clickable bubble + side card; the vertical spine colour-codes the
  * journey behind the nodes.
+ *
+ * Unlock model (new):
+ *   - The first quest is always open.
+ *   - Every other quest unlocks when its predecessor in `QUESTS` is
+ *     complete. Levels are cosmetic — they just colour the spine.
+ *
+ * Old `userLevel`-based gating was a trap: finishing all of Level 1
+ * (350 XP) doesn't reach the Level 2 threshold (500 XP), so the level
+ * cap would permanently hide L2 quests unless the user earned XP from
+ * elsewhere. Kept the prop for backwards compatibility (unused).
  */
 type Props = {
   lang: Lang;
-  userLevel: 1 | 2 | 3 | 4;
+  /** @deprecated unlock is now sequential; kept so callers don't break. */
+  userLevel?: 1 | 2 | 3 | 4;
   completedQuests: string[];
 };
 
@@ -30,16 +49,54 @@ type NodeState = "locked" | "available" | "completed";
 
 export default function ChapterPath({
   lang,
-  userLevel,
   completedQuests,
 }: Props) {
-  const cap = userLevel === 4 ? 3 : userLevel;
+  const toast = useToast();
   const demoAppend =
     typeof window !== "undefined" &&
     window.location.search.includes("demo=true")
       ? "?demo=true"
       : "";
   const levels: Array<1 | 2 | 3> = [1, 2, 3];
+
+  // Build per-quest state once per completedQuests change — used both
+  // for rendering the nodes and for positioning the walking mascot.
+  const stateByQuest = useMemo<Record<string, NodeState>>(() => {
+    const out: Record<string, NodeState> = {};
+    QUESTS.forEach((q, idx) => {
+      if (completedQuests.includes(q.id)) {
+        out[q.id] = "completed";
+        return;
+      }
+      if (idx === 0) {
+        out[q.id] = "available";
+        return;
+      }
+      const prev = QUESTS[idx - 1];
+      out[q.id] = completedQuests.includes(prev.id) ? "available" : "locked";
+    });
+    return out;
+  }, [completedQuests]);
+
+  // The "current" quest is the first non-completed node — that's where
+  // the miner mascot will stand.
+  const currentQuestId = useMemo(() => {
+    const next = QUESTS.find((q) => !completedQuests.includes(q.id));
+    return next?.id ?? QUESTS[QUESTS.length - 1].id;
+  }, [completedQuests]);
+
+  // Called when someone taps a locked node. Clarifies why.
+  function onLockedTap(q: Quest) {
+    const idx = QUESTS.findIndex((entry) => entry.id === q.id);
+    const prev = idx > 0 ? QUESTS[idx - 1] : null;
+    toast({
+      variant: "info",
+      message: t("questLockedToastTitle", lang),
+      sub: prev
+        ? t("questLockedToastBody", lang, { prev: questTitle(prev, lang) })
+        : t("questCompletePrevious", lang),
+    });
+  }
 
   return (
     <div className="relative">
@@ -53,9 +110,23 @@ export default function ChapterPath({
         }}
       />
 
-      {levels.map((lvl, lvlIdx) => {
+      {/*
+        Walking miner — overlays the entire path and travels from the
+        first quest to the current (first-unfinished) node, drawing a
+        glowing trail through every completed node on the way.
+      */}
+      <SkarbnikMiner
+        currentQuestId={currentQuestId}
+        completedQuests={completedQuests}
+      />
+
+      {levels.map((lvl) => {
         const quests = QUESTS.filter((q) => q.level === lvl);
-        const locked = lvl > cap;
+        // The level banner is "locked" only in the cosmetic sense —
+        // if no quest at this level is unlocked yet, dim the header.
+        const anyUnlocked = quests.some(
+          (q) => stateByQuest[q.id] !== "locked"
+        );
         const LevelIcon =
           lvl === 1 ? Sparkles : lvl === 2 ? Shield : Crown;
         const levelColor =
@@ -96,26 +167,21 @@ export default function ChapterPath({
                     {t(levelNameKey(lvl), lang)}
                   </p>
                 </div>
-                {locked && (
+                {!anyUnlocked && (
                   <Lock className="w-4 h-4 text-muted-themed ml-1" />
                 )}
               </div>
             </motion.div>
 
             {/* Quest nodes within this level */}
-            <div
-              className={`space-y-5 sm:space-y-6 ${
-                locked ? "opacity-40 pointer-events-none" : ""
-              }`}
-            >
+            <div className="space-y-5 sm:space-y-6">
               {quests.map((q, idx) => {
+                // Zig-zag continues across level boundaries so the
+                // spine still feels like one uninterrupted trail.
+                const globalIdx = QUESTS.findIndex((x) => x.id === q.id);
                 const side: "left" | "right" =
-                  (lvlIdx * 10 + idx) % 2 === 0 ? "left" : "right";
-                const state: NodeState = locked
-                  ? "locked"
-                  : completedQuests.includes(q.id)
-                  ? "completed"
-                  : "available";
+                  globalIdx % 2 === 0 ? "left" : "right";
+                const state = stateByQuest[q.id] ?? "locked";
                 return (
                   <ChapterNode
                     key={q.id}
@@ -125,6 +191,7 @@ export default function ChapterPath({
                     lang={lang}
                     demoAppend={demoAppend}
                     index={idx}
+                    onLockedTap={onLockedTap}
                   />
                 );
               })}
@@ -133,19 +200,26 @@ export default function ChapterPath({
         );
       })}
 
-      {/* Final flag — reached the end of the path */}
+      {/* Final flag — reached the end of the path. The "more quests
+          coming soon" subtitle signals that the content library is
+          still growing, so power-users who finish every quest don't
+          think the app is broken or abandoned. Kept intentionally
+          small and muted so it doesn't compete with the crown. */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
-        className="relative flex justify-center pt-10 z-20"
+        className="relative flex flex-col items-center pt-10 z-20"
       >
         <div className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl border border-gold-themed/40 bg-card-themed shadow-card">
           <Crown className="w-5 h-5 text-gold-themed" />
           <p className="font-mono text-xs uppercase tracking-widest text-gold-themed">
-            {lang === "pl" ? "Koniec szlaku" : "End of trail"}
+            {t("trailEnd", lang)}
           </p>
         </div>
+        <p className="mt-3 text-xs text-muted-themed font-mono tracking-wider">
+          {t("trailEndHint", lang)}
+        </p>
       </motion.div>
     </div>
   );
@@ -161,6 +235,7 @@ function ChapterNode({
   lang,
   demoAppend,
   index,
+  onLockedTap,
 }: {
   quest: Quest;
   side: "left" | "right";
@@ -168,6 +243,7 @@ function ChapterNode({
   lang: Lang;
   demoAppend: string;
   index: number;
+  onLockedTap: (q: Quest) => void;
 }) {
   const Icon =
     state === "locked" ? Lock : state === "completed" ? Check : Play;
@@ -211,8 +287,9 @@ function ChapterNode({
         side === "right" ? "flex-row-reverse" : ""
       }`}
     >
-      {/* Bubble */}
+      {/* Bubble — `data-quest-node` lets <SkarbnikMiner> position itself */}
       <div
+        data-quest-node={quest.id}
         className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center ${bubbleClass} flex-shrink-0`}
       >
         <Icon className={`w-7 h-7 sm:w-8 sm:h-8 ${iconColor}`} />
@@ -223,6 +300,7 @@ function ChapterNode({
             className="absolute inset-0 rounded-full border-2 border-gold-themed"
           />
         )}
+        {state === "completed" && <CompletionFlag questId={quest.id} />}
       </div>
 
       {/* Side card */}
@@ -261,6 +339,11 @@ function ChapterNode({
             +{quest.xp} XP
           </span>
         </div>
+        {state === "locked" && (
+          <p className="mt-2 text-[10px] font-mono text-muted-themed">
+            {t("questCompletePrevious", lang)}
+          </p>
+        )}
       </div>
     </motion.div>
   );
@@ -270,9 +353,18 @@ function ChapterNode({
   } pr-2 sm:pr-4 z-10`;
 
   if (state === "locked") {
+    // Locked bubbles are still tappable so the user gets feedback
+    // instead of a dead click — the toast explains what to finish.
     return (
       <div className={rowClass}>
-        <div className="cursor-not-allowed">{innerContent}</div>
+        <button
+          type="button"
+          onClick={() => onLockedTap(quest)}
+          className="cursor-not-allowed block bg-transparent border-0 p-0 text-left"
+          aria-disabled
+        >
+          {innerContent}
+        </button>
       </div>
     );
   }
@@ -286,5 +378,53 @@ function ChapterNode({
         {innerContent}
       </Link>
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Completion flag — tiny pennant that plants itself on finished      */
+/* quest bubbles. Pops in with a spring, then ripples in the wind via */
+/* a continuous skewY so it reads as "alive" at a glance.             */
+/* ------------------------------------------------------------------ */
+function CompletionFlag({ questId }: { questId: string }) {
+  // Per-instance gradient id keeps the SVG defs isolated when the
+  // browser inlines multiple flags on the same page — otherwise every
+  // flag would reference the last-parsed <linearGradient>.
+  const gradId = `flagGrad-${questId}`;
+  return (
+    <motion.div
+      initial={{ scale: 0, y: 6, opacity: 0 }}
+      animate={{ scale: 1, y: 0, opacity: 1 }}
+      transition={{ type: "spring", stiffness: 220, damping: 14, delay: 0.1 }}
+      className="absolute -top-6 -right-1 sm:-top-7 sm:-right-1 pointer-events-none"
+      aria-hidden
+    >
+      <svg width="24" height="30" viewBox="0 0 24 30" fill="none">
+        <defs>
+          <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#F5CE47" />
+            <stop offset="60%" stopColor="#10b981" />
+            <stop offset="100%" stopColor="var(--cyan)" />
+          </linearGradient>
+        </defs>
+        {/* Wooden pole */}
+        <rect x="4" y="3" width="2" height="25" rx="1" fill="#6b4423" />
+        {/* Brass finial on top */}
+        <circle cx="5" cy="3" r="1.6" fill="#d9a441" />
+        {/* Pennant with fishtail cut-out, waves in "wind" */}
+        <motion.path
+          d="M 6 4 L 21 6 L 18 10 L 21 14 L 6 12 Z"
+          fill={`url(#${gradId})`}
+          stroke="#0f172a"
+          strokeOpacity="0.25"
+          strokeWidth="0.6"
+          style={{ originX: "5px", originY: "8px", transformBox: "fill-box" }}
+          animate={{ skewY: [-3, 4, -3] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        />
+        {/* Subtle highlight */}
+        <ellipse cx="11" cy="7" rx="2.5" ry="0.8" fill="#fff" opacity="0.35" />
+      </svg>
+    </motion.div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, Send, X, Sparkles } from "lucide-react";
+import { Send, X, Sparkles } from "lucide-react";
 import { t } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
 
@@ -104,23 +104,25 @@ export default function ChatPanel({
   return (
     <AnimatePresence>
       {open && (
-        <>
-          {/* backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[90]"
-          />
-          {/* panel */}
-          <motion.div
-            initial={{ x: 400, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 400, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed top-0 right-0 bottom-0 w-full sm:w-[420px] bg-card-themed border-l border-themed z-[91] flex flex-col shadow-2xl"
-          >
+        /* Floating popover anchored above the FAB.
+         *
+         * No backdrop, no blur, no full-height rail — the user asked
+         * that the rest of the page stay readable while the chat is
+         * open (useful mid-quest or while browsing the hub). The
+         * window scales in from the bottom-right (origin matches the
+         * FAB it springs out of) and sits just above where the FAB
+         * lives so the two feel connected. Clicking outside doesn't
+         * close it — dismissal is explicitly via the X or the FAB,
+         * which is what users expect from a sticky chat widget.
+         */
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.94, y: 12 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+          style={{ transformOrigin: "bottom right" }}
+          className="fixed bottom-24 right-4 sm:right-6 w-[calc(100vw-2rem)] sm:w-[400px] h-[min(640px,calc(100vh-8rem))] bg-card-themed border border-themed rounded-2xl z-[91] flex flex-col shadow-2xl overflow-hidden"
+        >
             {/* header */}
             <div className="px-5 py-4 border-b border-themed flex items-center gap-3 flex-shrink-0">
               <div className="w-10 h-10 rounded-full bg-gold-themed/20 flex items-center justify-center">
@@ -236,22 +238,87 @@ export default function ChatPanel({
                 <Send className="w-4 h-4" />
               </button>
             </form>
-          </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );
 }
 
-/** Floating FAB that opens the ChatPanel. */
+/** Floating FAB that opens the ChatPanel.
+ *
+ * Design intent: a "coin" — a gradient brand rim with a high-contrast
+ * white inner face, and a bold Skarbnik chest on top of that face.
+ * The earlier version put a thin white chest directly on the
+ * gradient, which disappeared on the PKO theme (navy→green) because
+ * a 22px outline with ~1px strokes just can't compete with a dark
+ * gradient. The coin design solves that in three ways:
+ *   1. The logo sits on a solid card-colour disc, so contrast is
+ *      guaranteed regardless of how `--gold` / `--cyan` are themed.
+ *   2. The logo scales up to ~55% of the button and the stroke is
+ *      thickened so it reads at a glance.
+ *   3. The gradient survives as a 3px rim, keeping the brand colour
+ *      signal without drowning the mark.
+ * Size and positioning match the original compact FAB so the page
+ * content behind it stays fully readable.
+ */
 export function ChatFab({ onClick, lang }: { onClick: () => void; lang: Lang }) {
   return (
-    <button
+    <motion.button
       onClick={onClick}
       aria-label={t("chatTitle", lang)}
-      className="fixed bottom-6 right-6 z-[80] w-14 h-14 rounded-full gradient-gold-cyan-themed text-white flex items-center justify-center shadow-2xl hover:scale-105 transition-transform"
+      title={t("chatTitle", lang)}
+      initial={{ opacity: 0, scale: 0.7, y: 16 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 240, damping: 20, delay: 0.2 }}
+      whileHover={{ scale: 1.06 }}
+      whileTap={{ scale: 0.94 }}
+      className="fixed bottom-6 right-6 z-[80] w-14 h-14 rounded-full gradient-gold-cyan-themed p-[3px] shadow-[0_10px_28px_-6px_rgba(0,0,0,0.35)]"
     >
-      <MessageCircle className="w-6 h-6" />
-    </button>
+      {/* Inner card-coloured disc — the "face" of the coin. Solid
+          fill guarantees the logo reads on both themes. */}
+      <div className="relative w-full h-full rounded-full bg-card-themed flex items-center justify-center text-gold-themed">
+        {/* Skarbnik chest — chunkier strokes + wider rectangles than
+            the AppNav version so the silhouette survives at 30px.
+            The inner "gem" uses the accent (--cyan) for a clean
+            two-tone brand hit (cyan in default theme, green in PKO). */}
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 120 120"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M40 40 C40 20, 80 20, 80 40"
+            stroke="currentColor"
+            strokeWidth="10"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <rect
+            x="32"
+            y="38"
+            width="56"
+            height="12"
+            rx="3"
+            fill="currentColor"
+          />
+          <rect
+            x="34"
+            y="50"
+            width="52"
+            height="42"
+            rx="4"
+            fill="currentColor"
+            opacity="0.9"
+          />
+          <circle cx="60" cy="70" r="7" fill="var(--cyan)" />
+        </svg>
+      </div>
+      {/* Online pip — sits on the gradient rim, cut out by a ring
+          the same colour as the inner face so the dot reads as a
+          neat badge rather than a sticker. */}
+      <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-green ring-2 ring-card-themed" />
+    </motion.button>
   );
 }
