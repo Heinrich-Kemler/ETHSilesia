@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/server/supabaseAdmin";
 
 export const runtime = "nodejs";
@@ -18,6 +18,8 @@ type ScamAlert = {
   protection_tips_pl: string | null;
   protection_tips_en: string | null;
   source_url: string | null;
+  category: "web2" | "web3" | "global" | null;
+  source_name: string | null;
 };
 
 // Severity ordering for sorting
@@ -28,17 +30,25 @@ const severityOrder: Record<string, number> = {
   low: 3,
 };
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const supabase = getSupabaseAdminClient();
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get("category"); // "web2" | "web3" | null (all)
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("scam_alerts")
       .select(
-        "id, title_pl, title_en, summary_pl, summary_en, threat_type, severity, amount_lost_usd, detected_at, analogy_pl, analogy_en, protection_tips_pl, protection_tips_en, source_url",
+        "id, title_pl, title_en, summary_pl, summary_en, threat_type, severity, amount_lost_usd, detected_at, analogy_pl, analogy_en, protection_tips_pl, protection_tips_en, source_url, category, source_name",
       )
       .eq("active", true)
       .order("detected_at", { ascending: false });
+
+    if (category === "web2" || category === "web3" || category === "global") {
+      query = query.eq("category", category);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Alerts fetch error:", error.message);

@@ -10,7 +10,7 @@ export function getOpenAIClient(): OpenAI {
     throw new Error("Missing XAI_API_KEY (or OPENAI_API_KEY fallback).");
   }
 
-  const model = process.env.OPENAI_MODEL || "grok-4-1-fast-non-reasoning";
+  const model = process.env.OPENAI_MODEL || "grok-4-1-fast-reasoning";
   const baseURL =
     process.env.OPENAI_BASE_URL ||
     (model.startsWith("grok-") ? "https://api.x.ai/v1" : undefined);
@@ -19,7 +19,7 @@ export function getOpenAIClient(): OpenAI {
 }
 
 export function getOpenAIModel(): string {
-  return process.env.OPENAI_MODEL || "grok-4-1-fast-non-reasoning";
+  return process.env.OPENAI_MODEL || "grok-4-1-fast-reasoning";
 }
 
 export function normalizeLanguage(language?: string): "pl" | "en" {

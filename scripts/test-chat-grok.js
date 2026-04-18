@@ -88,7 +88,7 @@ Odpowiadaj krótko i konkretnie w języku zadanym przez użytkownika. Bądź pom
         Authorization: `Bearer ${process.env.XAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "grok-4-1-fast-non-reasoning",
+        model: "grok-4-1-fast-reasoning",
         messages: messages,
         max_tokens: 500,
         temperature: 0.5,
