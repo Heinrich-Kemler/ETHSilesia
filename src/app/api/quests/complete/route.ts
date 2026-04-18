@@ -16,6 +16,7 @@ import { ensureBadgeMintJob } from "@/lib/server/badgeMinting";
 import {
   calculateQuestXp,
   getQuestDefinition,
+  isQuestUnlocked,
   normalizeScore,
 } from "@/lib/server/questCatalog";
 import { assertRateLimit } from "@/lib/server/rateLimit";
@@ -77,6 +78,30 @@ export async function POST(request: Request) {
     }
 
     assertPrivyOwnership(auth, user.privy_id);
+
+    // ── Server-side unlock gate ──────────────────────────────────────────
+    // Previously this route trusted whatever `questId` the client sent,
+    // so a direct POST could farm `l3-boss` as a first action. Pull the
+    // user's existing completions first and run the same prerequisite
+    // check the UI uses before we accept the new one.
+    const { data: priorCompletions, error: priorCompletionsError } =
+      await supabase
+        .from("quest_completions")
+        .select("quest_id")
+        .eq("user_id", userId);
+
+    if (priorCompletionsError) {
+      throw new ApiError(500, "Failed to load quest progress.", false);
+    }
+
+    const priorQuestIds = (priorCompletions ?? []).map((row) => row.quest_id);
+
+    if (!isQuestUnlocked(questId, priorQuestIds)) {
+      throw new ApiError(
+        403,
+        "Quest is locked — complete prerequisites first."
+      );
+    }
 
     const nowIso = new Date().toISOString();
 
