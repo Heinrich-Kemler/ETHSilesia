@@ -13,11 +13,14 @@ export const maxDuration = 30;
 export const runtime = "nodejs";
 
 /**
- * Feature flag — set AI_ENABLED=true in .env.local to resume the full
- * Grok + Gemini RAG pipeline. Off by default so we don't burn API
+ * Feature flag — set AI_ENABLED=true in .env.local (or Vercel env) to resume
+ * the full Grok + Gemini RAG pipeline. Off by default so we don't burn API
  * credits while the backend/DB layer is being iterated on.
+ *
+ * Note: `.env.example` ships with AI_ENABLED=false. This intentionally
+ * string-compares to "true" so anything else (unset, "false", "0") stays off.
  */
-const AI_ENABLED = true;
+const AI_ENABLED = process.env.AI_ENABLED === "true";
 
 type ChatBody = {
   message?: string;
@@ -51,28 +54,31 @@ export async function POST(request: Request) {
     const userLang = body.language === "en" ? "English" : "Polish";
     const language: "pl" | "en" = body.language === "en" ? "en" : "pl";
 
-    console.log("[chat] [1] Request received", {
-      userQuery,
-      sessionId,
-      language,
-      userId: body.userId,
-    });
-
     if (!userQuery) {
       throw new ApiError(400, "message is required.");
     }
 
-    let authenticatedPrivyId: string | null = null;
+    // Require Privy auth unconditionally — chat is a member-only feature and
+    // each call burns paid Grok + Gemini credits. Previously auth was only
+    // enforced when the client attached `body.userId`, so any anonymous caller
+    // with a bearer-less fetch could drain credits + hit our DB.
+    const auth = await requirePrivyAuth(request);
     if (body.userId) {
-      const auth = await requirePrivyAuth(request);
       assertPrivyOwnership(auth, body.userId);
-      authenticatedPrivyId = auth.privyId;
     }
+    const authenticatedPrivyId: string = auth.privyId;
 
-    const sessionId =
-      authenticatedPrivyId && validatedSessionId
-        ? validatedSessionId
-        : "anonymous-session";
+    const sessionId = validatedSessionId ?? `privy:${auth.privyId}`;
+
+    // Deliberately log NO PII: userQuery can contain seed phrases, private
+    // keys, wallet addresses, and other sensitive content the user typed into
+    // the chat. Only log derived/non-sensitive metadata.
+    console.log("[chat] request received", {
+      sessionId,
+      language,
+      hasUserId: Boolean(body.userId),
+      messageLength: userQuery.length,
+    });
 
     // --- AI disabled path (default) ------------------------------------
     // Keeps the frontend UX seamless without calling Grok/Gemini.
@@ -85,35 +91,37 @@ export async function POST(request: Request) {
     // --- AI enabled path: full RAG pipeline ----------------------------
     const supabase = getSupabaseAdminClient();
 
-    // 1. Zidentyfikuj i wczytaj wewnętrzne ID usera na podstawie privy_id
+    // 1. Zidentyfikuj i wczytaj wewnętrzne ID usera na podstawie privy_id.
+    //    Auth is unconditional now, so authenticatedPrivyId is always set.
     let internalUserId: string | null = null;
     let userLevel = 1;
     let username = "Młody Górniku";
     let userTotalXp = 0;
     let userStreak = 0;
 
-    if (authenticatedPrivyId) {
-      const { data: userRecord } = await supabase
-        .from("users")
-        .select("id, level")
-        .eq("privy_id", authenticatedPrivyId)
-        .single();
+    // Pull all columns we actually reference below (previously the select
+    // was `id, level` but the code read `username`, `total_xp`, `streak_days`
+    // — those silently resolved to undefined, so every user appeared as a
+    // level-1 anonymous "Młody Górniku" in the system prompt).
+    const { data: userRecord, error: userErr } = await supabase
+      .from("users")
+      .select("id, level, username, total_xp, streak_days")
+      .eq("privy_id", authenticatedPrivyId)
+      .maybeSingle();
 
-      if (userErr)
-        console.warn("[chat] [2] User lookup error:", userErr.message);
+    if (userErr) {
+      console.warn("[chat] user lookup error:", userErr.message);
+    }
 
-      if (userRecord) {
-        internalUserId = userRecord.id;
-        userLevel = userRecord.level || 1;
-        username = userRecord.username || "Młody Górniku";
-        userTotalXp = userRecord.total_xp || 0;
-        userStreak = userRecord.streak_days || 0;
-        console.log("[chat] [2] User found:", { internalUserId, userLevel });
-      } else {
-        console.warn(
-          "[chat] [2] User not found in DB — proceeding as anonymous",
-        );
-      }
+    if (userRecord) {
+      internalUserId = userRecord.id;
+      userLevel = userRecord.level || 1;
+      username = userRecord.username || "Młody Górniku";
+      userTotalXp = userRecord.total_xp || 0;
+      userStreak = userRecord.streak_days || 0;
+      console.log("[chat] user loaded", { userLevel });
+    } else {
+      console.warn("[chat] user not found — proceeding with defaults");
     }
 
     // 2. Pobierz historię (limit do 6 ostatnich wiadomości dla niezapapychania okna kontekstu)
