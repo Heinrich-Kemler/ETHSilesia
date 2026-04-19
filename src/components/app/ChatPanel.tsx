@@ -207,9 +207,9 @@ export default function ChatPanel({
                 m.role === "user" ? (
                   <div key={m.id} className="flex justify-end">
                     <div className="bg-gold-themed/10 border border-gold-themed/20 rounded-xl rounded-tr-sm px-4 py-2.5 max-w-[85%]">
-                      <p className="text-sm text-themed whitespace-pre-wrap">
-                        {m.text}
-                      </p>
+                       <p className="text-sm text-themed whitespace-pre-wrap break-words">
+                         {m.text}
+                       </p>
                     </div>
                   </div>
                 ) : (
@@ -223,9 +223,9 @@ export default function ChatPanel({
                           instead of leaking raw asterisks. User
                           messages stay literal — we don't want their
                           typed text reformatted under them. */}
-                      <p className="text-sm text-secondary-themed leading-relaxed whitespace-pre-wrap">
-                        {renderInlineMarkdown(m.text)}
-                      </p>
+                       <p className="text-sm text-secondary-themed leading-relaxed whitespace-pre-wrap break-words">
+                         {renderInlineMarkdown(m.text)}
+                       </p>
                     </div>
                   </div>
                 )

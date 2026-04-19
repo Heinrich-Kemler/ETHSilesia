@@ -13,7 +13,6 @@ import type { Theme } from "@/lib/useTheme";
 
 const navLinks = [
   { key: "navQuests" as const, href: "#features" },
-  { key: "navLeaderboard" as const, href: "#leaderboard" },
   { key: "navCoach" as const, href: "#coach" },
 ];
 
@@ -120,11 +119,7 @@ export default function Navbar({
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
-            <a
-              key={link.key}
-              href={link.href}
-              className="nav-anchor"
-            >
+            <a key={link.key} href={link.href} className="nav-anchor">
               {t(link.key, lang)}
             </a>
           ))}
@@ -133,11 +128,7 @@ export default function Navbar({
         {/* Right side */}
         <div className="hidden md:flex items-center gap-2">
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <button
-            type="button"
-            onClick={handleLogin}
-            className="btn-primary"
-          >
+          <button type="button" onClick={handleLogin} className="btn-primary">
             <LogIn className="w-4 h-4" />
             {ctaLabel}
           </button>
@@ -209,7 +200,9 @@ export default function Navbar({
           color: var(--text-secondary);
           padding: 8px 14px;
           border-radius: 6px;
-          transition: color 160ms, background-color 160ms;
+          transition:
+            color 160ms,
+            background-color 160ms;
         }
         .nav-anchor:hover {
           color: var(--gold);
@@ -219,4 +212,3 @@ export default function Navbar({
     </nav>
   );
 }
-
