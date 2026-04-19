@@ -42,7 +42,7 @@ We use the same mechanics that make Duolingo addictive to teach users critical s
 
 ## License
 
-Source code is available under the **MIT License**.  
+Source code is available under the **MIT License** and **GPLv3**.  
 Educational content (quest text, explainers, and mascot art direction) is © the Skarbnik team—please contact us before reusing these assets.
 
 ---
@@ -87,5 +87,5 @@ Wykorzystujemy te same mechanizmy, które przyciągają użytkowników do Duolin
 
 ## Licencja
 
-Kod źródłowy dostępny jest na licencji **MIT**.  
+Kod źródłowy dostępny jest na licencji **MIT** i **GPLv3**.  
 Treści merytoryczne (teksty zadań, kopia edukacyjna, kierunek artystyczny maskotki) są chronione prawem autorskim zespołu Skarbnik — prosimy o kontakt przed ich ponownym wykorzystaniem.
