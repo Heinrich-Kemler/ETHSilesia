@@ -69,7 +69,7 @@ export default function AppNav({
             sits at 28px so it reads as an icon next to the wordmark
             rather than a mascot; all its colours follow the active
             theme through --gold / --cyan / --navy. */}
-        <Link href="/" className="flex items-center gap-3 group">
+        <Link href="/quest" className="flex items-center gap-3 group">
           <LanternGlyph size={28} />
           <div className="flex flex-col leading-none">
             <span
@@ -214,4 +214,3 @@ export default function AppNav({
     </nav>
   );
 }
-
