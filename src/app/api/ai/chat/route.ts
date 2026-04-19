@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI, TaskType } from "@google/generative-ai";
 import { ApiError, logServerError, toApiError } from "@/lib/server/apiErrors";
-import {
-  assertPrivyOwnership,
-  requirePrivyAuth,
-} from "@/lib/server/auth";
+import { assertPrivyOwnership, requirePrivyAuth } from "@/lib/server/auth";
 import { assertRateLimit } from "@/lib/server/rateLimit";
 import { getSupabaseAdminClient } from "@/lib/server/supabaseAdmin";
 
@@ -34,6 +31,47 @@ function cannedChatResponse(language: "pl" | "en"): string {
     return "Skarbnik odpoczywa — ulepszamy moją bazę wiedzy. Wróć wkrótce! Tymczasem — ruszaj na questy i ucz się praktycznie. Pamiętaj: DYOR (Do Your Own Research) i nigdy nie inwestuj więcej niż możesz stracić.";
   }
   return "Skarbnik is resting — my knowledge base is being upgraded. Come back soon! In the meantime — jump into the quests and learn by doing. Remember: DYOR (Do Your Own Research) and never invest more than you can afford to lose.";
+}
+
+export async function GET(request: Request) {
+  try {
+    const auth = await requirePrivyAuth(request);
+    const sessionId = `privy:${auth.privyId}`;
+    const supabase = getSupabaseAdminClient();
+
+    console.log("[chat] fetching history for", sessionId);
+
+    const { data: historyData, error: histErr } = await supabase
+      .from("chat_history")
+      .select("id, role, content, created_at")
+      .eq("session_id", sessionId)
+      .order("created_at", { ascending: true })
+      .order("role", { ascending: false }) // 'user' > 'model' ties
+      .limit(30);
+
+    if (histErr) {
+      console.error("[chat] history fetch error:", histErr.message);
+      throw new ApiError(500, "Failed to load chat history.", false);
+    }
+
+    return NextResponse.json({
+      history: (historyData || []).map((h) => ({
+        id: h.id || `h-${Date.now()}`,
+        role: h.role === "model" ? "assistant" : "user",
+        text: h.content,
+      })),
+    });
+  } catch (error) {
+    const apiError = toApiError(error, "Failed to load chat history.");
+    return NextResponse.json(
+      {
+        error: apiError.exposeMessage
+          ? apiError.message
+          : "Failed to load chat history.",
+      },
+      { status: apiError.status },
+    );
+  }
 }
 
 export async function POST(request: Request) {
@@ -213,7 +251,8 @@ Zasady:
 - Poziom 3: możesz swobodnie używać technicznego języka.
 - Jeśli użytkownik wspomni o "seed phrase" (frazie odzyskiwania) lub "private key" (kluczu prywatnym): ZAWSZE ostrzegaj, aby nigdy nie dzielił się nimi z nikim.
 - Nigdy nie dawaj i nie sugeruj porad inwestycyjnych.
-- Ogranicz odpowiedzi do 150 słów, chyba że użytkownik prosi o więcej szczegółów.
+- Ogranicz odpowiedzi do 150 słów, chyba że użytkownik prosi o więcej szczegółów. Nie pisz ile słów napisałeś.
+- Nie polecaj giełdy Zonda.
 - Zakończ każdą wypowiedź jednym pytaniem uzupełniającym (follow-up question), aby zachęcić do dalszej nauki.
 - Bądź ciepły, przyjazny i zachęcający, nigdy protekcjonalny (nie wymądrzaj się).`;
 
